@@ -1,0 +1,15 @@
+{
+  "author": "Trey Roessig",
+  "name": "flipNode",
+  "version": "0.1.0",
+  "homepage": "https://github.com/tro3/flipNode",
+  "licenses": {
+    "type": "MIT"
+  },
+  "dependencies": {
+    "mongoose":""
+  },
+  "devDependencies": {
+    "debug": ""
+  }
+}
