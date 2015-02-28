@@ -1,4 +1,3 @@
-mongoose = require('mongoose')
 
 
 execTree = (schema, doc, root, fcn) ->
@@ -10,7 +9,7 @@ execTree = (schema, doc, root, fcn) ->
             fcn(type, path, doc, root)
     
 
-flipPlugin = (schema, options) ->
+plugin = (schema, options) ->
     schema.add({ lastMod: Date })
     
     # Handle auto functions
@@ -25,14 +24,4 @@ flipPlugin = (schema, options) ->
 
 
 
-module.exports.types =
-    Auto: require('./types/auto')
-    AutoInit: require('./types/autoInit')
-
-module.exports.Schema = mongoose.Schema
-module.exports.connect = (conn) -> mongoose.connect(conn)
-module.exports.disconnect = () -> mongoose.disconnect()
-
-module.exports.model = (name, schema) ->
-    schema.plugin(flipPlugin)
-    mongoose.model(name, schema)
+module.exports = plugin
