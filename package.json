@@ -7,9 +7,11 @@
     "type": "MIT"
   },
   "dependencies": {
-    "mongoose":""
+    "mongoose":"",
+    "debug":""
   },
   "devDependencies": {
-    "debug": ""
+    "mocha": "",
+    "coffee-script":""
   }
 }
