@@ -6,8 +6,23 @@ Auto =     flipNode.types.Auto
 AutoInit = flipNode.types.AutoInit
 
 
+
+validateFunction = (doc) ->
+  if doc.isNew then ['Open'] else ['Pending', 'Closed']
+
+validateAllowed = (fcn) ->
+  (val) ->
+    items = fcn(this)
+    return items.indexOf(val) != -1
+    
+
 module.exports = new Schema
-  name: String
+  name:
+    type: String
+    required: true
+  stage:
+    type: String
+    validate: validateAllowed(validateFunction)
   auto:
     type: Auto
     exec: (doc) -> doc.name.toUpperCase()
@@ -17,7 +32,7 @@ module.exports = new Schema
   subdoc:
     name:
       type: String
-      default: ''
+      default: 'fred'
     auto:
       type: Auto
       exec: (doc) -> doc.subdoc.name.toUpperCase()
@@ -35,3 +50,6 @@ module.exports = new Schema
       type: AutoInit
       exec: (doc, root) -> root.name.toUpperCase()    
   ]
+
+module.exports.virtual('capname').get ->
+  this.name.toUpperCase()
