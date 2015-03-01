@@ -6,7 +6,7 @@ class AutoInit extends Auto
 
     constructor: (key, options) ->
         super key, options
-        @_flipType = 'auto_init'
+        @_flipData.type = 'auto_init'
 
 mongoose.Schema.Types.AutoInit = AutoInit
 mongoose.Types.AutoInit = mongoose.mongo.AutoInit

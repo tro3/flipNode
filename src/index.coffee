@@ -1,8 +1,7 @@
 
-model = require('./model')
 
-module.exports.Schema =     model.Schema
-module.exports.model =      model.model
-module.exports.connect =    model.connect
-module.exports.disconnect = model.disconnect
-module.exports.types =      model.types
+mongoose = require('mongoose')
+fnModel = require('./fnModel')
+
+module.exports.Schema = mongoose.Schema
+module.exports.types = fnModel.types

@@ -6,8 +6,9 @@ class Auto extends mongoose.SchemaType
 
     constructor: (key, options) ->
         super key, options
-        @_flipType = 'auto'
-        @_exec = options.exec
+        @_flipData =
+            type: 'auto'
+            exec: options.exec
         @_resultType = options.resultType || new SchemaString()
         
     checkRequired: (val) -> @_resultType.checkRequired(val)
