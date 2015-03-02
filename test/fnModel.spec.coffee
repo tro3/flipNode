@@ -77,6 +77,24 @@ describe 'fnModel', ->
                 assert.property err.errors, 'name'
                 done()
 
+        it 'validates unique', (done) ->
+            i1 = new @model(
+                name: 'bob'
+                eid: 12345
+            )
+            i1.save()
+            
+            @model.on('error', -> )
+            inst = new @model(
+                name: 'fred'
+                eid: 12345
+            )
+            inst.save (err, item, nAff) ->
+                assert.notStrictEqual err, null
+                assert.property err.errors, 'eid'
+                assert.equal err.errors.eid, '12345 is not unique'                
+                done()
+
         it 'performs default', (done) ->
             inst = new @model(
                 name: 'bob'
