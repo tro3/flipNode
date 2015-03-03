@@ -1,12 +1,13 @@
 flipNode = require('../../src')
-Schema =   flipNode.Schema
-List =     flipNode.types.List
-Subdoc =   flipNode.types.Subdoc
-Auto =     flipNode.types.Auto
-AutoInit = flipNode.types.AutoInit
+Schema =    flipNode.Schema
+List =      flipNode.types.List
+Doc =       flipNode.types.Doc
+Auto =      flipNode.types.Auto
+AutoInit =  flipNode.types.AutoInit
+Serialize = flipNode.types.Serialize
 
 
-flipNode.registerEndpoint 'advEndpoint',
+flipNode.registerEndpoint 'behavEndpoint',
     schema:
         name:
             type: String
@@ -27,7 +28,7 @@ flipNode.registerEndpoint 'advEndpoint',
             type: AutoInit
             exec: (doc) -> doc.name.toUpperCase()
         subdoc:
-            type: Subdoc
+            type: Doc
             schema:
                 name:
                     type: String

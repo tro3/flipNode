@@ -2,7 +2,7 @@
 flipNode = require('../../src')
 Schema =   flipNode.Schema
 List =     flipNode.types.List
-Doc =      flipNode.types.Subdoc
+Doc =      flipNode.types.Doc
 
 
 flipNode.registerEndpoint 'basicEndpoint',

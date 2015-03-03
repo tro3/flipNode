@@ -1,9 +1,10 @@
 
 module.exports.types =
-    List:     require('./types/list')
-    Subdoc:   require('./types/subdoc')
-    Auto:     require('./types/auto')
-    AutoInit: require('./types/autoInit')
+    List:      require('./types/list')
+    Doc:       require('./types/doc')
+    Auto:      require('./types/auto')
+    AutoInit:  require('./types/autoInit')
+    Serialize: require('./types/serialize')
 
 mongoose = require('mongoose')
 fnPlugin = require('./plugin')
