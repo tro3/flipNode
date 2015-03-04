@@ -7,7 +7,7 @@
     "type": "MIT"
   },
   "dependencies": {
-    "mongoose":"",
+    "mpath":"",
     "debug":""
   },
   "devDependencies": {

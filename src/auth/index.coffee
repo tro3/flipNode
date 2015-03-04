@@ -1,0 +1,2 @@
+
+Auth = require('./auth')
