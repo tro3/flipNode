@@ -10,42 +10,39 @@ types = require('../src/schema').types
 describe 'Schema module', ->
 
     describe 'expand function', ->
-        beforeEach ->
-            @type = () ->
-                
         it 'handles simple types', ->
             cfg =
-                name: @type
+                name: types.String
             assert.deepEqual expand(cfg), {
                 name:
-                    type: @type
+                    type: types.String
             }
             
         it 'handles complex types', ->
             cfg =
                 name:
-                    type: @type
+                    type: types.String
                     required: true
             assert.deepEqual expand(cfg), {
                 name:
-                    type: @type
+                    type: types.String
                     required: true
             }
 
         it 'handles simple subdocs', ->
             cfg =
                 address:
-                    street: @type
-                    city: @type
+                    street: types.String
+                    city: types.String
             debugger
             assert.deepEqual expand(cfg), {
                 address:
                     type: types.Dict
                     schema:
                         street:
-                            type: @type
+                            type: types.String
                         city:
-                            type: @type
+                            type: types.String
             }
         
         it 'handles complex subdocs', ->
@@ -53,53 +50,52 @@ describe 'Schema module', ->
                 address:
                     type: types.Dict
                     schema:
-                        street: @type
-                        city: @type
-            p expand(cfg)
+                        street: types.String
+                        city: types.String
             assert.deepEqual expand(cfg), {
                 address:
                     type: types.Dict
                     schema:
                         street:
-                            type: @type
+                            type: types.String
                         city:
-                            type: @type
+                            type: types.String
             }
             
         it 'handles simple lists', ->
             cfg =
-                tags: [@type]
+                tags: [types.String]
             assert.deepEqual expand(cfg), {
                 tags:
                     type: types.List
-                    subtype: @type
+                    subtype: types.String
             }
             
         it 'handles complex lists', ->
             cfg =
                 tags:
                     type: types.List
-                    subtype: @type
+                    subtype: types.String
             assert.deepEqual expand(cfg), {
                 tags:
                     type: types.List
-                    subtype: @type
+                    subtype: types.String
             }
         
         it 'handles simple lists of objects', ->
             cfg =
                 address: [
-                    street: @type
-                    city: @type
+                    street: types.String
+                    city: types.String
                 ]
             assert.deepEqual expand(cfg), {
                 address:
                     type: types.List
                     schema:
                         street:
-                            type: @type
+                            type: types.String
                         city:
-                            type: @type
+                            type: types.String
             }
             
         it 'handles complex lists of objects', ->
@@ -108,28 +104,28 @@ describe 'Schema module', ->
                     type: types.List
                     schema:
                         street:
-                            type: @type
+                            type: types.String
                         city:
-                            type: @type
+                            type: types.String
             assert.deepEqual expand(cfg), {
                 address:
                     type: types.List
                     schema:
                         street:
-                            type: @type
+                            type: types.String
                         city:
-                            type: @type
+                            type: types.String
             }
             
         it 'handles nested objects and lists', ->
             cfg =
                 subdoc:
                     subdoclist: [
-                        name: @type
+                        name: types.String
                     ]
                 sublist: [
                     subdoc:
-                        address: @type
+                        address: types.String
                 ]
             assert.deepEqual expand(cfg), {
                 subdoc:
@@ -139,7 +135,7 @@ describe 'Schema module', ->
                             type: types.List
                             schema:
                                 name:
-                                    type:@type
+                                    type:types.String
                 sublist:
                     type: types.List
                     schema:
@@ -147,5 +143,5 @@ describe 'Schema module', ->
                             type: types.Dict
                             schema:
                                 address:
-                                    type: @type
+                                    type: types.String
             }
