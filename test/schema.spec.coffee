@@ -2,9 +2,10 @@ assert = require('chai').assert
 equivObject = require('./lib/utils').equivObject
 p = console.log
 
-
-expand = require('../src/schema').expand
-types = require('../src/schema').types
+schema = require('../src/schema')
+Schema = schema.Schema
+expand = schema.expand
+types =  schema.types
 
 
 describe 'Schema module', ->
@@ -17,7 +18,7 @@ describe 'Schema module', ->
                 name:
                     type: types.String
             }
-            
+
         it 'handles complex types', ->
             cfg =
                 name:
@@ -44,7 +45,7 @@ describe 'Schema module', ->
                         city:
                             type: types.String
             }
-        
+
         it 'handles complex subdocs', ->
             cfg =
                 address:
@@ -61,16 +62,17 @@ describe 'Schema module', ->
                         city:
                             type: types.String
             }
-            
+
         it 'handles simple lists', ->
             cfg =
                 tags: [types.String]
             assert.deepEqual expand(cfg), {
                 tags:
                     type: types.List
-                    subtype: types.String
+                    subtype:
+                        type: types.String
             }
-            
+
         it 'handles complex lists', ->
             cfg =
                 tags:
@@ -79,9 +81,10 @@ describe 'Schema module', ->
             assert.deepEqual expand(cfg), {
                 tags:
                     type: types.List
-                    subtype: types.String
+                    subtype:
+                        type: types.String
             }
-        
+
         it 'handles simple lists of objects', ->
             cfg =
                 address: [
@@ -97,7 +100,7 @@ describe 'Schema module', ->
                         city:
                             type: types.String
             }
-            
+
         it 'handles complex lists of objects', ->
             cfg =
                 address:
@@ -116,7 +119,7 @@ describe 'Schema module', ->
                         city:
                             type: types.String
             }
-            
+
         it 'handles nested objects and lists', ->
             cfg =
                 subdoc:
@@ -145,3 +148,147 @@ describe 'Schema module', ->
                                 address:
                                     type: types.String
             }
+
+    describe 'Schema object', ->
+        describe 'get function', ->
+            beforeEach ->
+                @sch = new Schema(
+                    simple1: types.String
+                    simple2:
+                        type: types.String
+                        required: true
+                    sub: {
+                        simple1: types.String
+                        simple2:
+                            type: types.String
+                            required: true
+                    }
+                    list1: [types.String]
+                    list2: [
+                        type: types.String
+                        auth:
+                            read: true
+                    ]
+                    doclist1: [
+                        simple1: types.String
+                        simple2:
+                            type: types.String
+                            required: true
+                    ]
+                    doclist2:
+                        type: types.List
+                        schema:
+                            simple1: types.String
+                            simple2:
+                                type: types.String
+                                required: true
+                    nested:
+                        simple: types.String
+                        list: [types.String]
+                        doclist: [
+                            simple:
+                                type: types.String
+                                required: true
+                        ]
+                        doc:
+                            simple:
+                                type: types.String
+                                required: true
+                            list: [
+                                type: types.String
+                                auth:
+                                    read: true
+                            ]
+                            doclist:
+                                type: types.List
+                                schema:
+                                    simple1: types.String
+                                    simple2:
+                                        type: types.String
+                                        required: true
+                )
+
+            it 'handles simple types', ->
+                assert.deepEqual @sch.get('simple1'), {
+                    type: types.String
+                }
+                assert.deepEqual @sch.get('simple2'), {
+                    type: types.String
+                    required: true
+                }
+                
+            it 'handles subdocs', ->
+                assert.deepEqual @sch.get('sub.simple1'), {
+                    type: types.String
+                }
+                assert.deepEqual @sch.get('sub.simple2'), {
+                    type: types.String
+                    required: true
+                }                
+                
+            it 'handles simple lists', ->
+                assert.deepEqual @sch.get('list1'), {
+                    type: types.List
+                    subtype:
+                        type: types.String
+                }
+                assert.deepEqual @sch.get('list2'), {
+                    type: types.List
+                    subtype:
+                        type: types.String
+                        auth:
+                            read: true
+                }                
+
+            it 'handles lists of docs', ->
+                assert.deepEqual @sch.get('doclist1.simple1'), {
+                    type: types.String
+                }
+                assert.deepEqual @sch.get('doclist2.1.simple2'), {
+                    type: types.String
+                    required: true
+                }               
+            
+            it 'handles nested docs and lists', ->
+                assert.deepEqual @sch.get('nested.simple'), {
+                    type: types.String
+                }
+                assert.deepEqual @sch.get('nested.list'), {
+                    type: types.List
+                    subtype:
+                        type: types.String
+                }
+                assert.deepEqual @sch.get('nested.doclist.simple'), {
+                    type: types.String
+                    required: true
+                }
+                assert.deepEqual @sch.get('nested.doc.simple'), {
+                    type: types.String
+                    required: true
+                }
+                assert.deepEqual @sch.get('nested.doc.list'), {
+                    type: types.List
+                    subtype:
+                        type: types.String
+                        auth:
+                            read: true
+                }
+                assert.deepEqual @sch.get('nested.doc.doclist'), {
+                    type: types.List
+                    schema:
+                        simple1:
+                            type: types.String
+                        simple2:
+                            type: types.String
+                            required: true
+                }
+                assert.deepEqual @sch.get('nested.doc.doclist.0.simple1'), {
+                    type: types.String
+                }
+                assert.deepEqual @sch.get('nested.doc.doclist.simple2'), {
+                    type: types.String
+                    required: true
+                }
+                
+                
+                
