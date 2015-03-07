@@ -1,2 +1,3 @@
 
-Auth = require('./auth')
+module.exports = require('./auth')
+

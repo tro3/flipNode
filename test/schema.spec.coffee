@@ -6,6 +6,7 @@ schema = require('../src/schema')
 Schema = schema.Schema
 expand = schema.expand
 types =  schema.types
+paths = schema.paths
 
 
 describe 'Schema module', ->
@@ -289,6 +290,122 @@ describe 'Schema module', ->
                     type: types.String
                     required: true
                 }
-                
-                
-                
+                               
+    describe 'path extraction functions', ->
+        beforeEach ->
+            @sch = new Schema(
+                simple1: types.String
+                simple2:
+                    type: types.String
+                    required: true
+                sub: {
+                    simple1: types.String
+                    simple2:
+                        type: types.String
+                        required: true
+                }
+                list1: [types.String]
+                list2: [
+                    type: types.String
+                    auth:
+                        read: true
+                ]
+                doclist1: [
+                    simple1: types.String
+                    simple2:
+                        type: types.String
+                        required: true
+                ]
+                doclist2:
+                    type: types.List
+                    schema:
+                        simple1: types.String
+                        simple2:
+                            type: types.String
+                            required: true
+                nested:
+                    simple: types.String
+                    list: [types.String]
+                    doclist: [
+                        simple:
+                            type: types.String
+                            required: true
+                    ]
+                    doc:
+                        simple:
+                            type: types.String
+                            required: true
+                        list: [
+                            type: types.String
+                            auth:
+                                read: true
+                        ]
+                        doclist:
+                            type: types.List
+                            schema:
+                                simple1: types.String
+                                simple2:
+                                    type: types.String
+                                    required: true
+            )
+
+        it 'work for all paths', ->
+            assert.sameMembers paths.all(@sch), [
+                'simple1'
+                'simple2'
+                'sub'
+                'sub.simple1'
+                'sub.simple2'
+                'list1'
+                'list2'
+                'doclist1'
+                'doclist1.simple1'
+                'doclist1.simple2'
+                'doclist2'
+                'doclist2.simple1'
+                'doclist2.simple2'
+                'nested'
+                'nested.simple'
+                'nested.list'
+                'nested.doclist'
+                'nested.doclist.simple'
+                'nested.doc'
+                'nested.doc.simple'
+                'nested.doc.list'
+                'nested.doc.doclist'
+                'nested.doc.doclist.simple1'
+                'nested.doc.doclist.simple2'
+            ]
+
+
+        it 'work for primitive paths', ->
+            assert.sameMembers paths.primitives(@sch), [
+                'simple1'
+                'simple2'
+                'sub.simple1'
+                'sub.simple2'
+                'list1'
+                'list2'
+                'doclist1.simple1'
+                'doclist1.simple2'
+                'doclist2.simple1'
+                'doclist2.simple2'
+                'nested.simple'
+                'nested.list'
+                'nested.doclist.simple'
+                'nested.doc.simple'
+                'nested.doc.list'
+                'nested.doc.doclist.simple1'
+                'nested.doc.doclist.simple2'
+            ]
+
+        it 'work to find schemas with arbitrary properties', ->
+            assert.sameMembers paths.withTrueProp(@sch, 'required'), [
+                'simple2'
+                'sub.simple2'
+                'doclist1.simple2'
+                'doclist2.simple2'
+                'nested.doclist.simple'
+                'nested.doc.simple'
+                'nested.doc.doclist.simple2'
+            ]
