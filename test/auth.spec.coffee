@@ -217,4 +217,34 @@ describe 'Auth module', ->
                 delete: true
             }
 
-        it "gets permissions from lists of nested objects"
+        it "gets permissions from lists of nested objects", ->
+            endpoint =
+                auth:
+                    edit: () -> false
+                schema:
+                    list:
+                        type: List
+                        auth:
+                            read: (el) -> el.name == 'b'
+                        schema:
+                            name: String
+                            subdoc:
+                                type: Dict
+                                auth:
+                                    delete: false
+                                schema:
+                                    name: String
+
+            auth = new Auth(endpoint, {list: [{name:'a'}, {name:'b'}]})
+            assert.deepEqual auth.get('list.0.subdoc'), {
+                create: true
+                read: false
+                edit: false
+                delete: false
+            }
+            assert.deepEqual auth.get('list.1.subdoc'), {
+                create: true
+                read: true
+                edit: false
+                delete: false
+            }
