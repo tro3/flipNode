@@ -8,7 +8,9 @@
   },
   "dependencies": {
     "mpath":"",
-    "debug":""
+    "debug":"",
+    "q":"",
+    "mongodb":"2"
   },
   "devDependencies": {
     "node-inspector": "",

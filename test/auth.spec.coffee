@@ -95,6 +95,8 @@ describe 'Auth module', ->
                 schema:
                     list:
                         type: List
+                        auth:
+                            create: false
                         schema:
                             name: String
                             subdoc:
@@ -110,21 +112,40 @@ describe 'Auth module', ->
                 edit: false
                 delete: true
                 children:
-                    list: [{
-                        create: true
+                    list:
+                        create: false
                         read: true
                         edit: false
                         delete: true
-                        children:
-                            subdoc: {create: true, read: true, edit: false, delete: true}
-                    },{
-                        create: true
+                        children: [{
+                            create: false
+                            read: true
+                            edit: false
+                            delete: true
+                            children:
+                                subdoc: {create: false, read: true, edit: false, delete: true}
+                        },{
+                            create: false
+                            read: true
+                            edit: false
+                            delete: true
+                            children:
+                                subdoc: {create: false, read: false, edit: false, delete: true}
+                        }]
+            }
+            assert.deepEqual new Auth(endpoint, {x:false, list:[]}, 1, 2), {
+                __proto__: AuthProto
+                create: true
+                read: true
+                edit: false
+                delete: true
+                children:
+                    list: 
+                        create: false
                         read: true
                         edit: false
                         delete: true
-                        children:
-                            subdoc: {create: true, read: false, edit: false, delete: true}
-                    }]
+                        children: []
             }
             assert.equal root_test, false
             assert.equal user_test, 1
@@ -199,19 +220,26 @@ describe 'Auth module', ->
                     list:
                         type: List
                         auth:
+                            create: false
                             read: (el) -> el.name == 'b'
                         schema:
                             name: String
 
             auth = new Auth(endpoint, {list: [{name:'a'}, {name:'b'}]})
+            assert.deepEqual auth.get('list'), {
+                create: false
+                read: false
+                edit: false
+                delete: true
+            }
             assert.deepEqual auth.get('list.0'), {
-                create: true
+                create: false
                 read: false
                 edit: false
                 delete: true
             }
             assert.deepEqual auth.get('list.1'), {
-                create: true
+                create: false
                 read: true
                 edit: false
                 delete: true
