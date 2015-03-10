@@ -26,6 +26,16 @@ serializeAuth = (doc, authState, top=false) ->
                 serializeAuth(doc[key], val)
 
 
+enforceReadAuth = (doc, authState) ->
+    if authState.children
+        for key, val of authState.children
+            if !val.read
+                delete doc[key]
+            else if val.children and val.children instanceof Array
+                
+            else if val.children
+                if !val.read
+                    delete doc[key]
 
 module.exports = find = (db, collName, endpoint, query={}, options={}, user) ->
     docs = []
@@ -52,8 +62,8 @@ module.exports = find = (db, collName, endpoint, query={}, options={}, user) ->
         results.forEach (x) -> docs.filter((y) -> y.doc._id.equals(x._id))[0].projection = x
         
         # Get Auth
-        docs.forEach (x) -> x.auth = new Auth(endpoint, x.doc, user, db)
-        
+        docs.forEach (doc) -> doc.auth = new Auth(endpoint, doc.doc, user, db)
+
         # Enforce Auth
         
         # Expand References
