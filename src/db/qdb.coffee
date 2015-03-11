@@ -41,7 +41,19 @@ class qDB
         @connected.then -> q.Promise (resolve, reject) ->
             @db.collection(collection).insertMany docs, (err, resp) ->
                 reject err if err
-                resolve(resp.insertedIds)
+                resolve(resp)
+
+    update: (collection, spec={}, update={}, options={}) ->
+        @connected.then -> q.Promise (resolve, reject) ->
+            @db.collection(collection).updateOne spec, update, options, (err, resp) ->
+                reject err if err
+                resolve(resp)
+
+    updateMany: (collection, spec={}, update={}, options={}) ->
+        @connected.then -> q.Promise (resolve, reject) ->
+            @db.collection(collection).updateMany spec, update, options, (err, resp) ->
+                reject err if err
+                resolve(resp)
     
     remove: (collection, query) ->
         @connected.then -> q.Promise (resolve, reject) ->

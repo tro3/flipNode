@@ -7,13 +7,14 @@
     "type": "MIT"
   },
   "dependencies": {
-    "mpath":"",
-    "debug":"",
-    "q":"",
-    "mongodb":"2"
+    "mpath": "",
+    "debug": "",
+    "q": "",
+    "mongodb": "2"
   },
   "devDependencies": {
+    "chai": "",
     "node-inspector": "",
-    "chai": ""
+    "sinon": "^1.13.0"
   }
 }
