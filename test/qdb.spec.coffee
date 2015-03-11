@@ -9,12 +9,15 @@ p = console.log
 describe 'qdb', ->
     db = null
     
-    beforeEach ->
+    before ->
         db = connect('mongodb://localhost:27017/test')
+        
+    after (done) ->
+        db.close()
+        .then -> done()
 
     afterEach (done) ->
         db.drop('test', {})
-        .then -> db.close()
         .then -> done()
 
     describe 'insert', ->

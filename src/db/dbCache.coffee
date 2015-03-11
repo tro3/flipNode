@@ -23,13 +23,10 @@ hashQuery = (query, options={}) ->
 
 
 class DbCache
-    constructor: (connString) ->
-        @db = connect(connString)
+    constructor: (db) ->
+        @db = db
         @cache = {}
-        
-    collections: ->
-        @db.collections()
-    
+            
     find: (collection, query={}, options={}) ->
         hash = hashQuery(query, options)
         if hash of @cache
@@ -67,13 +64,6 @@ class DbCache
     
     remove: (collection, spec) ->
         @db.remove(collection, spec)
-
-    drop: (collection) ->
-        @db.drop(collection)
-    
-    close: () ->
-        @db.close()
-
 
 
 module.exports = DbCache
