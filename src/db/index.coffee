@@ -1,4 +1,4 @@
 x = module.exports
 
-x.qConnect = require('./qdb')
+x.connect = require('./qdb')
 x.find = require('./find')

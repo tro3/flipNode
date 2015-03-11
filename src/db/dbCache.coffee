@@ -25,30 +25,30 @@ hashQuery = (query, options={}) ->
 class DbCache
     constructor: (db) ->
         @db = db
-        @cache = {}
+        @lookup = {}
             
     find: (collection, query={}, options={}) ->
         hash = hashQuery(query, options)
-        if hash of @cache
-            return q.Promise.resolve(@cache[hash])
+        if hash of @lookup
+            return q.Promise.resolve(@lookup[hash])
         
         @db.find(collection, query, options)
         .then (docs) =>
-            @cache[hash] = docs
+            @lookup[hash] = docs
             docs.forEach (doc) =>
-                @cache[hashQuery({_id:doc._id})] = [doc]
+                @lookup[hashQuery({_id:doc._id})] = [doc]
             docs
             
 
     findOne: (collection, query={}, options={}) ->
         hash = hashQuery(query, options)
-        if hash of @cache
-            return q.Promise.resolve(@cache[hash][0])
+        if hash of @lookup
+            return q.Promise.resolve(@lookup[hash][0])
         
         @db.findOne(collection, query, options)
         .then (doc) =>
-            @cache[hash] = [doc]
-            @cache[hashQuery({_id:doc._id})] = [doc]
+            @lookup[hash] = [doc]
+            @lookup[hashQuery({_id:doc._id})] = [doc]
             doc
 
 
