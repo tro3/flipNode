@@ -12,7 +12,7 @@ Dict = schema.types.Dict
 List = schema.types.List
 Reference = schema.types.Reference
 
-getItems = require('../src/viewFunctions/common').getItems
+getItems = require('../src/viewFunctions/getItems')
 
 p = console.log
 

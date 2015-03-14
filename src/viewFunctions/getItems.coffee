@@ -195,5 +195,4 @@ _expandSingle = (req, config, id) ->
         sref
     
     
-x = module.exports
-x.getItems = getItems
+module.exports = getItems
