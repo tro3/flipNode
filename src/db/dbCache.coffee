@@ -1,5 +1,6 @@
 q = require('q')
 connect = require('./qdb')
+Doc = require('../doc').Doc
 p = console.log
 
 hashObj = (obj) ->
@@ -17,8 +18,8 @@ hashObj = (obj) ->
         result.push "#{key}:#{val}"
     result.join()
 
-hashQuery = (query, options={}) ->
-    return "#{hashObj(query)}?#{hashObj(options)}"
+hashQuery = (collection, query, options={}) ->
+    return "#{collection}?#{hashObj(query)}?#{hashObj(options)}"
 
 
 
@@ -28,27 +29,30 @@ class DbCache
         @lookup = {}
             
     find: (collection, query={}, options={}) ->
-        hash = hashQuery(query, options)
+        hash = hashQuery(collection, query, options)
         if hash of @lookup
             return q.Promise.resolve(@lookup[hash])
         
         @db.find(collection, query, options)
         .then (docs) =>
+            docs = (new Doc(x) for x in docs)
             @lookup[hash] = docs
             docs.forEach (doc) =>
-                @lookup[hashQuery({_id:doc._id})] = [doc]
+                @lookup[hashQuery(collection, {_id:doc._id})] = [doc]
             docs
             
 
     findOne: (collection, query={}, options={}) ->
-        hash = hashQuery(query, options)
+        hash = hashQuery(collection, query, options)
         if hash of @lookup
             return q.Promise.resolve(@lookup[hash][0])
-        
+
         @db.findOne(collection, query, options)
         .then (doc) =>
+            return null if !doc
+            doc = new Doc(doc)
             @lookup[hash] = [doc]
-            @lookup[hashQuery({_id:doc._id})] = [doc]
+            @lookup[hashQuery(collection, {_id:doc._id})] = [doc]
             doc
 
 

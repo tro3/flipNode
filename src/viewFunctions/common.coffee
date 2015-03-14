@@ -3,6 +3,7 @@ q = require('q')
 types = require('../schema').types
 Dict = types.Dict
 List = types.List
+Reference = types.Reference
 
 p = console.log
 
@@ -72,7 +73,6 @@ serializeAuth = (req, doc) ->
         _serializeAuthRec(req, doc, fullDoc, req.endpoint)
 
 _serializeAuthRec = (req, doc, fullDoc, endp, subdoc, prev, root) ->
-    debugger
     schema = endp.schema
     auth = endp.auth || {}
     subdoc = subdoc || false
@@ -152,12 +152,47 @@ _serializeAuthRec = (req, doc, fullDoc, endp, subdoc, prev, root) ->
                     
 
 
+#from .get(path):
+#    id
+#    [id1, id2]
+#    [[id1, id2], [id3]]
+
 expandRefs = (req, doc) ->
-    q.Promise.resolve()
+    refs = req.endpoint.references || {}
+    qForItems refs, (path, config) ->
+        if 'subtype' of config
+            config = config.subtype
+        ids = doc.get(path)
+        return q.Promise.resolve() if !ids
         
-            
+        lvl = 0
+        if !(ids instanceof Array)
+            lvl += 1
+            ids = [ids]
+        if !(ids[0] instanceof Array)
+            lvl += 1
+            ids = [ids]
+                
+        newrefs = ((null for y in x) for x in ids)
+        qForEach(ids, (row, i) ->
+            qForEach row, (id, j) ->
+                _expandSingle(req, config, id)
+                .then (ref) ->
+                    newrefs[i][j] = ref
+        ).then ->
+            while lvl
+                newrefs = newrefs[0]
+                lvl -= 1
+            doc.set(path, newrefs)
+        
     
-    
+_expandSingle = (req, config, id) ->
+    req.cache.findOne(config.collection, {_id:id})
+    .then (ref) ->
+        sref = {_id: id}
+        for fld in config.fields
+            sref[fld] = if ref then ref[fld] else 'broken reference'
+        sref
     
     
 x = module.exports

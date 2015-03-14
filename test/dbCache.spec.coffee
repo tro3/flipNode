@@ -32,9 +32,9 @@ describe 'dbCache', ->
     callCount = -> spy1.callCount + spy2.callCount
 
 
-    describe 'single', ->
+    describe 'single instance', ->
         db = null
-        
+
         beforeEach ->
             db = new DbCache(conn)
 
@@ -46,7 +46,7 @@ describe 'dbCache', ->
                     assert.equal doc.a, 1
                     done()
                 .catch (err) -> done(err)
-    
+
             it 'adds multiple docs', (done) ->
                 db.insert('test', [{i:2, a:1}, {i:1, b:2}])
                 .then -> db.find('test', {}, {sort:{i:1}})
@@ -55,7 +55,7 @@ describe 'dbCache', ->
                     assert.equal docs[1].a, 1
                     done()
                 .catch (err) -> done(err)
-    
+
         describe 'update', ->
             it 'modifies single doc', (done) ->
                 db.insert('test', {a:3})
@@ -65,7 +65,7 @@ describe 'dbCache', ->
                     assert.equal doc.a, 1
                     done()
                 .catch (err) -> done(err)
-    
+
         describe 'updateMany', ->
             it 'modifies multiple docs', (done) ->
                 db.insert('test', [{i:2, a:1}, {i:1, a:2}])
@@ -76,8 +76,8 @@ describe 'dbCache', ->
                     assert.equal docs[1].a, 2
                     done()
                 .catch (err) -> done(err)
-    
-        describe 'find', ->                
+
+        describe 'find', ->
             it 'handles basic request', (done) ->
                 db.insert('test', [{a:1,b:1},{a:2,b:2},{a:3,b:1},{a:4,b:2}])
                 .then -> db.find('test', {b:{$ne:1}}, {sort:{a:1}})
@@ -88,7 +88,7 @@ describe 'dbCache', ->
                     assert.equal callCount(), 1
                     done()
                 .catch (err) -> done(err)
-    
+
             it 'only checks db once for two equal multi queries', (done) ->
                 db.insert('test', [{a:1,b:1},{a:2,b:2},{a:3,b:1},{a:4,b:2}])
                 .then -> db.find('test', {b:{$ne:1}}, {sort:{a:1}})
@@ -102,8 +102,8 @@ describe 'dbCache', ->
                     done()
                 .catch (err) ->
                     done(err)
-    
-        describe 'findOne', ->    
+
+        describe 'findOne', ->
             it 'handles basic request', (done) ->
                 db.insert('test', [{a:1,b:1},{a:2,b:2},{a:3,b:1},{a:4,b:2}])
                 .then -> db.findOne('test', {b:{$ne:1}}, {sort:{a:1}})
@@ -111,7 +111,15 @@ describe 'dbCache', ->
                     assert.equal doc.a, 2
                     done()
                 .catch (err) -> done(err)
-    
+
+            it 'handles no document found', (done) ->
+                db.insert('test', [{a:1,b:1},{a:2,b:2},{a:3,b:1},{a:4,b:2}])
+                .then -> db.findOne('test', {b:3}, {sort:{a:1}})
+                .then (doc) ->
+                    assert.equal doc, null
+                    done()
+                .catch (err) -> done(err)
+
             it 'only checks db once for two equal single queries', (done) ->
                 db.insert('test', [{a:1,b:1},{a:2,b:2},{a:3,b:1},{a:4,b:2}])
                 .then -> db.findOne('test', {a:2})
@@ -127,7 +135,7 @@ describe 'dbCache', ->
                     done()
                 .catch (err) ->
                     done(err)
-    
+
             it 'only checks db once for a multi query followed by an id query', (done) ->
                 id = null
                 db.insert('test', [{a:1,b:1},{a:2,b:2},{a:3,b:1},{a:4,b:2}])
@@ -143,7 +151,7 @@ describe 'dbCache', ->
                     done()
                 .catch (err) ->
                     done(err)
-    
+
         describe 'remove', ->
             it 'handles basic request', (done) ->
                 db.insert('test', [{a:1,b:1},{a:2,b:2},{a:3,b:1},{a:4,b:2}])
@@ -158,10 +166,10 @@ describe 'dbCache', ->
 
 
 
-    describe 'multi', ->
+    describe 'multi-instance', ->
         db1 = null
         db2 = null
-        
+
         beforeEach ->
             db1 = new DbCache(conn)
             db2 = new DbCache(conn)
@@ -201,4 +209,4 @@ describe 'dbCache', ->
                     assert.equal callCount(), 4
                     done()
                 .catch (err) -> done(err)
-    
+
