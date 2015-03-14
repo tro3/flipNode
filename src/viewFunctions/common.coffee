@@ -158,7 +158,7 @@ _serializeAuthRec = (req, doc, fullDoc, endp, subdoc, prev, root) ->
 #    [[id1, id2], [id3]]
 
 expandRefs = (req, doc) ->
-    refs = req.endpoint.references || {}
+    refs = req.endpoint.paths.references || {}
     qForItems refs, (path, config) ->
         if 'subtype' of config
             config = config.subtype

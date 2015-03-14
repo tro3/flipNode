@@ -6,6 +6,7 @@ DbCache = require('../src/db/dbCache')
 Doc = require('../src/doc').Doc
 schema = require('../src/schema')
 Schema = schema.Schema
+Endpoint = schema.Endpoint
 String =  schema.types.String
 Dict = schema.types.Dict
 List = schema.types.List
@@ -48,10 +49,9 @@ describe 'viewFunctions.getItems', ->
 
     it 'retrieves simple item', (done) ->
         req.collection = 'test'
-        req.endpoint =
-            schema: new Schema(
-                a: Number
-            )
+        req.endpoint = new Endpoint {
+            a: Number
+        }
         req.cache.insert('test', {_id:1, a:1})
         .then -> getItems(req, {_id:1})
         .then (docs) ->
@@ -65,16 +65,15 @@ describe 'viewFunctions.getItems', ->
             done()
         .catch (err) -> done(err)
 
-
     it 'retrieves simple items with auth', (done) ->
         req.collection = 'test'
-        req.endpoint =
+        req.endpoint = new Endpoint (
             auth:
                 edit: (doc) -> doc._id == 1
                 delete: false
-            schema: new Schema(
+            schema:
                 a: Number
-            )
+        )
         req.cache.insert('test', [{_id:1, a:1}, {_id:2, a:1}])
         .then -> getItems(req, {a:1})
         .then (docs) ->
@@ -93,11 +92,10 @@ describe 'viewFunctions.getItems', ->
             done()
         .catch (err) -> done(err)
 
-
     it 'retrieves nested items with auth', (done) ->
         req.collection = 'test'
-        req.endpoint =
-            schema: new Schema(
+        req.endpoint = new Endpoint (
+            schema:
                 a: Number
                 b:
                     type: Dict
@@ -105,7 +103,7 @@ describe 'viewFunctions.getItems', ->
                         edit: (doc, root) -> root._id == 1
                     schema: 
                         c: Number
-            )
+        )
         req.cache.insert('test', [{_id:1, a:1, b:{c:1}}, {_id:2, a:1, b:{c:1}}])
         .then -> getItems(req, {a:1})
         .then (docs) ->
@@ -130,11 +128,10 @@ describe 'viewFunctions.getItems', ->
             done()
         .catch (err) -> done(err)
 
-
     it 'retrieves lists of items with auth', (done) ->
         req.collection = 'test'
-        req.endpoint =
-            schema: new Schema(
+        req.endpoint = new Endpoint (
+            schema:
                 a: Number
                 b:
                     type: List
@@ -144,7 +141,7 @@ describe 'viewFunctions.getItems', ->
                         delete: false
                     schema: 
                         c: Number
-            )
+        )
         req.cache.insert('test', {_id:1, a:1, b:[{c:1},{c:2}]})
         .then -> getItems(req, {a:1})
         .then (docs) ->
@@ -167,15 +164,13 @@ describe 'viewFunctions.getItems', ->
 
     it 'serializes references', (done) ->
         req.collection = 'test'
-        req.endpoint =
-            schema: new Schema(
+        req.endpoint = new Endpoint (
+            schema:
                 ref: 
                     type: Reference
                     collection: 'refs'
                     fields: ['name', 'city']
-            )
-        req.endpoint.references =
-            'ref': req.endpoint.schema.ref
+        )
         req.cache.insert('test', {_id:1, ref:1})
         .then -> getItems(req, {_id:1})
         .then (docs) ->
@@ -194,15 +189,13 @@ describe 'viewFunctions.getItems', ->
 
     it 'handles broken references', (done) ->
         req.collection = 'test'
-        req.endpoint =
-            schema: new Schema(
+        req.endpoint = new Endpoint (
+            schema:
                 ref: 
                     type: Reference
                     collection: 'refs'
                     fields: ['name', 'city']
-            )
-        req.endpoint.references =
-            'ref': req.endpoint.schema.ref
+        )
         req.cache.insert('test', {_id:1, ref:3})
         .then -> getItems(req, {_id:1})
         .then (docs) ->
@@ -221,16 +214,14 @@ describe 'viewFunctions.getItems', ->
 
     it 'serializes references in nested documents', (done) ->
         req.collection = 'test'
-        req.endpoint =
-            schema: new Schema(
+        req.endpoint = new Endpoint (
+            schema:
                 nested:
                     ref: 
                         type: Reference
                         collection: 'refs'
                         fields: ['name', 'city']
-            )
-        req.endpoint.references =
-            'nested.ref': req.endpoint.schema.nested.schema.ref
+        )
         req.cache.insert('test', {_id:1, nested:{ref:2}})
         .then -> getItems(req, {_id:1})
         .then (docs) ->
@@ -251,8 +242,8 @@ describe 'viewFunctions.getItems', ->
 
     it 'serializes references in nested documents with auth', (done) ->
         req.collection = 'test'
-        req.endpoint =
-            schema: new Schema(
+        req.endpoint = new Endpoint (
+            schema:
                 nested:
                     ref: 
                         type: Reference
@@ -267,10 +258,7 @@ describe 'viewFunctions.getItems', ->
                             type: Reference
                             collection: 'refs'
                             fields: ['name', 'city']
-            )
-        req.endpoint.references =
-            'nested.ref': req.endpoint.schema.nested.schema.ref
-            'nested2.ref': req.endpoint.schema.nested2.schema.ref
+        )
         req.cache.insert('test', {_id:1, nested:{ref:2}, nested2:{ref:1}})
         .then -> getItems(req, {_id:1})
         .then (docs) ->
@@ -291,16 +279,14 @@ describe 'viewFunctions.getItems', ->
 
     it 'serializes lists of references', (done) ->
         req.collection = 'test'
-        req.endpoint =
-            schema: new Schema(
+        req.endpoint = new Endpoint (
+            schema:
                 refs: [
                     type: Reference
                     collection: 'refs'
                     fields: ['name', 'city']
                 ]
-            )
-        req.endpoint.references =
-            'refs': req.endpoint.schema.refs
+        )
         req.cache.insert('test', {_id:1, refs:[1,2]})
         .then -> getItems(req, {_id:1})
         .then (docs) ->
@@ -322,20 +308,17 @@ describe 'viewFunctions.getItems', ->
             done()
         .catch (err) -> done(err)
 
-
     it 'serializes references in lists of items', (done) ->
         req.collection = 'test'
-        req.endpoint =
-            schema: new Schema(
+        req.endpoint = new Endpoint (
+            schema:
                 docs: [
                     ref:
                         type: Reference
                         collection: 'refs'
                         fields: ['name', 'city']
                 ]
-            )
-        req.endpoint.references =
-            'docs.ref': req.endpoint.schema.docs.schema.ref
+        )
         req.cache.insert('test', {_id:1, docs:[{_id:1, ref:1}, {_id:2, ref:3}]})
         .then -> getItems(req, {_id:1})
         .then (docs) ->
@@ -363,11 +346,10 @@ describe 'viewFunctions.getItems', ->
             done()
         .catch (err) -> done(err)
     
-
     it 'serializes lists of references in lists of items', (done) ->
         req.collection = 'test'
-        req.endpoint =
-            schema: new Schema(
+        req.endpoint = new Endpoint (
+            schema:
                 docs: [
                     refs: [
                         type: Reference
@@ -375,9 +357,7 @@ describe 'viewFunctions.getItems', ->
                         fields: ['name', 'city']
                     ]
                 ]
-            )
-        req.endpoint.references =
-            'docs.refs': req.endpoint.schema.docs.schema.refs
+        )
         req.cache.insert('test', {_id:1, docs:[{_id:1, refs:[1]}, {_id:2, refs:[2,3]}]})
         .then -> getItems(req, {_id:1})
         .then (docs) ->

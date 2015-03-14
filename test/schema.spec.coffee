@@ -3,10 +3,17 @@ equivObject = require('./lib/utils').equivObject
 p = console.log
 
 schema = require('../src/schema')
+
 Schema = schema.Schema
+Endpoint = schema.Endpoint
 expand = schema.expand
-types =  schema.types
 paths = schema.paths
+
+types =  schema.types
+String = types.String
+Reference = types.Reference
+List = types.List
+Dict = types.Dict
 
 
 describe 'Schema module', ->
@@ -409,3 +416,99 @@ describe 'Schema module', ->
                 'nested.doc.simple'
                 'nested.doc.doclist.simple2'
             ]
+
+    describe 'Endpoint object', ->
+        it 'handles a simple schema', ->
+            dut = new Endpoint {
+                name: String
+            }
+            assert.deepEqual dut, {
+                auth: {}
+                schema:
+                    __proto__: dut.schema.__proto__
+                    name:
+                        type: String
+                paths:
+                    references: {}
+            }
+
+        it 'handles a simple schema with reference', ->
+            dut = new Endpoint {
+                name: String
+                ref:
+                    type: Reference
+                    collection: 'users'
+                    fields: ['name']
+            }
+            assert.deepEqual dut, {
+                auth: {}
+                schema:
+                    __proto__: dut.schema.__proto__
+                    name:
+                        type: String
+                    ref:
+                        type: Reference
+                        collection: 'users'
+                        fields: ['name']
+                paths:
+                    references:
+                        ref: dut.schema.ref
+            }
+            
+        it 'handles a simple schema with auth', ->
+            dut = new Endpoint {
+                auth:
+                    edit: false
+                schema:
+                    name: String
+            }
+            assert.deepEqual dut, {
+                auth:
+                    edit: false
+                schema:
+                    __proto__: dut.schema.__proto__
+                    name:
+                        type: String
+                paths:
+                    references: {}
+            }
+
+        it 'handles schema with nested and listed reference', ->
+            dut = new Endpoint {
+                name: String
+                subdoc:
+                    main_ref:
+                        type: Reference
+                        collection: 'users'
+                        fields: ['name']
+                    list:
+                        type: List
+                        subtype:
+                            type: Reference
+                            collection: 'users'
+                            fields: ['name']
+            }
+            assert.deepEqual dut, {
+                auth: {}
+                schema:
+                    __proto__: dut.schema.__proto__
+                    name:
+                        type: String
+                    subdoc:
+                        type: Dict
+                        schema:
+                            main_ref:
+                                type: Reference
+                                collection: 'users'
+                                fields: ['name']
+                            list:
+                                type: List
+                                subtype:
+                                    type: Reference
+                                    collection: 'users'
+                                    fields: ['name']
+                paths:
+                    references:
+                        'subdoc.main_ref': dut.schema.subdoc.schema.main_ref
+                        'subdoc.list': dut.schema.subdoc.schema.list
+            }
