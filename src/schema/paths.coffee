@@ -1,4 +1,5 @@
-
+types = require('./types')
+p = console.log
 
 # Will collect all sch paths in which fn({type:String, required:true}) == true
 recurseCollect = (sch, fn, path='') ->
@@ -11,15 +12,18 @@ recurseCollect = (sch, fn, path='') ->
     paths
 
 
+ex = module.exports
 
-module.exports.all = (sch) ->
+ex.all = (sch) ->
     recurseCollect(sch, () -> true)
 
-module.exports.primitives = (sch) ->
+ex.primitives = (sch) ->
     recurseCollect(sch, (x) -> !('schema' of x))
-    
-module.exports.withTrueProp = (sch, prop) ->
+
+ex.withTrueProp = (sch, prop) ->
     fn = (x) -> prop of x && x[prop]
     recurseCollect(sch, fn)
-    
-    
+
+ex.ofType = (sch, type) ->
+    fn = (x) -> x.type == type || (x.type == types.List && ('subtype' of x) && x.subtype.type == type)
+    recurseCollect(sch, fn)
