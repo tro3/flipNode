@@ -21,7 +21,11 @@ ex.primitives = (sch) ->
     recurseCollect(sch, (x) -> !('schema' of x))
 
 ex.withTrueProp = (sch, prop) ->
-    fn = (x) -> prop of x && x[prop]
+    fn = (x) -> (prop of x && x[prop]) || (x.type == types.List && ('subtype' of x) && prop of x.subtype && x.subtype[prop])
+    recurseCollect(sch, fn)
+
+ex.withProp = (sch, prop) ->
+    fn = (x) -> prop of x || (x.type == types.List && ('subtype' of x) && prop of x.subtype)
     recurseCollect(sch, fn)
 
 ex.ofType = (sch, type) ->

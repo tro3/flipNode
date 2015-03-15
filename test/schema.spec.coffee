@@ -16,6 +16,8 @@ String = types.String
 Reference = types.Reference
 List = types.List
 Dict = types.Dict
+Auto = types.Auto
+AutoInit = types.AutoInit
 
 
 describe 'Schema module', ->
@@ -432,6 +434,11 @@ describe 'Schema module', ->
                         type: String
                 paths:
                     references: {}
+                    alloweds: {}
+                    requireds: {}
+                    uniques: {}
+                    autos: {}
+                    autoInits: {}
             }
 
         it 'handles a simple schema with reference', ->
@@ -455,6 +462,11 @@ describe 'Schema module', ->
                 paths:
                     references:
                         ref: dut.schema.ref
+                    alloweds: {}
+                    requireds: {}
+                    uniques: {}
+                    autos: {}
+                    autoInits: {}
             }
             
         it 'handles a simple schema with auth', ->
@@ -473,6 +485,11 @@ describe 'Schema module', ->
                         type: String
                 paths:
                     references: {}
+                    alloweds: {}
+                    requireds: {}
+                    uniques: {}
+                    autos: {}
+                    autoInits: {}
             }
 
         it 'handles schema with nested and listed reference', ->
@@ -513,7 +530,283 @@ describe 'Schema module', ->
                     references:
                         'subdoc.main_ref': dut.schema.subdoc.schema.main_ref
                         'subdoc.list': dut.schema.subdoc.schema.list
+                    alloweds: {}
+                    requireds: {}
+                    uniques: {}
+                    autos: {}
+                    autoInits: {}
             }
+
+        it 'handles nested schema with alloweds', ->
+            dut = new Endpoint {
+                name: String
+                subdoc:
+                    stage:
+                        type: String
+                        allowed: ['Open', 'Closed']
+                    list:
+                        type: List
+                        subtype:
+                            type: String
+                            allowed: ['Open', 'Closed']
+                list:
+                    type: List
+                    schema:
+                        stage:
+                            type: String
+                            allowed: ['Open', 'Closed']
+            }
+            assert.deepEqual dut, {
+                auth: {}
+                schema:
+                    __proto__: dut.schema.__proto__
+                    name:
+                        type: String
+                    subdoc:
+                        type: Dict
+                        schema:
+                            stage:
+                                type: String
+                                allowed: ['Open', 'Closed']
+                            list:
+                                type: List
+                                subtype:
+                                    type: String
+                                    allowed: ['Open', 'Closed']
+                    list:
+                        type: List
+                        schema:
+                            stage:
+                                type: String
+                                allowed: ['Open', 'Closed']
+                paths:
+                    references: {}
+                    alloweds:
+                        'subdoc.stage': dut.schema.subdoc.schema.stage
+                        'subdoc.list': dut.schema.subdoc.schema.list
+                        'list.stage': dut.schema.list.schema.stage
+                    requireds: {}
+                    uniques: {}
+                    autos: {}
+                    autoInits: {}
+            }
+
+        it 'handles nested schema with requireds', ->
+            dut = new Endpoint {
+                name: String
+                subdoc:
+                    stage:
+                        type: String
+                        required: true
+                    list:
+                        type: List
+                        subtype:
+                            type: String
+                            required: true
+                list:
+                    type: List
+                    schema:
+                        stage:
+                            type: String
+                            required: true
+            }
+            assert.deepEqual dut, {
+                auth: {}
+                schema:
+                    __proto__: dut.schema.__proto__
+                    name:
+                        type: String
+                    subdoc:
+                        type: Dict
+                        schema:
+                            stage:
+                                type: String
+                                required: true
+                            list:
+                                type: List
+                                subtype:
+                                    type: String
+                                    required: true
+                    list:
+                        type: List
+                        schema:
+                            stage:
+                                type: String
+                                required: true
+                paths:
+                    references: {}
+                    alloweds: {}
+                    requireds:
+                        'subdoc.stage': dut.schema.subdoc.schema.stage
+                        'subdoc.list': dut.schema.subdoc.schema.list
+                        'list.stage': dut.schema.list.schema.stage
+                    uniques: {}
+                    autos: {}
+                    autoInits: {}
+            }
+
+        it 'handles nested schema with uniques', ->
+            dut = new Endpoint {
+                name: String
+                subdoc:
+                    stage:
+                        type: String
+                        unique: true
+                    list:
+                        type: List
+                        subtype:
+                            type: String
+                            unique: true
+                list:
+                    type: List
+                    schema:
+                        stage:
+                            type: String
+                            unique: true
+            }
+            assert.deepEqual dut, {
+                auth: {}
+                schema:
+                    __proto__: dut.schema.__proto__
+                    name:
+                        type: String
+                    subdoc:
+                        type: Dict
+                        schema:
+                            stage:
+                                type: String
+                                unique: true
+                            list:
+                                type: List
+                                subtype:
+                                    type: String
+                                    unique: true
+                    list:
+                        type: List
+                        schema:
+                            stage:
+                                type: String
+                                unique: true
+                paths:
+                    references: {}
+                    alloweds: {}
+                    requireds: {}
+                    uniques:
+                        'subdoc.stage': dut.schema.subdoc.schema.stage
+                        'subdoc.list': dut.schema.subdoc.schema.list
+                        'list.stage': dut.schema.list.schema.stage
+                    autos: {}
+                    autoInits: {}
+            }
+
+        it 'handles nested schema with auto functions', ->
+            dut = new Endpoint {
+                name: String
+                subdoc:
+                    stage:
+                        type: Auto
+                        auto: (el, root) -> root.name
+                    list:
+                        type: List
+                        subtype:
+                            type: Auto
+                            auto: (el, root) -> root.name
+                list:
+                    type: List
+                    schema:
+                        stage:
+                            type: Auto
+                            auto: (el, root) -> root.name
+            }
+            assert.deepEqual dut, {
+                auth: {}
+                schema:
+                    __proto__: dut.schema.__proto__
+                    name:
+                        type: String
+                    subdoc:
+                        type: Dict
+                        schema:
+                            stage:
+                                type: Auto
+                                auto: dut.schema.subdoc.schema.stage.auto
+                            list:
+                                type: List
+                                subtype:
+                                    type: Auto
+                                    auto: dut.schema.subdoc.schema.list.subtype.auto
+                    list:
+                        type: List
+                        schema:
+                            stage:
+                                type: Auto
+                                auto: dut.schema.list.schema.stage.auto
+                paths:
+                    references: {}
+                    alloweds: {}
+                    requireds: {}
+                    uniques: {}
+                    autos:
+                        'subdoc.stage': dut.schema.subdoc.schema.stage
+                        'subdoc.list': dut.schema.subdoc.schema.list
+                        'list.stage': dut.schema.list.schema.stage
+                    autoInits: {}
+            }
+
+        it 'handles nested schema with autoInit functions', ->
+            dut = new Endpoint {
+                name: String
+                subdoc:
+                    stage:
+                        type: AutoInit
+                        auto: (el, root) -> root.name
+                    list:
+                        type: List
+                        subtype:
+                            type: AutoInit
+                            auto: (el, root) -> root.name
+                list:
+                    type: List
+                    schema:
+                        stage:
+                            type: AutoInit
+                            auto: (el, root) -> root.name
+            }
+            assert.deepEqual dut, {
+                auth: {}
+                schema:
+                    __proto__: dut.schema.__proto__
+                    name:
+                        type: String
+                    subdoc:
+                        type: Dict
+                        schema:
+                            stage:
+                                type: AutoInit
+                                auto: dut.schema.subdoc.schema.stage.auto
+                            list:
+                                type: List
+                                subtype:
+                                    type: AutoInit
+                                    auto: dut.schema.subdoc.schema.list.subtype.auto
+                    list:
+                        type: List
+                        schema:
+                            stage:
+                                type: AutoInit
+                                auto: dut.schema.list.schema.stage.auto
+                paths:
+                    references: {}
+                    alloweds: {}
+                    requireds: {}
+                    uniques: {}
+                    autos: {}
+                    autoInits:
+                        'subdoc.stage': dut.schema.subdoc.schema.stage
+                        'subdoc.list': dut.schema.subdoc.schema.list
+                        'list.stage': dut.schema.list.schema.stage
+            }
+
 
     describe 'prototype generation', ->
         it 'handles a simple schema', ->
