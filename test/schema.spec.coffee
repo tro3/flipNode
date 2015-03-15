@@ -515,7 +515,7 @@ describe 'Schema module', ->
                         'subdoc.list': dut.schema.subdoc.schema.list
             }
 
-    describe.only 'prototype generation', ->
+    describe 'prototype generation', ->
         it 'handles a simple schema', ->
             sch = new Schema {
                 name: String
@@ -538,6 +538,9 @@ describe 'Schema module', ->
                     list2: [
                         name: String
                     ]
+                list: [
+                    name: String
+                ]
             }
             dut = prototype(sch)
             assert.deepEqual dut, {
@@ -547,4 +550,5 @@ describe 'Schema module', ->
                     name: null
                     list: []
                     list2: []
+                list: []
             }
