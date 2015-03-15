@@ -13,6 +13,7 @@ prototype = schema.prototype
 
 types =  schema.types
 String = types.String
+Integer = types.Integer
 Reference = types.Reference
 List = types.List
 Dict = types.Dict
@@ -27,6 +28,8 @@ describe 'Schema module', ->
             cfg =
                 name: types.String
             assert.deepEqual expand(cfg), {
+                _id:
+                    type: types.Integer
                 name:
                     type: types.String
             }
@@ -37,6 +40,8 @@ describe 'Schema module', ->
                     type: types.String
                     required: true
             assert.deepEqual expand(cfg), {
+                _id:
+                    type: types.Integer
                 name:
                     type: types.String
                     required: true
@@ -47,11 +52,14 @@ describe 'Schema module', ->
                 address:
                     street: types.String
                     city: types.String
-            debugger
             assert.deepEqual expand(cfg), {
+                _id:
+                    type: types.Integer
                 address:
                     type: types.Dict
                     schema:
+                        _id:
+                            type: types.Integer
                         street:
                             type: types.String
                         city:
@@ -66,9 +74,13 @@ describe 'Schema module', ->
                         street: types.String
                         city: types.String
             assert.deepEqual expand(cfg), {
+                _id:
+                    type: types.Integer
                 address:
                     type: types.Dict
                     schema:
+                        _id:
+                            type: types.Integer
                         street:
                             type: types.String
                         city:
@@ -79,6 +91,8 @@ describe 'Schema module', ->
             cfg =
                 tags: [types.String]
             assert.deepEqual expand(cfg), {
+                _id:
+                    type: types.Integer
                 tags:
                     type: types.List
                     subtype:
@@ -91,6 +105,8 @@ describe 'Schema module', ->
                     type: types.List
                     subtype: types.String
             assert.deepEqual expand(cfg), {
+                _id:
+                    type: types.Integer
                 tags:
                     type: types.List
                     subtype:
@@ -104,9 +120,13 @@ describe 'Schema module', ->
                     city: types.String
                 ]
             assert.deepEqual expand(cfg), {
+                _id:
+                    type: types.Integer
                 address:
                     type: types.List
                     schema:
+                        _id:
+                            type: types.Integer
                         street:
                             type: types.String
                         city:
@@ -123,9 +143,13 @@ describe 'Schema module', ->
                         city:
                             type: types.String
             assert.deepEqual expand(cfg), {
+                _id:
+                    type: types.Integer
                 address:
                     type: types.List
                     schema:
+                        _id:
+                            type: types.Integer
                         street:
                             type: types.String
                         city:
@@ -143,20 +167,30 @@ describe 'Schema module', ->
                         address: types.String
                 ]
             assert.deepEqual expand(cfg), {
+                _id:
+                    type: types.Integer
                 subdoc:
                     type: types.Dict
                     schema:
+                        _id:
+                            type: types.Integer
                         subdoclist:
                             type: types.List
                             schema:
+                                _id:
+                                    type: types.Integer
                                 name:
                                     type:types.String
                 sublist:
                     type: types.List
                     schema:
+                        _id:
+                            type: types.Integer
                         subdoc:
                             type: types.Dict
                             schema:
+                                _id:
+                                    type: types.Integer
                                 address:
                                     type: types.String
             }
@@ -288,6 +322,8 @@ describe 'Schema module', ->
                 assert.deepEqual @sch.get('nested.doc.doclist'), {
                     type: types.List
                     schema:
+                        _id:
+                            type: types.Integer
                         simple1:
                             type: types.String
                         simple2:
@@ -362,50 +398,65 @@ describe 'Schema module', ->
 
         it 'work for all paths', ->
             assert.sameMembers paths.all(@sch), [
+                '_id'
                 'simple1'
                 'simple2'
                 'sub'
+                'sub._id'
                 'sub.simple1'
                 'sub.simple2'
                 'list1'
                 'list2'
                 'doclist1'
+                'doclist1._id'
                 'doclist1.simple1'
                 'doclist1.simple2'
                 'doclist2'
+                'doclist2._id'
                 'doclist2.simple1'
                 'doclist2.simple2'
                 'nested'
+                'nested._id'
                 'nested.simple'
                 'nested.list'
                 'nested.doclist'
+                'nested.doclist._id'
                 'nested.doclist.simple'
                 'nested.doc'
+                'nested.doc._id'
                 'nested.doc.simple'
                 'nested.doc.list'
                 'nested.doc.doclist'
+                'nested.doc.doclist._id'
                 'nested.doc.doclist.simple1'
                 'nested.doc.doclist.simple2'
             ]
 
-
         it 'work for primitive paths', ->
             assert.sameMembers paths.primitives(@sch), [
+                '_id'
                 'simple1'
                 'simple2'
+                'sub._id'
                 'sub.simple1'
                 'sub.simple2'
                 'list1'
                 'list2'
+                'doclist1._id'
                 'doclist1.simple1'
                 'doclist1.simple2'
+                'doclist2._id'
                 'doclist2.simple1'
                 'doclist2.simple2'
+                'nested._id'
                 'nested.simple'
                 'nested.list'
+                'nested.doclist._id'
                 'nested.doclist.simple'
+                'nested.doc._id'
                 'nested.doc.simple'
                 'nested.doc.list'
+                'nested.doc.doclist._id'
                 'nested.doc.doclist.simple1'
                 'nested.doc.doclist.simple2'
             ]
@@ -430,6 +481,8 @@ describe 'Schema module', ->
                 auth: {}
                 schema:
                     __proto__: dut.schema.__proto__
+                    _id:
+                        type: Integer
                     name:
                         type: String
                 paths:
@@ -453,6 +506,8 @@ describe 'Schema module', ->
                 auth: {}
                 schema:
                     __proto__: dut.schema.__proto__
+                    _id:
+                        type: Integer
                     name:
                         type: String
                     ref:
@@ -481,6 +536,8 @@ describe 'Schema module', ->
                     edit: false
                 schema:
                     __proto__: dut.schema.__proto__
+                    _id:
+                        type: Integer
                     name:
                         type: String
                 paths:
@@ -511,11 +568,15 @@ describe 'Schema module', ->
                 auth: {}
                 schema:
                     __proto__: dut.schema.__proto__
+                    _id:
+                        type: Integer
                     name:
                         type: String
                     subdoc:
                         type: Dict
                         schema:
+                            _id:
+                                type: Integer
                             main_ref:
                                 type: Reference
                                 collection: 'users'
@@ -560,11 +621,15 @@ describe 'Schema module', ->
                 auth: {}
                 schema:
                     __proto__: dut.schema.__proto__
+                    _id:
+                        type: Integer
                     name:
                         type: String
                     subdoc:
                         type: Dict
                         schema:
+                            _id:
+                                type: Integer
                             stage:
                                 type: String
                                 allowed: ['Open', 'Closed']
@@ -576,6 +641,8 @@ describe 'Schema module', ->
                     list:
                         type: List
                         schema:
+                            _id:
+                                type: Integer
                             stage:
                                 type: String
                                 allowed: ['Open', 'Closed']
@@ -614,11 +681,15 @@ describe 'Schema module', ->
                 auth: {}
                 schema:
                     __proto__: dut.schema.__proto__
+                    _id:
+                        type: Integer
                     name:
                         type: String
                     subdoc:
                         type: Dict
                         schema:
+                            _id:
+                                type: Integer
                             stage:
                                 type: String
                                 required: true
@@ -630,6 +701,8 @@ describe 'Schema module', ->
                     list:
                         type: List
                         schema:
+                            _id:
+                                type: Integer
                             stage:
                                 type: String
                                 required: true
@@ -668,11 +741,15 @@ describe 'Schema module', ->
                 auth: {}
                 schema:
                     __proto__: dut.schema.__proto__
+                    _id:
+                        type: Integer
                     name:
                         type: String
                     subdoc:
                         type: Dict
                         schema:
+                            _id:
+                                type: Integer
                             stage:
                                 type: String
                                 unique: true
@@ -684,6 +761,8 @@ describe 'Schema module', ->
                     list:
                         type: List
                         schema:
+                            _id:
+                                type: Integer
                             stage:
                                 type: String
                                 unique: true
@@ -722,11 +801,15 @@ describe 'Schema module', ->
                 auth: {}
                 schema:
                     __proto__: dut.schema.__proto__
+                    _id:
+                        type: Integer
                     name:
                         type: String
                     subdoc:
                         type: Dict
                         schema:
+                            _id:
+                                type: Integer
                             stage:
                                 type: Auto
                                 auto: dut.schema.subdoc.schema.stage.auto
@@ -738,6 +821,8 @@ describe 'Schema module', ->
                     list:
                         type: List
                         schema:
+                            _id:
+                                type: Integer
                             stage:
                                 type: Auto
                                 auto: dut.schema.list.schema.stage.auto
@@ -776,11 +861,15 @@ describe 'Schema module', ->
                 auth: {}
                 schema:
                     __proto__: dut.schema.__proto__
+                    _id:
+                        type: Integer
                     name:
                         type: String
                     subdoc:
                         type: Dict
                         schema:
+                            _id:
+                                type: Integer
                             stage:
                                 type: AutoInit
                                 auto: dut.schema.subdoc.schema.stage.auto
@@ -792,6 +881,8 @@ describe 'Schema module', ->
                     list:
                         type: List
                         schema:
+                            _id:
+                                type: Integer
                             stage:
                                 type: AutoInit
                                 auto: dut.schema.list.schema.stage.auto
@@ -807,7 +898,6 @@ describe 'Schema module', ->
                         'list.stage': dut.schema.list.schema.stage
             }
 
-
     describe 'prototype generation', ->
         it 'handles a simple schema', ->
             sch = new Schema {
@@ -816,6 +906,7 @@ describe 'Schema module', ->
             dut = prototype(sch)
             assert.deepEqual dut, {
                 __proto__: dut.__proto__
+                _id:null
                 name: null
             }
             
@@ -838,8 +929,10 @@ describe 'Schema module', ->
             dut = prototype(sch)
             assert.deepEqual dut, {
                 __proto__: dut.__proto__
+                _id: null
                 name: null
                 subdoc:
+                    _id: null
                     name: null
                     list: []
                     list2: []
