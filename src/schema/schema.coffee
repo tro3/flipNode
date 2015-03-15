@@ -1,6 +1,9 @@
 expand = require('./expand')
-Dict = require('./types').Dict
-List = require('./types').List
+types = require('./types') 
+Dict = types.Dict
+List = types.List
+Integer = types.Integer
+
 p = console.log
         
 class Schema
@@ -34,10 +37,3 @@ class Schema
 
 
 module.exports = Schema
-
-#module.exports = (data) ->
-#    sch = expand(data)
-#    proto = new Object
-#    proto.get = (path) -> get(path, sch)
-#    sch.__proto__ = proto
-#    sch

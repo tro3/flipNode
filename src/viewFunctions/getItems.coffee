@@ -5,21 +5,10 @@ Dict = types.Dict
 List = types.List
 Reference = types.Reference
 
+qForEach = require('./common').qForEach
+qForItems = require('./common').qForItems
+
 p = console.log
-
-
-qForEach = (list, fn) ->
-    qs = []
-    list.forEach (item, ind, root) -> qs.push fn(item, ind, root)
-    q.all(qs)
-
-
-qForItems = (obj, fn) ->
-    qs = []
-    for key, val of obj
-        qs.push fn(key, val)
-    q.all(qs)
-
 
 
 

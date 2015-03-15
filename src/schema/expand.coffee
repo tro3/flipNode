@@ -39,7 +39,8 @@ expand = (cfg, sch) ->
             sch[key].subtype = {type: sch[key].subtype}
         if 'schema' of sch[key]
             sch[key].schema = expand(sch[key].schema)
-            
+    sch._id =
+        type: types.Integer
     sch
     
     
