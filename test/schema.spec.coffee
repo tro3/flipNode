@@ -8,6 +8,8 @@ Schema = schema.Schema
 Endpoint = schema.Endpoint
 expand = schema.expand
 paths = schema.paths
+prototype = schema.prototype
+
 
 types =  schema.types
 String = types.String
@@ -511,4 +513,38 @@ describe 'Schema module', ->
                     references:
                         'subdoc.main_ref': dut.schema.subdoc.schema.main_ref
                         'subdoc.list': dut.schema.subdoc.schema.list
+            }
+
+    describe.only 'prototype generation', ->
+        it 'handles a simple schema', ->
+            sch = new Schema {
+                name: String
+            }
+            dut = prototype(sch)
+            assert.deepEqual dut, {
+                __proto__: dut.__proto__
+                name: null
+            }
+            
+            
+        it 'handles nested docs, nested lists, and simple lists', ->
+            sch = new Schema {
+                name: String
+                subdoc:
+                    name: String
+                    list: [
+                        name: String
+                    ]
+                    list2: [
+                        name: String
+                    ]
+            }
+            dut = prototype(sch)
+            assert.deepEqual dut, {
+                __proto__: dut.__proto__
+                name: null
+                subdoc:
+                    name: null
+                    list: []
+                    list2: []
             }
