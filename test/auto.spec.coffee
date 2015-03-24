@@ -15,7 +15,7 @@ runAuto = require('../src/viewFunctions/auto').runAuto
 p = console.log
 
 
-describe.only 'runAuto function', ->
+describe 'runAuto function', ->
         
     it 'handles simple new objects', ->
         data = new Doc {
