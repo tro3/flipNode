@@ -19,6 +19,8 @@ class Endpoint
             uniques: {}
             autos: {}
             autoInits: {}
+            docs: {}
+            lists: {}
             
         for path in paths.ofType(@schema, types.Reference)
             @paths.references[path] = @schema.get(path)
@@ -37,6 +39,12 @@ class Endpoint
 
         for path in paths.ofType(@schema, types.AutoInit)
             @paths.autoInits[path] = @schema.get(path)
+
+        for path in paths.ofType(@schema, types.Dict)
+            @paths.docs[path] = @schema.get(path)
+
+        for path in paths.ofType(@schema, types.List)
+            @paths.lists[path] = @schema.get(path)
 
 
 module.exports = Endpoint
