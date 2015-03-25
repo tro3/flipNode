@@ -492,6 +492,8 @@ describe 'Schema module', ->
                     uniques: {}
                     autos: {}
                     autoInits: {}
+                    docs: {}
+                    lists: {}
             }
 
         it 'handles a simple schema with reference', ->
@@ -522,6 +524,8 @@ describe 'Schema module', ->
                     uniques: {}
                     autos: {}
                     autoInits: {}
+                    docs: {}
+                    lists: {}
             }
             
         it 'handles a simple schema with auth', ->
@@ -547,6 +551,8 @@ describe 'Schema module', ->
                     uniques: {}
                     autos: {}
                     autoInits: {}
+                    docs: {}
+                    lists: {}
             }
 
         it 'handles schema with nested and listed reference', ->
@@ -596,6 +602,9 @@ describe 'Schema module', ->
                     uniques: {}
                     autos: {}
                     autoInits: {}
+                    docs:
+                        'subdoc': dut.schema.subdoc
+                    lists: {}
             }
 
         it 'handles nested schema with alloweds', ->
@@ -656,6 +665,10 @@ describe 'Schema module', ->
                     uniques: {}
                     autos: {}
                     autoInits: {}
+                    docs:
+                        'subdoc': dut.schema.subdoc
+                    lists:
+                        'list': dut.schema.list
             }
 
         it 'handles nested schema with requireds', ->
@@ -716,6 +729,10 @@ describe 'Schema module', ->
                     uniques: {}
                     autos: {}
                     autoInits: {}
+                    docs:
+                        'subdoc': dut.schema.subdoc
+                    lists:
+                        'list': dut.schema.list
             }
 
         it 'handles nested schema with uniques', ->
@@ -776,6 +793,10 @@ describe 'Schema module', ->
                         'list.stage': dut.schema.list.schema.stage
                     autos: {}
                     autoInits: {}
+                    docs:
+                        'subdoc': dut.schema.subdoc
+                    lists:
+                        'list': dut.schema.list
             }
 
         it 'handles nested schema with auto functions', ->
@@ -836,6 +857,10 @@ describe 'Schema module', ->
                         'subdoc.list': dut.schema.subdoc.schema.list
                         'list.stage': dut.schema.list.schema.stage
                     autoInits: {}
+                    docs:
+                        'subdoc': dut.schema.subdoc
+                    lists:
+                        'list': dut.schema.list
             }
 
         it 'handles nested schema with autoInit functions', ->
@@ -896,6 +921,10 @@ describe 'Schema module', ->
                         'subdoc.stage': dut.schema.subdoc.schema.stage
                         'subdoc.list': dut.schema.subdoc.schema.list
                         'list.stage': dut.schema.list.schema.stage
+                    docs:
+                        'subdoc': dut.schema.subdoc
+                    lists:
+                        'list': dut.schema.list
             }
 
     describe 'prototype generation', ->

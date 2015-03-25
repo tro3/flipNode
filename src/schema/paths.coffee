@@ -31,3 +31,6 @@ ex.withProp = (sch, prop) ->
 ex.ofType = (sch, type) ->
     fn = (x) -> x.type == type || (x.type == types.List && ('subtype' of x) && x.subtype.type == type)
     recurseCollect(sch, fn)
+    
+ex.ifTrue = (sch, fn) ->
+    recurseCollect(sch, fn)

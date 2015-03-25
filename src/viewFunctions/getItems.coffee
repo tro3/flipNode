@@ -28,7 +28,7 @@ getItems = (req, query={}, options={}) ->
         ids = (x._id for x in items)
 
             
-    # Check read auth for each item
+    # Check read auth for each item - not currently checked
         auths = (undefined for x in items)
         qForEach results, (doc, ind) ->
             auths[ind] = true

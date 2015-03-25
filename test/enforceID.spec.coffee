@@ -15,7 +15,7 @@ enforceID = require('../src/viewFunctions/enforceID')
 p = console.log
 
 
-describe.only 'enforceID function', ->
+describe 'enforceID function', ->
         
     it 'does nothing to simple new objects', ->
         data = new Doc {
