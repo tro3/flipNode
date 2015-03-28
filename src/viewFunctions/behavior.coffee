@@ -42,3 +42,24 @@ ex.required = (data, endp) ->
                 }
         descendApply(data.get(path), fn)
     errs
+    
+    
+ex.allowed = (data, endp, req) ->
+    errs = []
+    for path, sch of endp.paths.alloweds
+        allowFcn = if typeof sch.allowed == 'function' then sch.allowed else () -> sch.allowed
+        parentPath = path.split('.')[...-1].join('.')
+        attr = path.split('.').slice(-1)
+        fn = (val, inds) ->
+            allowVals = allowFcn(val, data, req)
+            if !('required' of sch) or sch.required = false
+                allowVals.push(null)
+                allowVals.push(undefined)
+            if allowVals.indexOf(val[attr]) == -1
+                lpath = extrapolatePath(path, inds, endp.schema)
+                errs.push {
+                    path: lpath
+                    msg: "Value '#{val[attr]}' at #{lpath} not allowed"
+                }
+        descendApply(data.get(parentPath), fn)
+    errs

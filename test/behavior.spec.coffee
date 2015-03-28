@@ -21,7 +21,7 @@ behavior = require('../src/viewFunctions/behavior')
 p = console.log
 
 
-describe 'behavior module', ->
+describe.only 'behavior module', ->
 
     describe 'required function', ->
         
@@ -54,7 +54,6 @@ describe 'behavior module', ->
                 'a.a'
             ]
 
-
         it 'handles nested lists of objects', ->
             endp = new Endpoint {
                 a:
@@ -64,15 +63,15 @@ describe 'behavior module', ->
                             required: true
                         d: [
                             e:
-                                type: Integer
+                                type: String
                                 required: true                            
                         ]
                     ]
             }
             data = new Doc {a: {b: [
-                {c:'',d:[{e:1}]}
+                {c:'',d:[{e:'a'}]}
                 {d:[]}
-                {c:1,d:[{f:1}]}
+                {c:1,d:[{e:' ', f:1}]}
                 {c:null,d:[]}
             ]}}
             errs = behavior.required(data, endp)
@@ -83,3 +82,122 @@ describe 'behavior module', ->
                 'a.b.2.d.0.e'
                 'a.b.3.c'
             ]
+
+
+    describe 'allowed function', ->
+        
+        it 'handles simple objects', ->
+            endp = new Endpoint {
+                a:
+                    type: Integer
+                    allowed: [1,2]
+                b:
+                    type: Integer
+                    allowed: (el) -> [2,3]
+            }
+            data = new Doc {a:3, b:2}
+            errs = behavior.allowed(data, endp)
+            assert.equal errs.length, 1
+            assert.sameMembers (x.path for x in errs), [
+                'a'
+            ]
+            data = new Doc {a:1, b:1}
+            errs = behavior.allowed(data, endp)
+            assert.equal errs.length, 1
+            assert.sameMembers (x.path for x in errs), [
+                'b'
+            ]
+
+        it 'handles nested lists of objects', ->
+            endp = new Endpoint {
+                a:
+                    b: [
+                        c:
+                            type: Integer
+                            allowed: (el) -> [2,3]
+                        d: [
+                            e:
+                                type: String
+                                allowed: (el) -> [2,3]                        
+                        ]
+                    ]
+            }
+            data = new Doc {a: {b: [
+                {d:[{e:2}]}
+                {c:2, d:[]}
+                {c:1,d:[{e:1, f:1}]}
+                {c:null,d:[]}
+            ]}}
+            errs = behavior.allowed(data, endp)
+            assert.equal errs.length, 2
+            assert.sameMembers (x.path for x in errs), [
+                'a.b.2.c'
+                'a.b.2.d.0.e'
+            ]
+
+
+        it 'handles element dependence', ->
+            endp = new Endpoint {
+                a:
+                    b: [
+                        allowed: [Integer]
+                        c:
+                            type: Integer
+                            allowed: (el) -> el.allowed
+                    ]
+            }
+            data = new Doc {a: {b: [
+                {allowed:[1,3],c:2}
+                {allowed:[1,3],c:3}
+            ]}}
+            errs = behavior.allowed(data, endp)
+            assert.equal errs.length, 1
+            assert.sameMembers (x.path for x in errs), [
+                'a.b.0.c'
+            ]
+
+        it 'handles root dependence', ->
+            endp = new Endpoint {
+                allowed: [Integer]
+                a:
+                    b: [
+                        c:
+                            type: Integer
+                            allowed: (el, root) -> root.allowed
+                    ]
+            }
+            data = new Doc {allowed:[1,3], a: {b: [
+                {c:2}
+                {c:3}
+            ]}}
+            errs = behavior.allowed(data, endp)
+            assert.equal errs.length, 1
+            assert.sameMembers (x.path for x in errs), [
+                'a.b.0.c'
+            ]
+
+        it 'handles req dependence', ->
+            endp = new Endpoint {
+                allowed: [Integer]
+                a:
+                    b: [
+                        c:
+                            type: Integer
+                            allowed: (el, root, req) -> req.allowed
+                    ]
+            }
+            req =
+                allowed: [1,3]
+            data = new Doc {a: {b: [
+                {c:2}
+                {c:3}
+            ]}}
+            errs = behavior.allowed(data, endp, req)
+            assert.equal errs.length, 1
+            assert.sameMembers (x.path for x in errs), [
+                'a.b.0.c'
+            ]
+
+    describe 'unique function', ->
+        
+        it 'handles simple objects'
