@@ -1,7 +1,11 @@
+q = require('q')
+
 schema = require('../schema')
 types =  schema.types
 List = types.List
 Dict = types.Dict
+
+qForItems = require('./common').qForItems
 
 p = console.log
 
@@ -63,3 +67,22 @@ ex.allowed = (data, endp, req) ->
                 }
         descendApply(data.get(parentPath), fn)
     errs
+    
+
+ex.unique = (data, endp, req) ->
+    errs = []
+    qs = []
+    qForItems endp.paths.uniques, (path, sch) ->
+        query = {}
+        query[path] = data.get(path)
+        req.cache.findOne(req.collection, query)
+        .then (doc) ->
+            if doc != null
+                errs.push {
+                    path: path
+                    msg: "Value '#{data.get(path)}' at #{path} is not unique"
+                }            
+    .then -> errs
+    .catch (err) ->
+        errs.push(err)
+        errs

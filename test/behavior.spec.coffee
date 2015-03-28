@@ -1,4 +1,8 @@
 assert = require('chai').assert
+sinon = require('sinon')
+
+connect = require('../src/db/qdb')
+DbCache = require('../src/db/dbCache')
 Doc = require('../src/doc').Doc
 schema = require('../src/schema')
 Schema = schema.Schema
@@ -21,7 +25,7 @@ behavior = require('../src/viewFunctions/behavior')
 p = console.log
 
 
-describe.only 'behavior module', ->
+describe 'behavior module', ->
 
     describe 'required function', ->
         
@@ -135,7 +139,6 @@ describe.only 'behavior module', ->
                 'a.b.2.d.0.e'
             ]
 
-
         it 'handles element dependence', ->
             endp = new Endpoint {
                 a:
@@ -198,6 +201,67 @@ describe.only 'behavior module', ->
                 'a.b.0.c'
             ]
 
+
     describe 'unique function', ->
+        conn = null
+        req = {}
+        spy = null
+    
+        before ->
+            conn = connect('mongodb://localhost:27017/test')
+            conn.insert('items', [
+                {_id:1, name: 'Bob', address: {city: 'Palo Alto'}}
+                {_id:2, name: 'Fred', address: {city: 'Menlo Park'}}
+            ])
+            spy = sinon.spy(conn, 'findOne')
+    
+        after (done) ->
+            conn.drop('items')
+            .then -> conn.close()
+            .then -> done()
+
+        beforeEach ->
+            req.cache = new DbCache(conn)
+
         
-        it 'handles simple objects'
+        it 'handles top-level contraints', (done) ->
+            req.collection = 'items'
+            req.endpoint = endp = new Endpoint {
+                name:
+                    type: String
+                    unique: true
+                address:
+                    city:
+                        type: String
+                        unique: true
+            }
+            data = new Doc {name: 'Bob', address: {city: 'San Diego'}}
+            behavior.unique(data, endp, req)
+            .then (errs) ->
+                assert.equal errs.length, 1
+                assert.sameMembers (x.path for x in errs), [
+                    'name'
+                ]
+                done()
+            .catch (err) -> done(err)
+
+        it 'handles nested contraints', (done) ->
+            req.collection = 'items'
+            req.endpoint = endp = new Endpoint {
+                name:
+                    type: String
+                    unique: true
+                address:
+                    city:
+                        type: String
+                        unique: true
+            }
+            data = new Doc {name: 'Robert', address: {city: 'Palo Alto'}}
+            behavior.unique(data, endp, req)
+            .then (errs) ->
+                assert.equal errs.length, 1
+                assert.sameMembers (x.path for x in errs), [
+                    'address.city'
+                ]
+                done()
+            .catch (err) -> done(err)
