@@ -1,5 +1,4 @@
 assert = require('chai').assert
-Doc = require('../src/doc').Doc
 schema = require('../src/schema')
 Schema = schema.Schema
 Endpoint = schema.Endpoint
@@ -18,7 +17,7 @@ p = console.log
 describe 'runAuto function', ->
         
     it 'handles simple new objects', ->
-        data = new Doc {
+        data = {
             a: 1
             b: 1
             c: 1
@@ -41,7 +40,7 @@ describe 'runAuto function', ->
         }
         
     it 'handles simple existing objects', ->
-        data = new Doc {
+        data = {
             _id: 1
             a: 1
             b: 1
@@ -66,7 +65,7 @@ describe 'runAuto function', ->
         }
 
     it 'handles nested objects', ->
-        data = new Doc {
+        data = {
             _id: 1
             n1:
                 a: 1
@@ -112,7 +111,7 @@ describe 'runAuto function', ->
         }
 
     it 'handles lists of objects', ->
-        data = new Doc {
+        data = {
             a: [
               {_id:1, a:2, b:1, c:1}    
               {a:2, b:1, c:1}    
@@ -139,7 +138,7 @@ describe 'runAuto function', ->
         }
 
     it 'handles nested objects referencing root', ->
-        data = new Doc {
+        data = {
             _id: 1
             f: 2
             n1:
@@ -187,7 +186,7 @@ describe 'runAuto function', ->
         }
 
     it 'handles lists of objects referencing root', ->
-        data = new Doc {
+        data = {
             f: 3
             a: [
               {_id:1, a:1, b:1, c:1}    
@@ -219,7 +218,7 @@ describe 'runAuto function', ->
     it 'handles nested objects referencing req', ->
         req =
             f: 5
-        data = new Doc {
+        data = {
             _id: 1
             n1:
                 a: 1
@@ -267,7 +266,7 @@ describe 'runAuto function', ->
     it 'handles lists of objects referencing req', ->
         req =
             f: 5        
-        data = new Doc {
+        data = {
             a: [
               {_id:1, a:1, b:1, c:1}    
               {a:1, b:1, c:1}    

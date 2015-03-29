@@ -1,3 +1,4 @@
+mpath = require('mpath')
 schema = require('../schema')
 types =  schema.types
 Auto = types.Auto
@@ -13,14 +14,14 @@ lastPath = (path) -> path.split('.')[-1..-1]
 
 x.runAuto = (data, endpoint, req) ->
     for path, sch of endpoint.paths.autos
-        list = data.get(parentPath(path))
+        list = mpath.get(parentPath(path), data) || data
         if !(list instanceof Array)
             list = [list]
         for element in list
             element[lastPath(path)] = sch.auto(element, data, req)
 
     for path, sch of endpoint.paths.autoInits
-        list = data.get(parentPath(path))
+        list = mpath.get(parentPath(path), data) || data
         if !(list instanceof Array)
             list = [list]
         for element in list

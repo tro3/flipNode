@@ -3,7 +3,6 @@ sinon = require('sinon')
 
 connect = require('../src/db/qdb')
 DbCache = require('../src/db/dbCache')
-Doc = require('../src/doc').Doc
 schema = require('../src/schema')
 Schema = schema.Schema
 Endpoint = schema.Endpoint
@@ -36,7 +35,7 @@ describe 'behavior module', ->
                     required: true
                 b: Integer
             }
-            data = new Doc {b:1}
+            data = {b:1}
             errs = behavior.required(data, endp)
             assert.equal errs.length, 1
             assert.sameMembers (x.path for x in errs), [
@@ -51,7 +50,7 @@ describe 'behavior module', ->
                         required: true
                     b: Integer
             }
-            data = new Doc {a: {a: null, b:1}}
+            data = {a: {a: null, b:1}}
             errs = behavior.required(data, endp)
             assert.equal errs.length, 1
             assert.sameMembers (x.path for x in errs), [
@@ -72,7 +71,7 @@ describe 'behavior module', ->
                         ]
                     ]
             }
-            data = new Doc {a: {b: [
+            data = {a: {b: [
                 {c:'',d:[{e:'a'}]}
                 {d:[]}
                 {c:1,d:[{e:' ', f:1}]}
@@ -99,13 +98,13 @@ describe 'behavior module', ->
                     type: Integer
                     allowed: (el) -> [2,3]
             }
-            data = new Doc {a:3, b:2}
+            data = {a:3, b:2}
             errs = behavior.allowed(data, endp)
             assert.equal errs.length, 1
             assert.sameMembers (x.path for x in errs), [
                 'a'
             ]
-            data = new Doc {a:1, b:1}
+            data = {a:1, b:1}
             errs = behavior.allowed(data, endp)
             assert.equal errs.length, 1
             assert.sameMembers (x.path for x in errs), [
@@ -126,7 +125,7 @@ describe 'behavior module', ->
                         ]
                     ]
             }
-            data = new Doc {a: {b: [
+            data = {a: {b: [
                 {d:[{e:2}]}
                 {c:2, d:[]}
                 {c:1,d:[{e:1, f:1}]}
@@ -149,7 +148,7 @@ describe 'behavior module', ->
                             allowed: (el) -> el.allowed
                     ]
             }
-            data = new Doc {a: {b: [
+            data = {a: {b: [
                 {allowed:[1,3],c:2}
                 {allowed:[1,3],c:3}
             ]}}
@@ -169,7 +168,7 @@ describe 'behavior module', ->
                             allowed: (el, root) -> root.allowed
                     ]
             }
-            data = new Doc {allowed:[1,3], a: {b: [
+            data = {allowed:[1,3], a: {b: [
                 {c:2}
                 {c:3}
             ]}}
@@ -191,7 +190,7 @@ describe 'behavior module', ->
             }
             req =
                 allowed: [1,3]
-            data = new Doc {a: {b: [
+            data = {a: {b: [
                 {c:2}
                 {c:3}
             ]}}
@@ -235,7 +234,7 @@ describe 'behavior module', ->
                         type: String
                         unique: true
             }
-            data = new Doc {name: 'Bob', address: {city: 'San Diego'}}
+            data = {name: 'Bob', address: {city: 'San Diego'}}
             behavior.unique(data, endp, req)
             .then (errs) ->
                 assert.equal errs.length, 1
@@ -256,7 +255,7 @@ describe 'behavior module', ->
                         type: String
                         unique: true
             }
-            data = new Doc {name: 'Robert', address: {city: 'Palo Alto'}}
+            data = {name: 'Robert', address: {city: 'Palo Alto'}}
             behavior.unique(data, endp, req)
             .then (errs) ->
                 assert.equal errs.length, 1

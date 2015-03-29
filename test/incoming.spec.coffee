@@ -1,5 +1,4 @@
 assert = require('chai').assert
-Doc = require('../src/doc').Doc
 schema = require('../src/schema')
 Schema = schema.Schema
 Endpoint = schema.Endpoint

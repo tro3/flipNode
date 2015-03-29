@@ -1,5 +1,4 @@
 assert = require('chai').assert
-Doc = require('../src/doc').Doc
 schema = require('../src/schema')
 Schema = schema.Schema
 Endpoint = schema.Endpoint
@@ -18,7 +17,7 @@ p = console.log
 describe 'enforceID function', ->
         
     it 'does nothing to simple new objects', ->
-        data = new Doc {
+        data = {
             a: 1
             b: 1
             c: 1
@@ -35,7 +34,7 @@ describe 'enforceID function', ->
         }
         
     it 'does nothing to simple existing objects', ->
-        data = new Doc {
+        data = {
             _id:4
             a: 1
             b: 1
@@ -54,7 +53,7 @@ describe 'enforceID function', ->
         }
         
     it 'handles nested objects', ->
-        data = new Doc {
+        data = {
             _id:4
             a: 
                 b: 1
@@ -83,7 +82,7 @@ describe 'enforceID function', ->
         }
     
     it 'handles lists of objects', ->
-        data = new Doc {
+        data = {
             _id:4
             a: [{
                 b: 1
@@ -128,7 +127,7 @@ describe 'enforceID function', ->
         }
 
     it 'handles lists of objects with lists', ->
-        data = new Doc {
+        data = {
             _id:4
             a: [
                 {b: [{c: 1, d:{e:1}}, {c: 1, d:{e:1}}]}
@@ -155,7 +154,7 @@ describe 'enforceID function', ->
         }
 
     it 'handles three levels of lists', ->
-        data = new Doc {
+        data = {
             _id:4
             a: [
                 b: [

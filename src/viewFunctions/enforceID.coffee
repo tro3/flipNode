@@ -3,7 +3,7 @@ p = console.log
 
 module.exports = enforceID = (data, endp) ->
     for path, sch of endp.paths.docs
-        docs = data.set(path+'._id', 1)       
+        docs = mpath.set(path+'._id', 1, data)       
 
     for path, sch of endp.paths.lists
         newlists = mpath.get path, data, (list) ->

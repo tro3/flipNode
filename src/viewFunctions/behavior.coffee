@@ -1,4 +1,5 @@
 q = require('q')
+mpath = require('mpath')
 
 schema = require('../schema')
 types =  schema.types
@@ -42,9 +43,9 @@ ex.required = (data, endp) ->
                 lpath = extrapolatePath(path, inds, endp.schema)
                 errs.push {
                     path: lpath
-                    msg: "Value required at #{lpath}"
+                    msg: "Value required at '#{lpath}'"
                 }
-        descendApply(data.get(path), fn)
+        descendApply(mpath.get(path, data), fn)
     errs
     
     
@@ -63,9 +64,9 @@ ex.allowed = (data, endp, req) ->
                 lpath = extrapolatePath(path, inds, endp.schema)
                 errs.push {
                     path: lpath
-                    msg: "Value '#{val[attr]}' at #{lpath} not allowed"
+                    msg: "Value '#{val[attr]}' at '#{lpath}' not allowed"
                 }
-        descendApply(data.get(parentPath), fn)
+        descendApply(mpath.get(parentPath, data) || data, fn)
     errs
     
 
@@ -74,13 +75,13 @@ ex.unique = (data, endp, req) ->
     qs = []
     qForItems endp.paths.uniques, (path, sch) ->
         query = {}
-        query[path] = data.get(path)
+        query[path] = mpath.get(path, data)
         req.cache.findOne(req.collection, query)
         .then (doc) ->
             if doc != null
                 errs.push {
                     path: path
-                    msg: "Value '#{data.get(path)}' at #{path} is not unique"
+                    msg: "Value '#{mpath.get(path, data)}' at '#{path}' is not unique"
                 }            
     .then -> errs
     .catch (err) ->

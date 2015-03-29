@@ -1,4 +1,5 @@
 q = require('q')
+mpath = require('mpath')
 
 types = require('../schema').types
 Dict = types.Dict
@@ -151,7 +152,7 @@ expandRefs = (req, doc) ->
     qForItems refs, (path, config) ->
         if 'subtype' of config
             config = config.subtype
-        ids = doc.get(path)
+        ids = mpath.get(path, doc)
         return q.Promise.resolve() if !ids
         
         lvl = 0
@@ -172,7 +173,7 @@ expandRefs = (req, doc) ->
             while lvl
                 newrefs = newrefs[0]
                 lvl -= 1
-            doc.set(path, newrefs)
+            mpath.set(path, newrefs, doc)
         
     
 _expandSingle = (req, config, id) ->

@@ -1,6 +1,5 @@
 q = require('q')
 connect = require('./qdb')
-Doc = require('../doc').Doc
 p = console.log
 
 hashObj = (obj) ->
@@ -35,7 +34,6 @@ class DbCache
         
         @db.find(collection, query, options)
         .then (docs) =>
-            docs = (new Doc(x) for x in docs)
             @lookup[hash] = docs
             docs.forEach (doc) =>
                 @lookup[hashQuery(collection, {_id:doc._id})] = [doc]
@@ -50,7 +48,6 @@ class DbCache
         @db.findOne(collection, query, options)
         .then (doc) =>
             return null if !doc
-            doc = new Doc(doc)
             @lookup[hash] = [doc]
             @lookup[hashQuery(collection, {_id:doc._id})] = [doc]
             doc

@@ -3,7 +3,6 @@ sinon = require('sinon')
 
 connect = require('../src/db/qdb')
 DbCache = require('../src/db/dbCache')
-Doc = require('../src/doc').Doc
 schema = require('../src/schema')
 Schema = schema.Schema
 Endpoint = schema.Endpoint

@@ -1,11 +1,10 @@
-Doc = require('../doc').Doc
 types = require('./types')
 List = types.List
 Dict = types.Dict
 
 
 
-prototype = (schema, top=true) ->
+prototype = (schema) ->
     result = {}
     for key, val of schema
         if typeof val == 'object'
@@ -15,8 +14,6 @@ prototype = (schema, top=true) ->
                 result[key] = []
             else
                 result[key] = null
-    if top
-        result = new Doc(result)
     result
 
 
