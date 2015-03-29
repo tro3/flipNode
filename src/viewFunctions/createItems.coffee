@@ -47,9 +47,9 @@ createItems = (req, data, direct=false) ->
         baseID = null
         if resp.status == 'OK'
             delete resp.errs
-            req.cache.db.findOne('flipData', {_id:'ids'})
-            .then (ids) ->
-                baseID = ids[req.collection]
+            req.cache.db.findOne('flipData.ids', {collection:req.collection})
+            .then (result) ->
+                baseID = result.lastID
                 qForEach data, (item, index) ->
                     runAuto(item, endpoint)                               # Run Autos
                     enforceID(item, endpoint)                             # Enforce ID's
@@ -57,12 +57,18 @@ createItems = (req, data, direct=false) ->
                     resp.items[index] = item
                     req.cache.insert(req.collection, item)                # Insert item
             .then ->
-                1                                                         # Insert history
+                hist = []
+                data.forEach (item, index) ->                             # Insert history
+                    hist.push
+                        collection: req.collection
+                        item: item._id
+                        action: 'created'
+                req.cache.insert 'flipData.history', hist
             .then ->
                 update =
-                    $set: {}
-                update.$set[req.collection] = baseID + data.length
-                req.cache.db.update('flipData', {_id:'ids'}, update)
+                    $set:
+                        lastID: baseID + data.length
+                req.cache.db.update('flipData.ids', {collection:req.collection}, update)
         else
             delete resp.items
     .then ->

@@ -19,7 +19,7 @@ createItems = require('../src/viewFunctions/createItems')
 p = console.log
 
 
-describe 'viewFunctions.createItems', ->
+describe.only 'viewFunctions.createItems', ->
     conn = null
     req = {}
 
@@ -32,12 +32,13 @@ describe 'viewFunctions.createItems', ->
 
     beforeEach (done) ->
         req.cache = new DbCache(conn)
-        conn.insert('flipData', {_id:'ids', test:0})
+        conn.insert('flipData.ids', {collection:'test', lastID:0})
         done()
 
     afterEach (done) ->
         conn.drop('test')
-        conn.drop('flipData')
+        conn.drop('flipData.ids')
+        conn.drop('flipData.history')
         done()
 
 
@@ -66,7 +67,6 @@ describe 'viewFunctions.createItems', ->
             done()
         .catch (err) -> done(err)
 
-
     it 'creates two simple items', (done) ->
         req.collection = 'test'
         req.endpoint = new Endpoint {
@@ -94,7 +94,6 @@ describe 'viewFunctions.createItems', ->
             done()
         .catch (err) -> done(err)
 
-
     it 'does not create two simple items when a type error exists in one', (done) ->
         req.collection = 'test'
         req.endpoint = new Endpoint {
@@ -116,22 +115,23 @@ describe 'viewFunctions.createItems', ->
             done()
         .catch (err) -> done(err)
 
-
     it 'does not create two simple items when a required error exists in one', (done) ->
         req.collection = 'test'
         req.endpoint = new Endpoint {
-            a:
-                type: Integer
-                required: true
+            a: [
+                a:
+                    type: Integer
+                    required: true
+            ]
         }
-        data = [{a:1},{b:1}]
+        data = [{a:[{a:1}]},{a:[{a:2},{b:1}]}]
         createItems(req, data)
         .then (result) ->
             assert.deepEqual result, {
                 status: 'ERR'
                 errs: [
                     []
-                    [{path:'a', msg: "Value required at 'a'"}]
+                    [{path:'a.1.a', msg: "Value required at 'a.1.a'"}]
                 ]
             }
         .then -> conn.find('test')
@@ -139,7 +139,6 @@ describe 'viewFunctions.createItems', ->
             assert.equal docs.length, 0
             done()
         .catch (err) -> done(err)
-
 
     it 'does not create two simple items when an allowed error exists in one', (done) ->
         req.collection = 'test'
@@ -164,23 +163,23 @@ describe 'viewFunctions.createItems', ->
             done()
         .catch (err) -> done(err)
 
-
-    it 'does not create two simple items when an allowed error exists in one', (done) ->
+    it 'does not create two simple items when an unique error exists in one', (done) ->
         req.collection = 'test'
         req.endpoint = new Endpoint {
             a:
-                type: Integer
-                unique: true
+                a:
+                    type: Integer
+                    unique: true
         }
-        data = [{a:1},{a:3}]
-        conn.insert('test', {a:3})
+        data = [{a:{a:1}},{a:{a:3}}]
+        conn.insert('test', {a:{a:3}})
         .then -> createItems(req, data)
         .then (result) ->
             assert.deepEqual result, {
                 status: 'ERR'
                 errs: [
                     []
-                    [{path:'a', msg: "Value '3' at 'a' is not unique"}]
+                    [{path:'a.a', msg: "Value '3' at 'a.a' is not unique"}]
                 ]
             }
         .then -> conn.find('test')
@@ -188,3 +187,108 @@ describe 'viewFunctions.createItems', ->
             assert.equal docs.length, 1
             done()
         .catch (err) -> done(err)
+
+    it 'handles sequential writes', (done) ->
+        req.collection = 'test'
+        req.endpoint = new Endpoint {
+            a: Integer
+        }
+        data =
+            a:1
+        createItems(req, data)
+        .then (result) ->
+            assert.deepEqual result, {
+                status: 'OK'
+                items: [{
+                    _id:1
+                    a:1
+                }]
+            }
+        .then -> conn.find('test')
+        .then (docs) ->
+            assert.deepEqual docs, [{
+                _id:1
+                a:1
+            }]
+        .then -> createItems(req, data)
+        .then (result) ->
+            assert.deepEqual result, {
+                status: 'OK'
+                items: [{
+                    _id:2
+                    a:1
+                }]
+            }
+        .then -> conn.find('test')
+        .then (docs) ->
+            assert.deepEqual docs, [{
+                _id:1
+                a:1
+            },{
+                _id:2
+                a:1
+            }]
+            done()
+        .catch (err) -> done(err)
+
+    it 'handles adds create history for single item', (done) ->
+        req.collection = 'test'
+        req.endpoint = new Endpoint {
+            a: Integer
+        }
+        data =
+            a:1
+        createItems(req, data)
+        .then (result) ->
+            assert.deepEqual result, {
+                status: 'OK'
+                items: [{
+                    _id:1
+                    a:1
+                }]
+            }
+        .then -> conn.find('flipData.history')
+        .then (docs) ->
+            assert.deepEqual docs, [{
+                _id:docs[0]._id
+                collection: 'test'
+                item: 1
+                action: 'created'
+            }]
+            done()
+        .catch (err) -> done(err)
+
+    it 'handles adds create history for multiple items', (done) ->
+        req.collection = 'test'
+        req.endpoint = new Endpoint {
+            a: Integer
+        }
+        data = [{a:2},{a:4}]
+        createItems(req, data)
+        .then (result) ->
+            assert.deepEqual result, {
+                status: 'OK'
+                items: [{
+                    _id:1
+                    a:2
+                },{
+                    _id:2
+                    a:4
+                }]
+            }
+        .then -> conn.find('flipData.history')
+        .then (docs) ->
+            assert.deepEqual docs, [{
+                _id:docs[0]._id
+                collection: 'test'
+                item: 1
+                action: 'created'
+                },{
+                _id:docs[1]._id
+                collection: 'test'
+                item: 2
+                action: 'created'
+            }]
+            done()
+        .catch (err) -> done(err)
+
