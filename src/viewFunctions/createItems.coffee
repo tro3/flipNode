@@ -30,8 +30,7 @@ createItems = (req, data, direct=false) ->
     qForEach data, (item, index) ->
         itemErrs = []
         if !direct
-            tmp = incoming(item, schema)
-            itemErrs = itemErrs.concat(tmp)                                 # Enforce existence and clean data
+            itemErrs = itemErrs.concat(incoming(item, schema))              # Enforce existence and clean data
         item = merge({}, item, schema)                                      # Fill in prototype
         if !direct
             itemErrs = itemErrs.concat(behavior.allowed(item, endpoint))    # Enforce allowed, required, and unique constraints

@@ -19,7 +19,7 @@ createItems = require('../src/viewFunctions/createItems')
 p = console.log
 
 
-describe.only 'viewFunctions.createItems', ->
+describe 'viewFunctions.createItems', ->
     conn = null
     req = {}
 
