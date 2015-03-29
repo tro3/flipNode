@@ -1,5 +1,4 @@
 assert = require('chai').assert
-equivObject = require('./lib/utils').equivObject
 p = console.log
 
 schema = require('../src/schema')
