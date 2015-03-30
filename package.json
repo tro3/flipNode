@@ -7,10 +7,11 @@
     "type": "MIT"
   },
   "dependencies": {
-    "mpath": "",
     "debug": "",
-    "q": "",
-    "mongodb": "2"
+    "deep-diff": "^0.3.0",
+    "mongodb": "2",
+    "mpath": "",
+    "q": ""
   },
   "devDependencies": {
     "chai": "",

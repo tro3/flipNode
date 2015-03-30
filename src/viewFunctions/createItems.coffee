@@ -62,6 +62,7 @@ createItems = (req, data, direct=false) ->
                         collection: req.collection
                         item: item._id
                         action: 'created'
+                        new: item
                 req.cache.insert 'flipData.history', hist
             .then ->
                 update =

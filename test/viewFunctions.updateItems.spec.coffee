@@ -14,12 +14,12 @@ Reference = schema.types.Reference
 Integer = schema.types.Integer
 
 
-createItems = require('../src/viewFunctions/createItems')
+updateItems = require('../src/viewFunctions/updateItems')
 
 p = console.log
 
 
-describe 'viewFunctions.createItems', ->
+describe 'viewFunctions.updateItems', ->
     conn = null
     req = {}
 
@@ -42,230 +42,45 @@ describe 'viewFunctions.createItems', ->
         .finally -> done()
 
 
-    it 'creates a simple item', (done) ->
+    it 'updates a simple item', (done) ->
         req.collection = 'test'
         req.endpoint = new Endpoint {
             a: Integer
         }
         data =
+            _id:1
             a:1
-        createItems(req, data)
+        conn.insert('test', data)
+        .then -> data.a = 2
+        .then -> updateItems(req, data)
         .then (result) ->
             assert.deepEqual result, {
                 status: 'OK'
                 items: [{
                     _id:1
-                    a:1
+                    a:2
                 }]
             }
         .then -> conn.findOne('test', {_id:1})
         .then (doc) ->
             assert.deepEqual doc, {
                 _id:1
-                a:1
+                a:2
             }
             done()
         .catch (err) -> done(err)
 
-    it 'creates two simple items', (done) ->
+    it 'updates two simple items', (done) ->
         req.collection = 'test'
         req.endpoint = new Endpoint {
             a: Integer
         }
-        data = [{a:1},{a:4}]
-        createItems(req, data)
-        .then (result) ->
-            assert.deepEqual result, {
-                status: 'OK'
-                items: [{
-                    _id:1
-                    a:1
-                },{
-                    _id:2
-                    a:4
-                }]
-            }
-        .then -> conn.findOne('test', {_id:2})
-        .then (doc) ->
-            assert.deepEqual doc, {
-                _id:2
-                a:4
-            }
-            done()
-        .catch (err) -> done(err)
-
-    it 'does not create two simple items when a type error exists in one', (done) ->
-        req.collection = 'test'
-        req.endpoint = new Endpoint {
-            a: Integer
-        }
-        data = [{a:1},{a:'q'}]
-        createItems(req, data)
-        .then (result) ->
-            assert.deepEqual result, {
-                status: 'ERR'
-                errs: [
-                    []
-                    [{path:'a', msg: "Could not convert 'a' value of 'q'"}]
-                ]
-            }
-        .then -> conn.find('test')
-        .then (docs) ->
-            assert.equal docs.length, 0
-            done()
-        .catch (err) -> done(err)
-
-    it 'does not create two simple items when a required error exists in one', (done) ->
-        req.collection = 'test'
-        req.endpoint = new Endpoint {
-            a: [
-                a:
-                    type: Integer
-                    required: true
-            ]
-        }
-        data = [{a:[{a:1}]},{a:[{a:2},{b:1}]}]
-        createItems(req, data)
-        .then (result) ->
-            assert.deepEqual result, {
-                status: 'ERR'
-                errs: [
-                    []
-                    [{path:'a.1.a', msg: "Value required at 'a.1.a'"}]
-                ]
-            }
-        .then -> conn.find('test')
-        .then (docs) ->
-            assert.equal docs.length, 0
-            done()
-        .catch (err) -> done(err)
-
-    it 'does not create two simple items when an allowed error exists in one', (done) ->
-        req.collection = 'test'
-        req.endpoint = new Endpoint {
-            a:
-                type: Integer
-                allowed: [1,2]
-        }
-        data = [{a:1},{a:3}]
-        createItems(req, data)
-        .then (result) ->
-            assert.deepEqual result, {
-                status: 'ERR'
-                errs: [
-                    []
-                    [{path:'a', msg: "Value '3' at 'a' not allowed"}]
-                ]
-            }
-        .then -> conn.find('test')
-        .then (docs) ->
-            assert.equal docs.length, 0
-            done()
-        .catch (err) -> done(err)
-
-    it 'does not create two simple items when an unique error exists in one', (done) ->
-        req.collection = 'test'
-        req.endpoint = new Endpoint {
-            a:
-                a:
-                    type: Integer
-                    unique: true
-        }
-        data = [{a:{a:1}},{a:{a:3}}]
-        conn.insert('test', {a:{a:3}})
-        .then -> createItems(req, data)
-        .then (result) ->
-            assert.deepEqual result, {
-                status: 'ERR'
-                errs: [
-                    []
-                    [{path:'a.a', msg: "Value '3' at 'a.a' is not unique"}]
-                ]
-            }
-        .then -> conn.find('test')
-        .then (docs) ->
-            assert.equal docs.length, 1
-            done()
-        .catch (err) -> done(err)
-
-    it 'handles sequential writes', (done) ->
-        req.collection = 'test'
-        req.endpoint = new Endpoint {
-            a: Integer
-        }
-        data =
-            a:1
-        createItems(req, data)
-        .then (result) ->
-            assert.deepEqual result, {
-                status: 'OK'
-                items: [{
-                    _id:1
-                    a:1
-                }]
-            }
-        .then -> conn.find('test')
-        .then (docs) ->
-            assert.deepEqual docs, [{
-                _id:1
-                a:1
-            }]
-        .then -> createItems(req, data)
-        .then (result) ->
-            assert.deepEqual result, {
-                status: 'OK'
-                items: [{
-                    _id:2
-                    a:1
-                }]
-            }
-        .then -> conn.find('test')
-        .then (docs) ->
-            assert.deepEqual docs, [{
-                _id:1
-                a:1
-            },{
-                _id:2
-                a:1
-            }]
-            done()
-        .catch (err) -> done(err)
-
-    it 'handles adds create history for single item', (done) ->
-        req.collection = 'test'
-        req.endpoint = new Endpoint {
-            a: Integer
-        }
-        data =
-            a:1
-        createItems(req, data)
-        .then (result) ->
-            assert.deepEqual result, {
-                status: 'OK'
-                items: [{
-                    _id:1
-                    a:1
-                }]
-            }
-        .then -> conn.find('flipData.history')
-        .then (docs) ->
-            assert.deepEqual docs, [{
-                _id:docs[0]._id
-                collection: 'test'
-                item: 1
-                action: 'created'
-                new: {_id:1, a:1}
-            }]
-            done()
-        .catch (err) -> done(err)
-
-    it 'handles adds create history for multiple items', (done) ->
-        req.collection = 'test'
-        req.endpoint = new Endpoint {
-            a: Integer
-        }
-        data = [{a:2},{a:4}]
-        createItems(req, data)
+        data = [{_id:1,a:1},{_id:2,a:4}]
+        conn.insert('test', data)
+        .then ->
+            data[0].a = 2
+            data[1].a = 3
+        .then -> updateItems(req, data)
         .then (result) ->
             assert.deepEqual result, {
                 status: 'OK'
@@ -274,7 +89,142 @@ describe 'viewFunctions.createItems', ->
                     a:2
                 },{
                     _id:2
-                    a:4
+                    a:3
+                }]
+            }
+        .then -> conn.findOne('test', {_id:2})
+        .then (doc) ->
+            assert.deepEqual doc, {
+                _id:2
+                a:3
+            }
+            done()
+        .catch (err) -> done(err)
+
+    it 'does not update two simple items when a type error exists in one', (done) ->
+        req.collection = 'test'
+        req.endpoint = new Endpoint {
+            a: Integer
+        }
+        data = [{_id:1,a:1},{_id:2,a:4}]
+        conn.insert('test', data)
+        .then ->
+            data[0].a = 2
+            data[1].a = 'q'
+        .then -> updateItems(req, data)
+        .then (result) ->
+            assert.deepEqual result, {
+                status: 'ERR'
+                errs: [
+                    []
+                    [{path:'a', msg: "Could not convert 'a' value of 'q'"}]
+                ]
+            }
+        .then -> conn.findOne('test', {_id:1})
+        .then (doc) ->
+            assert.equal doc.a, 1
+            done()
+        .catch (err) -> done(err)
+
+    it 'does not update two simple items when a required error exists in one', (done) ->
+        req.collection = 'test'
+        req.endpoint = new Endpoint {
+            a: [
+                a:
+                    type: Integer
+                    required: true
+            ]
+        }
+        data = [{_id:1,a:[{_id:1, a:1}]},{_id:2,a:[{_id:1, a:2},{_id:2, a:1}]}]
+        conn.insert('test', data)
+        .then ->
+            data[0].a[0].a = 2
+            data[1].a.push {b:1}
+        .then -> updateItems(req, data)
+        .then (result) ->
+            assert.deepEqual result, {
+                status: 'ERR'
+                errs: [
+                    []
+                    [{path:'a.2.a', msg: "Value required at 'a.2.a'"}]
+                ]
+            }
+        .then -> conn.findOne('test', {_id:1})
+        .then (doc) ->
+            assert.equal doc.a[0].a, 1
+            done()
+        .catch (err) -> done(err)
+
+    it 'does not update two simple items when an allowed error exists in one', (done) ->
+        req.collection = 'test'
+        req.endpoint = new Endpoint {
+            a:
+                type: Integer
+                allowed: [1,2]
+        }
+        data = [{_id:1,a:1},{_id:2,a:2}]
+        conn.insert('test', data)
+        .then ->
+            data[0].a = 2
+            data[1].a = 3
+        .then -> updateItems(req, data)
+        .then (result) ->
+            assert.deepEqual result, {
+                status: 'ERR'
+                errs: [
+                    []
+                    [{path:'a', msg: "Value '3' at 'a' not allowed"}]
+                ]
+            }
+        .then -> conn.findOne('test', {_id:1})
+        .then (doc) ->
+            assert.equal doc.a, 1
+            done()
+        .catch (err) -> done(err)
+
+    it 'does not update two simple items when an unique error exists in one', (done) ->
+        req.collection = 'test'
+        req.endpoint = new Endpoint {
+            a:
+                a:
+                    type: Integer
+                    unique: true
+        }
+        data = [{_id:1,a:{a:3}},{_id:2,a:{a:4}}]
+        conn.insert('test', data)
+        .then ->
+            data[0].a.a = 2
+            data[1].a.a = 3
+        .then -> updateItems(req, data)
+        .then (result) ->
+            assert.deepEqual result, {
+                status: 'ERR'
+                errs: [
+                    []
+                    [{path:'a.a', msg: "Value '3' at 'a.a' is not unique"}]
+                ]
+            }
+        .then -> conn.findOne('test', {_id:1})
+        .then (doc) ->
+            assert.equal doc.a.a, 3
+            done()
+        .catch (err) -> done(err)
+
+    it 'adds update history for single item', (done) ->
+        req.collection = 'test'
+        req.endpoint = new Endpoint {
+            a: Integer
+        }
+        data = {_id:1,a:1}
+        conn.insert('test', data)
+        .then -> data.a = 2
+        .then -> updateItems(req, data)
+        .then (result) ->
+            assert.deepEqual result, {
+                status: 'OK'
+                items: [{
+                    _id:1
+                    a:2
                 }]
             }
         .then -> conn.find('flipData.history')
@@ -283,14 +233,57 @@ describe 'viewFunctions.createItems', ->
                 _id:docs[0]._id
                 collection: 'test'
                 item: 1
-                action: 'created'
-                new: {_id:1, a:2}
-            },{
-                _id:docs[1]._id
-                collection: 'test'
-                item: 2
-                action: 'created'
-                new: {_id:2, a:4}
+                action: 'field changed'
+                objPath: ''
+                field: 'a'
+                old: 1
+                new: 2
+            }]
+            done()
+        .catch (err) -> done(err)
+
+    it 'adds update history for multiple items', (done) ->
+        req.collection = 'test'
+        req.endpoint = new Endpoint {
+            a: Integer
+        }
+        data = [{_id:1, a:2},{_id:2, a:4}]
+        conn.insert('test', data)
+        .then ->
+            data[0].a = 1
+            data[1].a = 2
+        .then -> updateItems(req, data)
+        .then (result) ->
+            assert.deepEqual result, {
+                status: 'OK'
+                items: [{
+                    _id:1
+                    a:1
+                },{
+                    _id:2
+                    a:2
+                }]
+            }
+        .then -> conn.find('flipData.history')
+        .then (docs) ->
+            assert.deepEqual docs, [{
+                    _id:docs[0]._id
+                    collection: 'test'
+                    item: 1
+                    action: 'field changed'
+                    objPath: ''
+                    field: 'a'
+                    old: 2
+                    new: 1
+                },{
+                    _id:docs[1]._id
+                    collection: 'test'
+                    item: 2
+                    action: 'field changed'
+                    objPath: ''
+                    field: 'a'
+                    old: 4
+                    new: 2
             }]
             done()
         .catch (err) -> done(err)

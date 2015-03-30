@@ -219,7 +219,6 @@ describe 'merge function', ->
             }]
         }
         
-
     it 'handles reordering of objects in list', ->
         old =
             _id:1
@@ -253,3 +252,8 @@ describe 'merge function', ->
                 b:2
             }]
         }
+
+    it 'handles other new data in place of object'
+    
+    it 'handles other new data in place of array'
+    
