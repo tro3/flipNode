@@ -21,7 +21,10 @@ module.exports = merge = (old, new_, schema) ->
             if val.type == Dict
                 o = if key of old then old[key] else prototype(val.schema)
                 n = if key of new_ then new_[key] else {}
-                result[key] = merge(o, n, val.schema)
+                if typeof o == 'object' && typeof n == 'object'
+                    result[key] = merge(o, n, val.schema)
+                else
+                    result[key] = n
                 
             else if val.type == List
                 if 'subtype' of val                                  # Primitive list
@@ -33,7 +36,7 @@ module.exports = merge = (old, new_, schema) ->
                         result[key] = []
                             
                 else if key of new_                                  # Modified object list
-                        o = if key of old then old[key] else []
+                        o = if key of old && old[key] instanceof Array then old[key] else []
                         lookup = collectIds(o)
                         result[key] = []
                         for n in new_[key]
