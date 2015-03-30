@@ -253,7 +253,55 @@ describe 'merge function', ->
             }]
         }
 
-    it 'handles other new data in place of object'
+    it 'handles other new data in place of object', ->
+        old =
+            _id:1
+            a: 1
+            b:
+                c:1
+        new_ =
+            _id:1
+            a:
+                c:1
+            b: 1
+        sch = new Schema {
+            a: 
+                c: Integer
+            b: Integer
+        }
+        assert.deepEqual merge(old, new_, sch), {
+            _id:1
+            a:
+                c:1
+            b: 1
+        }
     
-    it 'handles other new data in place of array'
+    it 'handles other new data in place of array', ->
+        old =
+            _id:1
+            a: 1
+            b: [1,2]
+            c: [{_id:1,a:1}]
+            d: 1
+        new_ =
+            _id:1
+            a: [1,2]
+            b: 1
+            c: 1
+            d: [{_id:1,a:1}]
+        sch = new Schema {
+            a: [Integer]
+            b: Integer
+            c: Integer
+            d: [
+                a: Integer
+            ]
+        }
+        assert.deepEqual merge(old, new_, sch), {
+            _id:1
+            a: [1,2]
+            b: 1
+            c: 1
+            d: [{_id:1,a:1}]
+        }
     
