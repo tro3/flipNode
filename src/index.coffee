@@ -1,8 +1,25 @@
 
+express = require('express')
+DbCache = require('./db').DbCache
+Endpoint = require('./schema').Endpoint
+viewFcns = require('./viewFunctions')
 
-mongoose = require('mongoose')
-fnModel = require('./fnModel')
+module.exports.schema = require('./schema')
+module.exports.api = (db, config) ->
+    router = express.Router()
+    
+    for key, val of config
+        config[key] = new Endpoint(val)
 
-module.exports.Schema = mongoose.Schema
-module.exports.types = fnModel.types
-module.exports.registerEndpoint = fnModel.registerEndpoint
+    router.param 'collection', (req, res, next) ->
+        req.collection = req.params.collection
+        if !(req.collection of config)
+            res.status(404).send()
+            return
+        req.endpoint = config[req.collection]
+        req.cache = new DbCache(db)
+        next()
+
+    router.get '/:collection', (req, res) -> viewFcns.getListView(req, res)
+    
+    router

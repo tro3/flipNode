@@ -9,6 +9,7 @@
   "dependencies": {
     "debug": "",
     "deep-diff": "^0.3.0",
+    "express": "^4.12.3",
     "mongodb": "2",
     "mpath": "",
     "q": ""
@@ -16,6 +17,7 @@
   "devDependencies": {
     "chai": "",
     "node-inspector": "",
-    "sinon": "^1.13.0"
+    "sinon": "^1.13.0",
+    "supertest": "^0.15.0"
   }
 }
