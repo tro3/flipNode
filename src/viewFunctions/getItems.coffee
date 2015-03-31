@@ -13,7 +13,7 @@ p = console.log
 
 
 
-getItems = (req, query={}, options={}) ->
+getItems = (req, query={}, options={}, single=false) ->
     collName = req.collection
     items = null
     ids = null
@@ -55,7 +55,11 @@ getItems = (req, query={}, options={}) ->
             serializeAuth(req, doc)
             .then -> expandRefs(req, doc)
     .then ->
-        return req.active
+        if single && auths[0] == false
+            return false
+        else
+            return req.active
+
 
 
 

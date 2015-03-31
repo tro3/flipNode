@@ -169,3 +169,10 @@ describe 'api.getList', ->
                         done()
         .catch (err) -> done(err)
 
+    it 'handles a list retrieval with a query'
+
+    it 'handles a list retrieval with a subset of fields'
+
+    it 'handles a list retrieval with a sort request'
+
+    it 'handles a list retrieval with a page request'

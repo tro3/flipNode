@@ -29,3 +29,22 @@ module.exports.getListView = (req, res) ->
                     _items: items
                 )
         .catch (err) -> throw err
+
+
+module.exports.getItemView = (req, res) ->
+    # check high-level auth
+    if typeof req.endpoint.auth.read == 'boolean' && !req.endpoint.auth.read
+        res.status(403).send()
+        q.Promise.resolve true
+    else
+        getItems(req, {_id:parseInt(req.params.id)}, {}, true).then (items) ->
+            if items == false
+                res.status(403).send()
+            else if items.length > 0
+                res.status(200).send(
+                    _status: 'OK'
+                    _item: items[0]
+                )
+            else
+                res.status(404).send()
+        .catch (err) -> throw err
