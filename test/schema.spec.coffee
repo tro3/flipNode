@@ -477,7 +477,12 @@ describe 'Schema module', ->
                 name: String
             }
             assert.deepEqual dut, {
-                auth: {}
+                auth:
+                    create: true
+                    read: true
+                    edit: true
+                    delete: true
+
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
@@ -504,7 +509,12 @@ describe 'Schema module', ->
                     fields: ['name']
             }
             assert.deepEqual dut, {
-                auth: {}
+                auth:
+                    create: true
+                    read: true
+                    edit: true
+                    delete: true
+
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
@@ -536,7 +546,10 @@ describe 'Schema module', ->
             }
             assert.deepEqual dut, {
                 auth:
+                    create: true
+                    read: true
                     edit: false
+                    delete: true
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
@@ -570,7 +583,12 @@ describe 'Schema module', ->
                             fields: ['name']
             }
             assert.deepEqual dut, {
-                auth: {}
+                auth:
+                    create: true
+                    read: true
+                    edit: true
+                    delete: true
+
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
@@ -626,7 +644,12 @@ describe 'Schema module', ->
                             allowed: ['Open', 'Closed']
             }
             assert.deepEqual dut, {
-                auth: {}
+                auth:
+                    create: true
+                    read: true
+                    edit: true
+                    delete: true
+
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
@@ -690,7 +713,12 @@ describe 'Schema module', ->
                             required: true
             }
             assert.deepEqual dut, {
-                auth: {}
+                auth:
+                    create: true
+                    read: true
+                    edit: true
+                    delete: true
+
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
@@ -754,7 +782,12 @@ describe 'Schema module', ->
                             unique: true
             }
             assert.deepEqual dut, {
-                auth: {}
+                auth:
+                    create: true
+                    read: true
+                    edit: true
+                    delete: true
+
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
@@ -818,7 +851,12 @@ describe 'Schema module', ->
                             auto: (el, root) -> root.name
             }
             assert.deepEqual dut, {
-                auth: {}
+                auth:
+                    create: true
+                    read: true
+                    edit: true
+                    delete: true
+
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
@@ -882,7 +920,12 @@ describe 'Schema module', ->
                             auto: (el, root) -> root.name
             }
             assert.deepEqual dut, {
-                auth: {}
+                auth:
+                    create: true
+                    read: true
+                    edit: true
+                    delete: true
+
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:

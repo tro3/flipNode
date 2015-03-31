@@ -17,7 +17,7 @@ getItems = (req, query={}, options={}) ->
     collName = req.collection
     items = null
     ids = null
-
+    auths = null
     
     # Get Full Docs
     fields = options.fields
@@ -27,21 +27,26 @@ getItems = (req, query={}, options={}) ->
     .then (results) ->
         items = results
         ids = (x._id for x in items)
-
             
-    # Check read auth for each item - not currently checked
+        # Check read auth for each item
         auths = (undefined for x in items)
+        resolve = (doc) ->
+            read = req.endpoint.auth.read
+            if typeof read == 'function'
+                return q.Promise.resolve(read(doc, req))
+            else
+                return q.Promise.resolve(read)
+
         qForEach results, (doc, ind) ->
-            auths[ind] = true
-            q.Promise.resolve()
+            resolve(doc)
+            .then (auth) -> auths[ind] = auth
             
-        ids.filter (x, ind) -> auths[ind]
-
-
     # Get remaining doc projections
-    options.fields = fields 
-    req.cache.find(collName, query, options)
-
+    .then ->
+        ids = ids.filter (x, ind) -> auths[ind]
+        query._id = {$in:ids}        
+        options.fields = fields
+        req.cache.find(collName, query, options)
 
     # Enforce auth and serialize
     .then (results) ->

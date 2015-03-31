@@ -5,6 +5,7 @@ Endpoint = require('./schema').Endpoint
 viewFcns = require('./viewFunctions')
 
 module.exports.schema = require('./schema')
+
 module.exports.api = (db, config) ->
     router = express.Router()
     

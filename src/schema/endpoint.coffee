@@ -11,6 +11,10 @@ class Endpoint
         else
             @schema = new Schema(config.schema)
             @auth = if 'auth' of config then config.auth else {}
+            
+        for perm in ['create','read','edit','delete']
+            if !(perm of @auth)
+                @auth[perm] = true
 
         @paths =
             references: {}
