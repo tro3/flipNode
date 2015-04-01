@@ -22,12 +22,36 @@ module.exports.getListView = (req, res) ->
     else
         resolve(req.endpoint.auth.create, req)
         .then (createAuth) ->
-            getItems(req, {}).then (items) ->
-                res.status(200).send(
+            query = {}
+            options = {}
+            page = null
+            size = null
+            if 'query' of req.query
+                query = JSON.parse(req.query.query)
+            if 'fields' of req.query
+                options.fields = JSON.parse(req.query.fields)
+            if 'sort' of req.query
+                options.sort = JSON.parse(req.query.sort)
+            if 'page' of req.query
+                size = (req.query.pageSize && parseInt(req.query.pageSize)) || 50
+                page = parseInt(req.query.page)
+                options.skip = (page-1)*size
+                options.limit = size
+            getItems(req, query, options).then (items) ->
+                resp = 
                     _status: 'OK'
                     _auth: createAuth
                     _items: items
-                )
+                if 'page' of req.query
+                    delete options.skip
+                    delete options.limit
+                    req.cache.count(req.collection, query, options)
+                    .then (count) ->
+                        resp._page = page
+                        resp._pages = Math.ceil(count/size)
+                        res.status(200).send(resp)
+                else
+                    res.status(200).send(resp)
         .catch (err) -> throw err
 
 
@@ -37,7 +61,10 @@ module.exports.getItemView = (req, res) ->
         res.status(403).send()
         q.Promise.resolve true
     else
-        getItems(req, {_id:parseInt(req.params.id)}, {}, true).then (items) ->
+        options = {}
+        if 'fields' of req.query
+            options.fields = JSON.parse(req.query.fields)
+        getItems(req, {_id:parseInt(req.params.id)}, options, true).then (items) ->
             if items == false
                 res.status(403).send()
             else if items.length > 0

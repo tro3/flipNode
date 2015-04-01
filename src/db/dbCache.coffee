@@ -66,6 +66,11 @@ class DbCache
     remove: (collection, spec) ->
         @db.remove(collection, spec)
 
+    count: (collection, query={}, options={}) ->
+        hash = hashQuery(collection, query, options)
+        if hash of @lookup
+            return q.Promise.resolve(@lookup[hash].length)
+        @db.count(collection, query, options)
 
 module.exports = DbCache
 

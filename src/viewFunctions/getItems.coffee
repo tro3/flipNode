@@ -44,8 +44,10 @@ getItems = (req, query={}, options={}, single=false) ->
     # Get remaining doc projections
     .then ->
         ids = ids.filter (x, ind) -> auths[ind]
-        query._id = {$in:ids}        
+        query = {_id: {$in:ids}}
         options.fields = fields
+        delete options.limit
+        delete options.skip
         req.cache.find(collName, query, options)
 
     # Enforce auth and serialize
@@ -59,6 +61,7 @@ getItems = (req, query={}, options={}, single=false) ->
             return false
         else
             return req.active
+    .catch (err) -> throw err
 
 
 

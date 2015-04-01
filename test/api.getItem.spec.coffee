@@ -23,7 +23,7 @@ describe 'api.getItem', ->
         app.use '/api', flip.api conn,
             users:
                 name: types.String
-        conn.insert('users', {_id:1, name:'admin'})
+        conn.insert('users', {_id:1, name:'admin', city:'Menlo Park'})
         .then ->
             request(app)
                 .get('/api/users/1')
@@ -41,6 +41,7 @@ describe 'api.getItem', ->
                                     _edit: true
                                     _delete: true
                                 name: 'admin'
+                                city: 'Menlo Park'
                         done()
         .catch (err) -> done(err)
 
@@ -61,7 +62,22 @@ describe 'api.getItem', ->
                         done()
         .catch (err) -> done(err)
 
-    it.skip 'responds with a 404 for non-existent document'
+    it 'responds with a 404 for non-existent document', (done) ->
+        app = express()
+        app.use '/api', flip.api conn,
+            users:
+                name: types.String
+        conn.insert('users', {_id:1, name:'admin'})
+        .then ->
+            request(app)
+                .get('/api/users/2')
+                .expect(404)
+                .end (err, res) ->
+                    if err
+                        done(err)
+                    else
+                        done()
+        .catch (err) -> done(err)
 
     it 'responds with a 403 for read auth constant false', (done) ->
         app = express()
@@ -103,4 +119,28 @@ describe 'api.getItem', ->
                         done()
         .catch (err) -> done(err)
 
-    it 'handles a simple item with a subset of fields'
+    it 'handles a simple item with a subset of fields', (done) ->
+        app = express()
+        app.use '/api', flip.api conn,
+            users:
+                name: types.String
+        conn.insert('users', {_id:1, name:'admin', city:'Menlo Park'})
+        .then ->
+            request(app)
+                .get('/api/users/1?fields={"city":1}')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end (err, res) ->
+                    if err
+                        done(err)
+                    else
+                        assert.deepEqual res.body,
+                            _status: 'OK'
+                            _item:
+                                _id:1
+                                _auth:
+                                    _edit: true
+                                    _delete: true
+                                city: 'Menlo Park'
+                        done()
+        .catch (err) -> done(err)

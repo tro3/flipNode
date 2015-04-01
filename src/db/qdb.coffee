@@ -35,6 +35,12 @@ class qDB
             @db.collection(collection).findOne query, options, (err, resp) ->
                 reject err if err
                 resolve(resp)
+ 
+    count: (collection, query={}, options={}) ->
+        @connected.then -> q.Promise (resolve, reject) ->
+            @db.collection(collection).find(query, options).count (err, resp) ->
+                reject err if err
+                resolve(resp)
     
     insert: (collection, docs) ->
         docs = [docs] if !(docs instanceof Array)
