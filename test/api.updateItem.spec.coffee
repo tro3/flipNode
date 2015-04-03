@@ -14,12 +14,14 @@ describe 'api.updateItem', ->
     before ->
         conn = connect('mongodb://localhost:27017/test')
 
+    beforeEach ->
+        app = express()
+
     afterEach (done) ->
         conn.drop('users')
         .finally -> done()
 
     it 'updates a simple item', (done) ->
-        app = express()
         app.use '/api', flip.api conn,
             users:
                 name: types.String
@@ -172,7 +174,28 @@ describe 'api.updateItem', ->
                     else
                         done()
         .catch (err) -> done(err)
-
     
-    
-    it 'responds with _status=ERR for wrong data types'
+    it 'responds with _status=ERR for wrong data types', (done) ->
+        app.use '/api', flip.api conn,
+            users:
+                eid: types.Integer
+        conn.insert('users', {_id:1, eid:408})
+        .then ->
+            data = {_id:1, eid:'admin2'}
+            request(app)
+                .put('/api/users/1')
+                .set('Content-Type', 'application/json')
+                .send(data)
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end (err, res) ->
+                    if err
+                        done(err)
+                    else
+                        assert.deepEqual res.body,
+                            _status: 'ERR'
+                            _errs: [
+                                {path: 'eid', msg: "Could not convert 'eid' value of 'admin2'"}
+                            ]
+                        done()
+        .catch (err) -> done(err)

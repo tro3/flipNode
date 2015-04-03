@@ -137,22 +137,9 @@ module.exports.updateItemView = (req, res) ->
                 else
                     res.status(403).send(UNAUTHORIZED)
             else
-                throw new Error resp.errs
+                res.status(200).send(
+                    _status: 'ERR'
+                    _errs: resp.errs[0]
+                )
             
     .catch (err) -> throw err
-        
-
-    #    options = {}
-    #    if 'fields' of req.query
-    #        options.fields = JSON.parse(req.query.fields)
-    #    getItems(req, {_id:parseInt(req.params.id)}, options, true).then (items) ->
-    #        if items == false
-    #            res.status(403).send()
-    #        else if items.length > 0
-    #            res.status(200).send(
-    #                _status: 'OK'
-    #                _item: items[0]
-    #            )
-    #        else
-    #            res.status(404).send()
-    #    .catch (err) -> throw err
