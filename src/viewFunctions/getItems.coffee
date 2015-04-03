@@ -44,7 +44,7 @@ getItems = (req, query={}, options={}, single=false) ->
     # Get remaining doc projections
     .then ->
         ids = ids.filter (x, ind) -> auths[ind]
-        query = {_id: {$in:ids}}
+        query = if single then {_id: ids[0]} else {_id: {$in:ids}}
         options.fields = fields
         delete options.limit
         delete options.skip

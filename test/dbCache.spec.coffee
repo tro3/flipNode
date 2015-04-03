@@ -210,3 +210,5 @@ describe 'dbCache', ->
                     done()
                 .catch (err) -> done(err)
 
+        describe 'update', ->
+            it 'invalidates local caches'
