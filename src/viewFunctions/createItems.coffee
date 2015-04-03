@@ -73,6 +73,7 @@ createItems = (req, data, direct=false) ->
             delete resp.items
     .then ->
         resp
+    .catch (err) -> throw err
                 
             
             

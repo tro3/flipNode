@@ -28,6 +28,7 @@ module.exports.api = (db, config) ->
 
     router.get '/:collection', (req, res) -> viewFcns.getListView(req, res)
     router.get '/:collection/:id(\\d+)', (req, res) -> viewFcns.getItemView(req, res)
+    router.post '/:collection', (req, res) -> viewFcns.createItemView(req, res)
     router.put '/:collection/:id(\\d+)', (req, res) -> viewFcns.updateItemView(req, res)
     
     router

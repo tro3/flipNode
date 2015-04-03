@@ -95,6 +95,39 @@ module.exports.getItemView = (req, res) ->
         .catch (err) -> throw err
 
 
+module.exports.createItemView = (req, res) ->
+    item = null
+    id = null
+    
+    # Check high-level auth
+    evalAuth('create', req.endpoint.auth, req)
+    .then (auth) ->
+        if !auth
+            res.status(403).send(UNAUTHORIZED)
+            return
+        if not 'body' of req
+            res.status(400).send(MALFORMED)
+            return
+
+        item = req.body
+                    
+        # Create item
+        createItems(req, [item]).then (resp) ->
+            if resp.status == 'OK'
+                getItems(req, {_id:resp.items[0]._id}, {}, true).then (items) ->
+                    res.status(200).send(
+                        _status: 'OK'
+                        _item: items[0]
+                    )
+            else
+                res.status(200).send(
+                    _status: 'ERR'
+                    _errs: resp.errs[0]
+                )
+            
+    .catch (err) -> throw err
+
+
 module.exports.updateItemView = (req, res) ->
     item = null
     id = null

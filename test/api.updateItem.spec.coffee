@@ -19,6 +19,7 @@ describe 'api.updateItem', ->
 
     afterEach (done) ->
         conn.drop('users')
+        .finally -> conn.drop('flipData.history')
         .finally -> done()
 
     it 'updates a simple item', (done) ->
@@ -46,7 +47,11 @@ describe 'api.updateItem', ->
                                     _edit: true
                                     _delete: true
                                 name: 'admin2'
-                        done()
+                        conn.findOne('users', {_id:1}).then (doc) ->
+                            assert.deepEqual doc,
+                                _id:1
+                                name: 'admin2'            
+                            done()
         .catch (err) -> done(err)
     
     it 'responds with a 404 for non-existent collection', (done) ->
