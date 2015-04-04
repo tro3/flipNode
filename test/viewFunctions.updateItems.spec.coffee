@@ -288,4 +288,4 @@ describe 'viewFunctions.updateItems', ->
             done()
         .catch (err) -> done(err)
 
-    it 'does update history for fields with Log false'
+    it 'does not update history for fields with Log false'

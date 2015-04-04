@@ -6,6 +6,7 @@ Dict = types.Dict
 List = types.List
 Reference = types.Reference
 
+evalAuth = require('./auth')
 qForEach = require('./common').qForEach
 qForItems = require('./common').qForItems
 
@@ -19,8 +20,7 @@ getItems = (req, query={}, options={}, single=false) ->
     ids = null
     auths = null
     
-    # Get Full Docs
-    fields = options.fields
+    fields = options.fields                                             # Get Full Docs
     delete options.fields
 
     req.cache.find(collName, query, options)
@@ -28,21 +28,12 @@ getItems = (req, query={}, options={}, single=false) ->
         items = results
         ids = (x._id for x in items)
             
-        # Check read auth for each item
-        auths = (undefined for x in items)
-        resolve = (doc) ->
-            read = req.endpoint.auth.read
-            if typeof read == 'function'
-                return q.Promise.resolve(read(doc, req))
-            else
-                return q.Promise.resolve(read)
-
+        auths = (undefined for x in items)                              # Check read auth for each item
         qForEach results, (doc, ind) ->
-            resolve(doc)
+            evalAuth 'read', req.endpoint.auth, req, doc
             .then (auth) -> auths[ind] = auth
             
-    # Get remaining doc projections
-    .then ->
+    .then ->                                                            # Get remaining doc projections
         ids = ids.filter (x, ind) -> auths[ind]
         query = if single then {_id: ids[0]} else {_id: {$in:ids}}
         options.fields = fields
@@ -50,8 +41,7 @@ getItems = (req, query={}, options={}, single=false) ->
         delete options.skip
         req.cache.find(collName, query, options)
 
-    # Enforce auth and serialize
-    .then (results) ->
+    .then (results) ->                                                  # Enforce auth and serialize
         req.active = results
         qForEach results, (doc) ->
             serializeAuth(req, doc)
@@ -98,7 +88,7 @@ _serializeAuthRec = (req, doc, fullDoc, endp, subdoc, prev, root) ->
             q.Promise.resolve(prev[attr])
         else
             q.Promise.resolve(true)
-        
+    
     evaluate('read', fullDoc)
     .then (readAuth) ->
         return false if !readAuth
