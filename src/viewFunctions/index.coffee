@@ -3,6 +3,7 @@ evalAuth = require('./auth')
 getItems = require('./getItems')
 createItems = require('./createItems')
 updateItems = require('./updateItems')
+deleteItems = require('./deleteItems')
 
 p = console.log
 
@@ -169,6 +170,44 @@ module.exports.updateItemView = (req, res) ->
                         )
                 else
                     res.status(403).send(UNAUTHORIZED)
+            else
+                res.status(200).send(
+                    _status: 'ERR'
+                    _errs: resp.errs[0]
+                )
+            
+    .catch (err) -> throw err
+
+
+module.exports.deleteItemView = (req, res) ->
+    item = null
+    id = null
+    
+    # Check high-level auth
+    evalAuth('delete', req.endpoint.auth, req)
+    .then (auth) ->
+        if !auth
+            res.status(403).send(UNAUTHORIZED)
+            return
+
+        id = parseInt(req.params.id)
+        getItems(req, {_id:id}, {}, true).then (dbItems) ->
+            if dbItems.length == 0
+                res.status(404).send(NOT_FOUND)
+                return
+            evalAuth('delete', req.endpoint.auth, req, dbItems[0])
+
+    .then (auth) ->
+        if !auth
+            res.status(403).send(UNAUTHORIZED)
+            return
+
+        # Delete items
+        deleteItems(req, [id]).then (resp) ->
+            if resp.status == 'OK'
+                res.status(200).send(
+                    _status: 'OK'
+                )
             else
                 res.status(200).send(
                     _status: 'ERR'

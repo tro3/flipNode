@@ -164,6 +164,16 @@ describe 'dbCache', ->
                     done()
                 .catch (err) -> done(err)
 
+        it 'is robust to external doc changes', (done) ->
+            db.insert('test', [{a:1,b:1},{a:2,b:2},{a:3,b:1},{a:4,b:2}])
+            .then -> db.findOne('test', {a:1})
+            .then (doc) ->
+                doc.b = 2
+                db.findOne('test', {a:1})
+            .then (doc) ->
+                assert.equal doc.b, 1
+                done()
+            .done null, (err) -> throw err
 
 
     describe 'multi-instance', ->
@@ -212,3 +222,5 @@ describe 'dbCache', ->
 
         describe 'update', ->
             it 'invalidates local caches'
+
+        
