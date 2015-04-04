@@ -26,7 +26,7 @@ describe 'dbCache', ->
     afterEach (done) ->
         conn.find.restore()
         conn.findOne.restore()
-        conn.drop('test', {})
+        conn.drop('test')
         .then -> done()
 
     callCount = -> spy1.callCount + spy2.callCount
@@ -57,14 +57,29 @@ describe 'dbCache', ->
                 .catch (err) -> done(err)
 
         describe 'update', ->
+            beforeEach (done) ->
+                db.insert('test', {_id:1, a:3})
+                .then -> done()
+                                
             it 'modifies single doc', (done) ->
-                db.insert('test', {a:3})
-                .then -> db.update('test', {a:3}, {a:1})
+                db.update('test', {a:3}, {_id:1, a:1})
                 .then -> db.findOne('test')
                 .then (doc) ->
                     assert.equal doc.a, 1
                     done()
                 .catch (err) -> done(err)
+
+            it 'invalidates local cache', (done) ->
+                db.findOne('test', {_id:1})
+                .then (doc) ->
+                    assert.equal doc.a, 3
+                .then -> db.update('test', {_id:1}, {_id:1, a:1})
+                .then -> db.findOne('test', {_id:1})
+                .then (doc) ->
+                    assert.equal callCount(), 2
+                    assert.equal doc.a, 1
+                    done()
+                .done null, (err) -> done(err)
 
         describe 'updateMany', ->
             it 'modifies multiple docs', (done) ->
@@ -219,8 +234,4 @@ describe 'dbCache', ->
                     assert.equal callCount(), 4
                     done()
                 .catch (err) -> done(err)
-
-        describe 'update', ->
-            it 'invalidates local caches'
-
         

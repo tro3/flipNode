@@ -39,7 +39,7 @@ deepcopy = (obj) ->
         else if val instanceof ObjectID
             result[key] = deepcopy(val)
             result[key].__proto__ = val.proto
-        else            
+        else
             result[key] = deepcopy(val)
     result
 
@@ -54,10 +54,10 @@ class DbCache
         if !(hash of @lookup)
             return false
         @lookup[hash].every (x) -> x._id != null
-            
+
     find: (collection, query={}, options={}) ->
         hash = hashQuery(collection, query, options)
-        
+
         if !@isCached(hash)
             tmpQ = @db.find(collection, query, options)
             .then (docs) =>
@@ -68,7 +68,7 @@ class DbCache
         else
             tmpQ = q.Promise.resolve()
         return tmpQ.then => deepcopy(@lookup[hash])
-            
+
 
     findOne: (collection, query={}, options={}) ->
         hash = hashQuery(collection, query, options)
@@ -92,9 +92,10 @@ class DbCache
             return q.Promise.resolve(@lookup[hash].length)
         @db.count(collection, query, options)
 
-    
+
     insert: (collection, docs) ->
         @db.insert(collection, docs)
+
 
     update: (collection, spec, update, options) ->
         hash = hashQuery(collection, spec, {})
@@ -102,12 +103,14 @@ class DbCache
             @lookup[hash].forEach (x) -> x._id = null
         @db.update(collection, spec, update, options)
 
+
     updateMany: (collection, spec, update, options) ->
         hash = hashQuery(collection, spec, {})
         if hash of @lookup
             @lookup[hash].forEach (x) -> x._id = null
         @db.updateMany(collection, spec, update, options)
-    
+
+
     remove: (collection, spec) ->
         hash = hashQuery(collection, spec, {})
         if hash of @lookup
@@ -116,6 +119,3 @@ class DbCache
 
 
 module.exports = DbCache
-
-
-
