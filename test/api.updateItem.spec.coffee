@@ -71,7 +71,11 @@ describe 'api.updateItem', ->
                     if err
                         done(err)
                     else
-                        done()
+                        conn.findOne('users', {_id:1}).then (doc) ->
+                            assert.deepEqual doc,
+                                _id:1
+                                name: 'admin'            
+                            done()
         .catch (err) -> done(err)
 
     it 'responds with a 404 for non-existent document', (done) ->
@@ -91,7 +95,11 @@ describe 'api.updateItem', ->
                     if err
                         done(err)
                     else
-                        done()
+                        conn.findOne('users', {_id:1}).then (doc) ->
+                            assert.deepEqual doc,
+                                _id:1
+                                name: 'admin'            
+                            done()
         .catch (err) -> done(err)
 
     it 'responds with a 400 for for mismatched id', (done) ->
@@ -111,7 +119,11 @@ describe 'api.updateItem', ->
                     if err
                         done(err)
                     else
-                        done()
+                        conn.findOne('users', {_id:1}).then (doc) ->
+                            assert.deepEqual doc,
+                                _id:1
+                                name: 'admin'            
+                            done()
         .catch (err) -> done(err)
 
     it 'responds with a 400 for for garbled data', (done) ->
@@ -131,7 +143,11 @@ describe 'api.updateItem', ->
                     if err
                         done(err)
                     else
-                        done()
+                        conn.findOne('users', {_id:1}).then (doc) ->
+                            assert.deepEqual doc,
+                                _id:1
+                                name: 'admin'            
+                            done()
         .catch (err) -> done(err)
 
     it 'responds with a 403 for edit auth constant false', (done) ->
@@ -154,7 +170,11 @@ describe 'api.updateItem', ->
                     if err
                         done(err)
                     else
-                        done()
+                        conn.findOne('users', {_id:1}).then (doc) ->
+                            assert.deepEqual doc,
+                                _id:1
+                                name: 'admin'            
+                            done()
         .catch (err) -> done(err)
 
     it 'responds with a 403 for edit auth function false', (done) ->
@@ -177,7 +197,11 @@ describe 'api.updateItem', ->
                     if err
                         done(err)
                     else
-                        done()
+                        conn.findOne('users', {_id:1}).then (doc) ->
+                            assert.deepEqual doc,
+                                _id:1
+                                name: 'admin'            
+                            done()
         .catch (err) -> done(err)
     
     it 'responds with _status=ERR for wrong data types', (done) ->
@@ -202,5 +226,9 @@ describe 'api.updateItem', ->
                             _errs: [
                                 {path: 'eid', msg: "Could not convert 'eid' value of 'admin2'"}
                             ]
-                        done()
+                        conn.findOne('users', {_id:1}).then (doc) ->
+                            assert.deepEqual doc,
+                                _id:1
+                                eid: 408            
+                            done()
         .catch (err) -> done(err)

@@ -55,7 +55,7 @@ describe 'api.deleteItem', ->
                         .done null, (err) -> throw err
         .done null, (err) -> done(err)
     
-    it.skip 'responds with a 404 for non-existent collection', (done) ->
+    it 'responds with a 404 for non-existent collection', (done) ->
         app = express()
         app.use '/api', flip.api conn,
             users:
@@ -64,18 +64,18 @@ describe 'api.deleteItem', ->
         .then ->
             data = {_id:1, name:'admin2'}
             request(app)
-                .put('/api/frogs/1')
-                .set('Content-Type', 'application/json')
-                .send(data)
+                .delete('/api/frogs/1')
                 .expect(404)
                 .end (err, res) ->
                     if err
                         done(err)
                     else
-                        done()
+                        conn.find('users', {}).then (docs) ->
+                            assert.equal docs.length, 1
+                            done()
         .catch (err) -> done(err)
 
-    it.skip 'responds with a 404 for non-existent document', (done) ->
+    it 'responds with a 404 for non-existent document', (done) ->
         app = express()
         app.use '/api', flip.api conn,
             users:
@@ -84,124 +84,59 @@ describe 'api.deleteItem', ->
         .then ->
             data = {_id:1, name:'admin2'}
             request(app)
-                .put('/api/users/2')
-                .set('Content-Type', 'application/json')
-                .send(data)
+                .delete('/api/users/2')
                 .expect(404)
                 .end (err, res) ->
                     if err
                         done(err)
                     else
-                        done()
+                        conn.find('users', {}).then (docs) ->
+                            assert.equal docs.length, 1
+                            done()
         .catch (err) -> done(err)
 
-    it.skip 'responds with a 400 for for mismatched id', (done) ->
-        app = express()
-        app.use '/api', flip.api conn,
-            users:
-                name: types.String
-        conn.insert('users', {_id:1, name:'admin'})
-        .then ->
-            data = {_id:2, name:'admin2'}
-            request(app)
-                .put('/api/users/1')
-                .set('Content-Type', 'application/json')
-                .send(data)
-                .expect(400)
-                .end (err, res) ->
-                    if err
-                        done(err)
-                    else
-                        done()
-        .catch (err) -> done(err)
-
-    it.skip 'responds with a 400 for for garbled data', (done) ->
-        app = express()
-        app.use '/api', flip.api conn,
-            users:
-                name: types.String
-        conn.insert('users', {_id:1, name:'admin'})
-        .then ->
-            data = {_id:2, name:'admin2'}
-            request(app)
-                .put('/api/users/1')
-                .set('Content-Type', 'application/json')
-                .send("I am bob")
-                .expect(400)
-                .end (err, res) ->
-                    if err
-                        done(err)
-                    else
-                        done()
-        .catch (err) -> done(err)
-
-    it.skip 'responds with a 403 for edit auth constant false', (done) ->
+    it 'responds with a 403 for delete auth constant false', (done) ->
         app = express()
         app.use '/api', flip.api conn,
             users:
                 auth:
-                    edit: false
+                    delete: false
                 schema:
                     name: types.String
         conn.insert('users', {_id:1, name:'admin'})
         .then ->
             data = {_id:1, name:'admin2'}
             request(app)
-                .put('/api/users/1')
-                .set('Content-Type', 'application/json')
-                .send(data)
+                .delete('/api/users/1')
                 .expect(403)
                 .end (err, res) ->
                     if err
                         done(err)
                     else
-                        done()
+                        conn.find('users', {}).then (docs) ->
+                            assert.equal docs.length, 1
+                            done()
         .catch (err) -> done(err)
 
-    it.skip 'responds with a 403 for edit auth function false', (done) ->
+    it 'responds with a 403 for delete auth function false', (done) ->
         app = express()
         app.use '/api', flip.api conn,
             users:
                 auth:
-                    edit: -> false
+                    delete: -> false
                 schema:
                     name: types.String
         conn.insert('users', {_id:1, name:'admin'})
         .then ->
             data = {_id:1, name:'admin2'}
             request(app)
-                .put('/api/users/1')
-                .set('Content-Type', 'application/json')
-                .send(data)
+                .delete('/api/users/1')
                 .expect(403)
                 .end (err, res) ->
                     if err
                         done(err)
                     else
-                        done()
-        .catch (err) -> done(err)
-    
-    it.skip 'responds with _status=ERR for wrong data types', (done) ->
-        app.use '/api', flip.api conn,
-            users:
-                eid: types.Integer
-        conn.insert('users', {_id:1, eid:408})
-        .then ->
-            data = {_id:1, eid:'admin2'}
-            request(app)
-                .put('/api/users/1')
-                .set('Content-Type', 'application/json')
-                .send(data)
-                .expect('Content-Type', /json/)
-                .expect(200)
-                .end (err, res) ->
-                    if err
-                        done(err)
-                    else
-                        assert.deepEqual res.body,
-                            _status: 'ERR'
-                            _errs: [
-                                {path: 'eid', msg: "Could not convert 'eid' value of 'admin2'"}
-                            ]
-                        done()
+                        conn.find('users', {}).then (docs) ->
+                            assert.equal docs.length, 1
+                            done()
         .catch (err) -> done(err)

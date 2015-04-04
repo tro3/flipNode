@@ -70,7 +70,9 @@ describe 'api.createItem', ->
                 if err
                     done(err)
                 else
-                    done()
+                    conn.count('users').then (count) ->
+                        assert.equal count, 0
+                        done()
 
     it 'responds with a 400 for for garbled data', (done) ->
         app = express()
@@ -87,7 +89,9 @@ describe 'api.createItem', ->
                 if err
                     done(err)
                 else
-                    done()
+                    conn.count('users').then (count) ->
+                        assert.equal count, 0
+                        done()
 
     it 'responds with a 403 for create auth constant false', (done) ->
         app = express()
@@ -107,7 +111,9 @@ describe 'api.createItem', ->
                 if err
                     done(err)
                 else
-                    done()
+                    conn.count('users').then (count) ->
+                        assert.equal count, 0
+                        done()
 
     it 'responds with a 403 for create auth function false', (done) ->
         app = express()
@@ -127,7 +133,9 @@ describe 'api.createItem', ->
                 if err
                     done(err)
                 else
-                    done()
+                    conn.count('users').then (count) ->
+                        assert.equal count, 0
+                        done()
     
     it 'responds with _status=ERR for wrong data types', (done) ->
         app.use '/api', flip.api conn,
@@ -149,4 +157,6 @@ describe 'api.createItem', ->
                         _errs: [
                             {path: 'eid', msg: "Could not convert 'eid' value of 'admin2'"}
                         ]
-                    done()
+                    conn.count('users').then (count) ->
+                        assert.equal count, 0
+                        done()
