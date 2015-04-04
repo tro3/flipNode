@@ -39,7 +39,6 @@ module.exports = diff = (o, n, path='') ->
                 nInd = 0
                 adds = []
                 rems = []
-                debugger
                 while oInd < oVals.length || nInd < nVals.length
                     if nInd < nVals.length && oVals.indexOf(nVals[nInd]) == -1
                         adds.push nInd

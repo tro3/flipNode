@@ -70,27 +70,6 @@ updateItems = (req, data, direct=false) ->
             delete resp.items
     .then ->
         resp
-                
-            
-            
-        
 
-#enforce auth on incoming*
-    #existence
-    #readonly
-#enforce datatypes on incoming*
-#merge incoming (with {}) & fill in protos
-#enforce schema behaviors*
-    #allowed
-    #required
-    #unique
-#run Auto / AutoInit funcs
-#enforce ids
-#insert item
-#add history    
-
-
-
-    
     
 module.exports = updateItems

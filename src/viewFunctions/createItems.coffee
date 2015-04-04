@@ -74,27 +74,6 @@ createItems = (req, data, direct=false) ->
     .then ->
         resp
     .catch (err) -> throw err
-                
-            
-            
-        
-
-#enforce auth on incoming*
-    #existence
-    #readonly
-#enforce datatypes on incoming*
-#merge incoming (with {}) & fill in protos
-#enforce schema behaviors*
-    #allowed
-    #required
-    #unique
-#run Auto / AutoInit funcs
-#enforce ids
-#insert item
-#add history    
-
-
-
     
     
 module.exports = createItems
