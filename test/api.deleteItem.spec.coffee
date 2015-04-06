@@ -3,7 +3,7 @@ request = require('supertest')
 express = require('express')
 flip = require('../src')
 types = flip.schema.types
-connect = require('../src/db').connect
+connect = require('../src/api/db').connect
 
 p = console.log
 

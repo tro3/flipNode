@@ -2,8 +2,8 @@ assert = require('chai').assert
 sinon = require('sinon')
 Collection = require('mongodb/lib/collection')
 
-connect = require('../src/db/qdb')
-DbCache = require('../src/db/dbCache')
+connect = require('../src/api/db/qdb')
+DbCache = require('../src/api/db/dbCache')
 p = console.log
 
 

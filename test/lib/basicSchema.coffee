@@ -1,5 +1,5 @@
 
-flipNode = require('../../src')
+flipNode = require('../../src/api')
 Schema =   flipNode.Schema
 
 

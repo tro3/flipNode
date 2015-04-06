@@ -1,10 +1,10 @@
 assert = require('chai').assert
 sinon = require('sinon')
 
-connect = require('../src/db/qdb')
-DbCache = require('../src/db/dbCache')
+connect = require('../src/api/db/qdb')
+DbCache = require('../src/api/db/dbCache')
 
-schema = require('../src/schema')
+schema = require('../src/api/schema')
 Schema = schema.Schema
 Endpoint = schema.Endpoint
 String =  schema.types.String
@@ -14,7 +14,7 @@ Reference = schema.types.Reference
 Integer = schema.types.Integer
 
 
-createItems = require('../src/viewFunctions/createItems')
+createItems = require('../src/api/viewFunctions/createItems')
 
 p = console.log
 

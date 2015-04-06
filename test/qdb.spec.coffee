@@ -1,7 +1,7 @@
 assert = require('chai').assert
 sinon = require('sinon')
 
-connect = require('../src/db/qdb')
+connect = require('../src/api/db/qdb')
 p = console.log
 
 

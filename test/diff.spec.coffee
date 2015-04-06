@@ -1,6 +1,6 @@
 assert = require('chai').assert
 
-diff = require('../src/viewFunctions/diff')
+diff = require('../src/api/viewFunctions/diff')
 p = console.log
 
 

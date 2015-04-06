@@ -1,7 +1,7 @@
 assert = require('chai').assert
 p = console.log
 
-schema = require('../src/schema')
+schema = require('../src/api/schema')
 
 Schema = schema.Schema
 Endpoint = schema.Endpoint

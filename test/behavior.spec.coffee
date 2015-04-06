@@ -1,9 +1,9 @@
 assert = require('chai').assert
 sinon = require('sinon')
 
-connect = require('../src/db/qdb')
-DbCache = require('../src/db/dbCache')
-schema = require('../src/schema')
+connect = require('../src/api/db/qdb')
+DbCache = require('../src/api/db/dbCache')
+schema = require('../src/api/schema')
 Schema = schema.Schema
 Endpoint = schema.Endpoint
 
@@ -20,7 +20,7 @@ Auto = types.Auto
 AutoInit = types.AutoInit
 
 
-behavior = require('../src/viewFunctions/behavior')
+behavior = require('../src/api/viewFunctions/behavior')
 p = console.log
 
 

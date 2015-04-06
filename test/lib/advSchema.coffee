@@ -1,5 +1,5 @@
 mg = require('mongoose')
-flipNode = require('../../src')
+flipNode = require('../../src/api')
 
 Schema =   flipNode.Schema
 Auto =     flipNode.types.Auto

@@ -1,6 +1,6 @@
 assert = require('chai').assert
 
-schema = require('../src/schema')
+schema = require('../src/api/schema')
 Schema = schema.Schema
 
 types =  schema.types
@@ -8,7 +8,7 @@ Integer = types.Integer
 List = types.List
 Dict = types.Dict
 
-merge = require('../src/viewFunctions/merge')
+merge = require('../src/api/viewFunctions/merge')
 p = console.log
 
 

@@ -1,5 +1,5 @@
 assert = require('chai').assert
-schema = require('../src/schema')
+schema = require('../src/api/schema')
 Schema = schema.Schema
 Endpoint = schema.Endpoint
 
@@ -16,7 +16,7 @@ Auto = types.Auto
 AutoInit = types.AutoInit
 
 
-incoming = require('../src/viewFunctions/incoming')
+incoming = require('../src/api/viewFunctions/incoming')
 p = console.log
 
 
