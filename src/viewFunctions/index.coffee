@@ -68,9 +68,9 @@ module.exports.getListView = (req, res) ->
                     .then (count) ->
                         resp._page = page
                         resp._pages = Math.ceil(count/size)
-                        res.status(200).send(resp)
+                        res.body = resp
                 else
-                    res.status(200).send(resp)
+                    res.body = resp
         .catch (err) -> throw err
 
 
@@ -87,10 +87,9 @@ module.exports.getItemView = (req, res) ->
             if items == false
                 res.status(403).send(UNAUTHORIZED)
             else if items.length > 0
-                res.status(200).send(
+                res.body =
                     _status: 'OK'
                     _item: items[0]
-                )
             else
                 res.status(404).send(NOT_FOUND)
         .catch (err) -> throw err
@@ -116,15 +115,13 @@ module.exports.createItemView = (req, res) ->
         createItems(req, [item]).then (resp) ->
             if resp.status == 'OK'
                 getItems(req, {_id:resp.items[0]._id}, {}, true).then (items) ->
-                    res.status(200).send(
+                    res.body =
                         _status: 'OK'
                         _item: items[0]
-                    )
             else
-                res.status(200).send(
-                    _status: 'ERR'
-                    _errs: resp.errs[0]
-                )
+                    res.body =
+                        _status: 'ERR'
+                        _errs: resp.errs[0]
             
     .catch (err) -> throw err
 
@@ -164,17 +161,15 @@ module.exports.updateItemView = (req, res) ->
             if resp.status == 'OK'
                 if resp.items.length > 0
                     getItems(req, {_id:id}, {}, true).then (items) ->
-                        res.status(200).send(
+                        res.body =
                             _status: 'OK'
                             _item: items[0]
-                        )
                 else
                     res.status(403).send(UNAUTHORIZED)
             else
-                res.status(200).send(
+                res.body =
                     _status: 'ERR'
                     _errs: resp.errs[0]
-                )
             
     .catch (err) -> throw err
 
@@ -205,13 +200,11 @@ module.exports.deleteItemView = (req, res) ->
         # Delete items
         deleteItems(req, [id]).then (resp) ->
             if resp.status == 'OK'
-                res.status(200).send(
+                res.body =
                     _status: 'OK'
-                )
             else
-                res.status(200).send(
+                res.body =
                     _status: 'ERR'
                     _errs: resp.errs[0]
-                )
             
     .catch (err) -> throw err

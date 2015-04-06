@@ -14,12 +14,14 @@ describe 'api.getList', ->
     before ->
         conn = connect('mongodb://localhost:27017/test')
 
+    beforeEach ->
+        app = express()
+
     afterEach (done) ->
         conn.drop('users')
         .finally -> done()
 
     it 'responds with a simple list', (done) ->
-        app = express()
         app.use '/api', flip.api conn,
             users:
                 name: types.String
@@ -328,6 +330,72 @@ describe 'api.getList', ->
                                     _delete: true
                                 name:'fred'
                                 city:'San Jose'
+                            }]
+                        done()
+        .catch (err) -> done(err)
+        
+    it 'emits an event on read list', (done) ->
+        api = flip.api conn,
+            users:
+                name: types.String
+        app.use '/api', api
+        tests = {}
+        [
+            'pre'
+            'read.pre'
+            'users.read.pre'
+        ].forEach (x) ->
+            tests[x] = false
+            api.events.on x, (req, res) ->
+                assert.equal req.collection, 'users'
+                assert.equal req.id, undefined
+                tests[x] = true
+        [
+            'post'
+            'read.post'
+            'users.read.post'
+        ].forEach (x) ->
+            tests[x] = false
+            api.events.on x, (req, res) ->
+                assert.equal req.collection, 'users'
+                assert.equal req.id, undefined
+                assert.deepEqual res.body,
+                    _status: 'OK'
+                    _auth: true
+                    _items: [{
+                        _id:1
+                        _auth:
+                            _edit: true
+                            _delete: true
+                        name: 'admin'
+                    }]
+                tests[x] = true
+        conn.insert('users', {_id:1, name:'admin'})
+        .then ->
+            request(app)
+                .get('/api/users')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end (err, res) ->
+                    if err
+                        done(err)
+                    else
+                        assert.deepEqual tests,
+                            'pre': true
+                            'post': true
+                            'read.pre': true
+                            'users.read.pre': true
+                            'read.post': true
+                            'users.read.post': true
+                        assert.deepEqual res.body,
+                            _status: 'OK'
+                            _auth: true
+                            _items: [{
+                                _id:1
+                                _auth:
+                                    _edit: true
+                                    _delete: true
+                                name: 'admin'
                             }]
                         done()
         .catch (err) -> done(err)

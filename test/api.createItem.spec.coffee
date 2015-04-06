@@ -5,6 +5,7 @@ flip = require('../src')
 types = flip.schema.types
 connect = require('../src/db').connect
 
+p = console.log
 
 
 describe 'api.createItem', ->
@@ -56,7 +57,6 @@ describe 'api.createItem', ->
                         done()
     
     it 'responds with a 404 for non-existent collection', (done) ->
-        app = express()
         app.use '/api', flip.api conn,
             users:
                 name: types.String
@@ -75,7 +75,6 @@ describe 'api.createItem', ->
                         done()
 
     it 'responds with a 400 for for garbled data', (done) ->
-        app = express()
         app.use '/api', flip.api conn,
             users:
                 name: types.String
@@ -94,7 +93,6 @@ describe 'api.createItem', ->
                         done()
 
     it 'responds with a 403 for create auth constant false', (done) ->
-        app = express()
         app.use '/api', flip.api conn,
             users:
                 auth:
@@ -116,7 +114,6 @@ describe 'api.createItem', ->
                         done()
 
     it 'responds with a 403 for create auth function false', (done) ->
-        app = express()
         app.use '/api', flip.api conn,
             users:
                 auth:
@@ -159,4 +156,65 @@ describe 'api.createItem', ->
                         ]
                     conn.count('users').then (count) ->
                         assert.equal count, 0
+                        done()
+
+    it 'emits an event on creation', (done) ->
+        api = flip.api conn,
+            users:
+                name: types.String
+        app.use '/api', api
+        data = {name:'admin2'}
+        tests = {}
+        [
+            'create.pre'
+            'users.create.pre'
+        ].forEach (x) ->
+            tests[x] = false
+            api.events.on x, (req, res) ->
+                assert.equal req.collection, 'users'
+                assert.deepEqual req.body, {name:'admin2'}
+                tests[x] = true
+        [
+            'create.post'
+            'users.create.post'
+        ].forEach (x) ->
+            tests[x] = false
+            api.events.on x, (req, res) ->
+                assert.equal req.collection, 'users'
+                assert.deepEqual res.body,
+                    _status: 'OK'
+                    _item:
+                        _id:1
+                        _auth:
+                            _edit: true
+                            _delete: true
+                        name: 'admin2'
+                tests[x] = true
+        request(app)
+            .post('/api/users')
+            .set('Content-Type', 'application/json')
+            .send(data)
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .end (err, res) ->
+                if err
+                    done(err)
+                else
+                    assert.deepEqual tests,
+                        'create.pre': true
+                        'users.create.pre': true
+                        'create.post': true
+                        'users.create.post': true
+                    assert.deepEqual res.body,
+                        _status: 'OK'
+                        _item:
+                            _id:1
+                            _auth:
+                                _edit: true
+                                _delete: true
+                            name: 'admin2'
+                    conn.findOne('users', {_id:1}).then (doc) ->
+                        assert.deepEqual doc,
+                            _id:1
+                            name: 'admin2'            
                         done()

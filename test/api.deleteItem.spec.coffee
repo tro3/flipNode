@@ -140,3 +140,53 @@ describe 'api.deleteItem', ->
                             assert.equal docs.length, 1
                             done()
         .catch (err) -> done(err)
+
+    it 'emits an event on delete', (done) ->        
+        api = flip.api conn,
+            users:
+                name: types.String
+        app.use '/api', api
+        tests = {}
+        [
+            'delete.pre'
+            'users.delete.pre'
+            'delete.post'
+            'users.delete.post'
+        ].forEach (x) ->
+            tests[x] = false
+            api.events.on x, (req, res) ->
+                assert.equal req.collection, 'users'
+                assert.equal req.id, 1
+                tests[x] = true
+        conn.insert('users', {_id:1, name:'admin'})
+        .then ->
+            request(app)
+                .delete('/api/users/1')
+                .set('Content-Type', 'application/json')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end (err, res) ->
+                    if err
+                        done(err)
+                    else
+                        assert.deepEqual tests,
+                            'delete.pre': true
+                            'users.delete.pre': true
+                            'delete.post': true
+                            'users.delete.post': true
+                        assert.deepEqual res.body,
+                            _status: 'OK'
+                        conn.count('users', {_id:1}).then (count) ->
+                            assert.equal count, 0
+                            conn.findOne('flipData.history', {}).then (doc) ->
+                                assert.deepEqual doc,
+                                    _id: doc._id
+                                    collection: 'users'
+                                    item: 1
+                                    action: 'deleted'
+                                    old:
+                                        _id: 1
+                                        name: 'admin'
+                                done()
+                        .done null, (err) -> throw err
+        .done null, (err) -> done(err)
