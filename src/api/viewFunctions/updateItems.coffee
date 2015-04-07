@@ -1,7 +1,7 @@
 q = require('q')
 
 types = require('../schema').types
-Dict = types.Dict
+Doc = types.Doc
 List = types.List
 Reference = types.Reference
 

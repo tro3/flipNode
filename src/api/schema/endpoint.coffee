@@ -44,7 +44,7 @@ class Endpoint
         for path in paths.ofType(@schema, types.AutoInit)
             @paths.autoInits[path] = @schema.get(path)
 
-        for path in paths.ofType(@schema, types.Dict)
+        for path in paths.ofType(@schema, types.Doc)
             @paths.docs[path] = @schema.get(path)
 
         for path in paths.ifTrue(@schema, (x) -> x.type == types.List && 'schema' of x)

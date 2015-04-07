@@ -7,7 +7,7 @@ types = flip.schema.types
 p = console.log
 
 
-describe.only 'meta API', ->
+describe 'meta API', ->
     app = null
     conn = null
 

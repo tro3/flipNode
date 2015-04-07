@@ -6,7 +6,7 @@ Schema = schema.Schema
 types =  schema.types
 Integer = types.Integer
 List = types.List
-Dict = types.Dict
+Doc = types.Doc
 
 merge = require('../src/api/viewFunctions/merge')
 p = console.log

@@ -4,7 +4,7 @@ mpath = require('mpath')
 schema = require('../schema')
 types =  schema.types
 List = types.List
-Dict = types.Dict
+Doc = types.Doc
 
 qForItems = require('./common').qForItems
 

@@ -7,7 +7,7 @@ schema = require('../src/api/schema')
 Schema = schema.Schema
 Endpoint = schema.Endpoint
 String =  schema.types.String
-Dict = schema.types.Dict
+Doc = schema.types.Doc
 List = schema.types.List
 Reference = schema.types.Reference
 
@@ -97,7 +97,7 @@ describe 'viewFunctions.getItems', ->
             schema:
                 a: Number
                 b:
-                    type: Dict
+                    type: Doc
                     auth:
                         edit: (doc, root) -> root._id == 1
                     schema: 
@@ -249,7 +249,7 @@ describe 'viewFunctions.getItems', ->
                         collection: 'refs'
                         fields: ['name', 'city']
                 nested2:
-                    type: Dict
+                    type: Doc
                     auth:
                         read: false
                     schema:

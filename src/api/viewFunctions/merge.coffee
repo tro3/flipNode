@@ -1,7 +1,7 @@
 schema = require('../schema')
 prototype = schema.prototype
 List = schema.types.List
-Dict = schema.types.Dict
+Doc = schema.types.Doc
 p = console.log
 
 
@@ -18,7 +18,7 @@ module.exports = merge = (old, new_, schema) ->
     for key, val of schema
         if typeof val != 'function'
             
-            if val.type == Dict
+            if val.type == Doc
                 o = if key of old then old[key] else prototype(val.schema)
                 n = if key of new_ then new_[key] else {}
                 if typeof o == 'object' && typeof n == 'object'

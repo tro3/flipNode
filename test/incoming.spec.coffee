@@ -5,7 +5,7 @@ Endpoint = schema.Endpoint
 
 types =  schema.types
 List = types.List
-Dict = types.Dict
+Doc = types.Doc
 String = types.String
 Integer = types.Integer
 Float = types.Float

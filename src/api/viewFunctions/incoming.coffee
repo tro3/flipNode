@@ -1,7 +1,7 @@
 schema = require('../schema')
 types =  schema.types
 List = types.List
-Dict = types.Dict
+Doc = types.Doc
 ReadOnly = types.ReadOnly
 
 p = console.log
@@ -29,7 +29,7 @@ module.exports = incoming = (data, sch, path='') ->
     for key, val of data
         if key not of sch
             delete data[key]
-        else if sch[key].type == Dict
+        else if sch[key].type == Doc
             errs = errs.concat(incoming(val, sch[key].schema, pConcat(path,key)))
         else if sch[key].type == List
             if 'subtype' of sch[key]

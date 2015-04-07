@@ -2,7 +2,7 @@ q = require('q')
 mpath = require('mpath')
 
 types = require('../schema').types
-Dict = types.Dict
+Doc = types.Doc
 List = types.List
 Reference = types.Reference
 
@@ -70,7 +70,7 @@ _serializeAuthRec = (req, doc, fullDoc, endp, subdoc, prev, root) ->
     subdoc = subdoc || false
     prev = prev || {}
     root = root || fullDoc
-    type = endp.type || Dict
+    type = endp.type || Doc
     
     resolve = (val, full, attr) ->
         if typeof val == 'function'
@@ -99,7 +99,7 @@ _serializeAuthRec = (req, doc, fullDoc, endp, subdoc, prev, root) ->
             .then (result) -> state[perm] = result
 
         .then ->
-            if type == Dict
+            if type == Doc
 
                 doc._auth = {_edit: state.edit}
                 if !subdoc
@@ -107,7 +107,7 @@ _serializeAuthRec = (req, doc, fullDoc, endp, subdoc, prev, root) ->
 
                 qForItems schema, (key, val) ->
                     if 'schema' of val and key of doc
-                        if val.type == Dict
+                        if val.type == Doc
                             full = if (key of fullDoc) then fullDoc[key] else {}
                             _serializeAuthRec(req, doc[key], full, val, true, state, root)
                             .then (authed) -> delete doc[key] if !authed
@@ -119,12 +119,12 @@ _serializeAuthRec = (req, doc, fullDoc, endp, subdoc, prev, root) ->
                                 _serializeAuthRec(req, doc[key], full, val, true, state, root)
                                 .then (authed) -> delete doc[key] if !authed
                         else
-                            throw new Error('Malformed schema, "schema" prop for non-Dict/List')
+                            throw new Error('Malformed schema, "schema" prop for non-Doc/List')
 
             else if type == List
                 auths = []
                 localEndp =
-                    type: Dict
+                    type: Doc
                     auth: auth
                     schema: schema
                 qForEach doc, (subdoc, ind) ->
@@ -138,7 +138,7 @@ _serializeAuthRec = (req, doc, fullDoc, endp, subdoc, prev, root) ->
                         delete doc[ind]
 
             else
-                throw new Error('Malformed document, needs to be Dict or List')
+                throw new Error('Malformed document, needs to be Doc or List')
                     
         .then -> true
                     

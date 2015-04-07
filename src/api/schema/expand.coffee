@@ -30,7 +30,7 @@ expand = (cfg, sch) ->
                     schema: val[0]
         else if !('type' of val)
             sch[key] =
-                type: types.Dict
+                type: types.Doc
                 schema: val
         else
             sch[key] = val

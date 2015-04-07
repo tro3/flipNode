@@ -15,7 +15,7 @@ String = types.String
 Integer = types.Integer
 Reference = types.Reference
 List = types.List
-Dict = types.Dict
+Doc = types.Doc
 Auto = types.Auto
 AutoInit = types.AutoInit
 
@@ -55,7 +55,7 @@ describe 'Schema module', ->
                 _id:
                     type: types.Integer
                 address:
-                    type: types.Dict
+                    type: types.Doc
                     schema:
                         _id:
                             type: types.Integer
@@ -68,7 +68,7 @@ describe 'Schema module', ->
         it 'handles complex subdocs', ->
             cfg =
                 address:
-                    type: types.Dict
+                    type: types.Doc
                     schema:
                         street: types.String
                         city: types.String
@@ -76,7 +76,7 @@ describe 'Schema module', ->
                 _id:
                     type: types.Integer
                 address:
-                    type: types.Dict
+                    type: types.Doc
                     schema:
                         _id:
                             type: types.Integer
@@ -169,7 +169,7 @@ describe 'Schema module', ->
                 _id:
                     type: types.Integer
                 subdoc:
-                    type: types.Dict
+                    type: types.Doc
                     schema:
                         _id:
                             type: types.Integer
@@ -186,7 +186,7 @@ describe 'Schema module', ->
                         _id:
                             type: types.Integer
                         subdoc:
-                            type: types.Dict
+                            type: types.Doc
                             schema:
                                 _id:
                                     type: types.Integer
@@ -596,7 +596,7 @@ describe 'Schema module', ->
                     name:
                         type: String
                     subdoc:
-                        type: Dict
+                        type: Doc
                         schema:
                             _id:
                                 type: Integer
@@ -657,7 +657,7 @@ describe 'Schema module', ->
                     name:
                         type: String
                     subdoc:
-                        type: Dict
+                        type: Doc
                         schema:
                             _id:
                                 type: Integer
@@ -726,7 +726,7 @@ describe 'Schema module', ->
                     name:
                         type: String
                     subdoc:
-                        type: Dict
+                        type: Doc
                         schema:
                             _id:
                                 type: Integer
@@ -795,7 +795,7 @@ describe 'Schema module', ->
                     name:
                         type: String
                     subdoc:
-                        type: Dict
+                        type: Doc
                         schema:
                             _id:
                                 type: Integer
@@ -864,7 +864,7 @@ describe 'Schema module', ->
                     name:
                         type: String
                     subdoc:
-                        type: Dict
+                        type: Doc
                         schema:
                             _id:
                                 type: Integer
@@ -933,7 +933,7 @@ describe 'Schema module', ->
                     name:
                         type: String
                     subdoc:
-                        type: Dict
+                        type: Doc
                         schema:
                             _id:
                                 type: Integer

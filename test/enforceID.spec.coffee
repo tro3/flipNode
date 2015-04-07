@@ -6,7 +6,7 @@ Endpoint = schema.Endpoint
 types =  schema.types
 Integer = types.Integer
 List = types.List
-Dict = types.Dict
+Doc = types.Doc
 Auto = types.Auto
 AutoInit = types.AutoInit
 

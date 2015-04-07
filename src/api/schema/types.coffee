@@ -5,7 +5,7 @@ x = module.exports
 x.ReadOnly = () ->
     
 x.List = () -> x.TypeError # Should never be used
-x.Dict = () -> x.TypeError # Should never be used
+x.Doc = () -> x.TypeError # Should never be used
 
 x.Auto = (val) -> x.ReadOnly
 x.AutoInit = (val) -> x.ReadOnly

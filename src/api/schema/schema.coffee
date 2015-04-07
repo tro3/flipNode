@@ -1,6 +1,6 @@
 expand = require('./expand')
 types = require('./types') 
-Dict = types.Dict
+Doc = types.Doc
 List = types.List
 Integer = types.Integer
 
@@ -15,9 +15,9 @@ class Schema
     get: (path) ->
         parts = path.split('.')
         
-        current = {type: Dict, schema: @}
+        current = {type: Doc, schema: @}
         for part in parts
-            if current.type == Dict
+            if current.type == Doc
                 if part of current.schema
                     current = current.schema[part]
                 else
