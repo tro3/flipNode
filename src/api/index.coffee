@@ -9,6 +9,7 @@ viewFcns = require('./viewFunctions')
 p = console.log
 
 module.exports.schema = require('./schema')
+module.exports.connect = require('./db').connect
 
 maps = {
     'POST': 'create'
@@ -21,6 +22,7 @@ maps = {
 module.exports.api = (db, config) ->
     router = express.Router()
     router.events = new EventEmitter()
+    router.config = config
     
     router.use(bodyParser.json())
     router.use (err,req,res,next) ->
