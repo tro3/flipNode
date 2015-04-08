@@ -60,12 +60,48 @@ describe 'api.createItem', ->
         app.use '/api', flip.api conn,
             users:
                 name: types.String
-        data = {_id:1, name:'admin2'}
+        data = {name:'admin2'}
         request(app)
             .post('/api/frogs')
             .set('Content-Type', 'application/json')
             .send(data)
             .expect(404)
+            .end (err, res) ->
+                if err
+                    done(err)
+                else
+                    conn.count('users').then (count) ->
+                        assert.equal count, 0
+                        done()
+
+    it 'responds with a 404 for existing collection, but with id in URL', (done) ->
+        app.use '/api', flip.api conn,
+            users:
+                name: types.String
+        data = {name:'admin2'}
+        request(app)
+            .post('/api/users/1')
+            .set('Content-Type', 'application/json')
+            .send(data)
+            .expect(404)
+            .end (err, res) ->
+                if err
+                    done(err)
+                else
+                    conn.count('users').then (count) ->
+                        assert.equal count, 0
+                        done()
+
+    it 'responds with a 400 for existing collection, but with id in data', (done) ->
+        app.use '/api', flip.api conn,
+            users:
+                name: types.String
+        data = {_id:1, name:'admin2'}
+        request(app)
+            .post('/api/users')
+            .set('Content-Type', 'application/json')
+            .send(data)
+            .expect(400)
             .end (err, res) ->
                 if err
                     done(err)
@@ -138,7 +174,7 @@ describe 'api.createItem', ->
         app.use '/api', flip.api conn,
             users:
                 eid: types.Integer
-        data = {_id:1, eid:'admin2'}
+        data = {eid:'admin2'}
         request(app)
             .post('/api/users')
             .set('Content-Type', 'application/json')

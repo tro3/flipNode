@@ -78,6 +78,30 @@ describe 'api.updateItem', ->
                             done()
         .catch (err) -> done(err)
 
+    it 'responds with a 404 for existing document but no id in URL', (done) ->
+        app = express()
+        app.use '/api', flip.api conn,
+            users:
+                name: types.String
+        conn.insert('users', {_id:1, name:'admin'})
+        .then ->
+            data = {_id:1, name:'admin2'}
+            request(app)
+                .put('/api/users')
+                .set('Content-Type', 'application/json')
+                .send(data)
+                .expect(404)
+                .end (err, res) ->
+                    if err
+                        done(err)
+                    else
+                        conn.findOne('users', {_id:1}).then (doc) ->
+                            assert.deepEqual doc,
+                                _id:1
+                                name: 'admin'            
+                            done()
+        .catch (err) -> done(err)
+
     it 'responds with a 404 for non-existent document', (done) ->
         app = express()
         app.use '/api', flip.api conn,

@@ -108,6 +108,9 @@ module.exports.createItemView = (req, res) ->
         if not 'body' of req
             res.status(400).send(MALFORMED)
             return
+        if '_id' of req.body
+            res.status(400).send(MALFORMED)
+            return
 
         item = req.body
                     

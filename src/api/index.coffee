@@ -50,21 +50,24 @@ module.exports.api = (db, config) ->
         router.events.emit "#{req.collection}.#{maps[req.method]}.pre", req, res
         next()
         
-    router.get '/:collection', (req, res, next) -> viewFcns.getListView(req, res).then -> next()
-    router.get '/:collection/:id(\\d+)', (req, res, next) -> viewFcns.getItemView(req, res).then -> next()
-    router.post '/:collection', (req, res, next) -> viewFcns.createItemView(req, res).then -> next()
-    router.put '/:collection/:id(\\d+)', (req, res, next) -> viewFcns.updateItemView(req, res).then -> next()
-    router.delete '/:collection/:id(\\d+)', (req, res, next) -> viewFcns.deleteItemView(req, res).then -> next()
+    router.use (req, res, next) -> res.handled = false; next()
+    router.get '/:collection', (req, res, next) -> res.handled = true; viewFcns.getListView(req, res).then -> next()
+    router.get '/:collection/:id(\\d+)', (req, res, next) -> res.handled = true; viewFcns.getItemView(req, res).then -> next()
+    router.post '/:collection', (req, res, next) -> res.handled = true; viewFcns.createItemView(req, res).then -> next()
+    router.put '/:collection/:id(\\d+)', (req, res, next) -> res.handled = true; viewFcns.updateItemView(req, res).then -> next()
+    router.delete '/:collection/:id(\\d+)', (req, res, next) -> res.handled = true; viewFcns.deleteItemView(req, res).then -> next()
 
     router.use (req, res) ->
-        if res.statusCode == 200
+        if !res.handled
+            res.status(404).send()        
+        else if res.statusCode == 200
             router.events.emit "post", req, res
             router.events.emit "#{maps[req.method]}.post", req, res
             router.events.emit "#{req.collection}.#{maps[req.method]}.post", req, res
             if res.body
                 res.send(res.body)
             else
-                res.status(204)
+                res.status(204).send()
     
     router
 
