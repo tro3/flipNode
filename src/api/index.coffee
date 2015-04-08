@@ -2,6 +2,7 @@
 EventEmitter = require('events').EventEmitter
 express = require('express')
 bodyParser = require('body-parser')
+q = require('q')
 DbCache = require('./db').DbCache
 Endpoint = require('./schema').Endpoint
 viewFcns = require('./viewFunctions')
@@ -66,3 +67,12 @@ module.exports.api = (db, config) ->
                 res.status(204)
     
     router
+
+
+module.exports.prepDB = (db, config) ->
+    return q.Promise.resolve() if !db
+    db.find('flipData.ids').then (docs) ->
+        colls = (x.collection for x in docs)
+        for key of config
+            if !(key in colls)            
+                db.insert('flipData.ids', {collection:key, lastID:0})
