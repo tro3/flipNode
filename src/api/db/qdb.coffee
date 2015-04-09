@@ -44,6 +44,7 @@ class qDB
     
     insert: (collection, docs) ->
         docs = [docs] if !(docs instanceof Array)
+        return q() if !docs.length
         @connected.then -> q.Promise (resolve, reject) ->
             @db.collection(collection).insertMany docs, (err, resp) ->
                 reject err if err
