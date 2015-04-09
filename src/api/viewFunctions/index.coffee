@@ -113,7 +113,7 @@ module.exports.createItemView = (req, res) ->
                     res.body =
                         _status: 'ERR'
                         _errs: resp.errs[0]
-            
+    .catch (err) -> throw err
 
 
 module.exports.updateItemView = (req, res) ->

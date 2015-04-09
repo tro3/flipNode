@@ -26,4 +26,4 @@ x.SERVER_ERROR = (msg) ->
     _status: 'ERR'
     _code: 500
     _msg: 'Server Error'
-    _detail: msg
+    _detail: msg.toString()

@@ -351,3 +351,27 @@ describe 'api.updateItem', ->
                                 done()
         .catch (err) -> done(err)
     
+    it 'handles an Auto function error', (done) ->
+        app.use '/api', flip.api conn,
+            users:
+                name: types.String
+                fullName:
+                    type: types.Auto
+                    auto: (el) -> el.bob[0]
+        conn.insert('users', {_id:1, name:'admin'})
+        .then ->
+            data = {_id:1, name:'admin2'}
+            request(app)
+            .put('/api/users/1')
+            .set('Content-Type', 'application/json')
+            .send(data)
+            .expect('Content-Type', /json/)
+            .expect(500)
+            .end (err, res) ->
+                if err
+                    done(err)
+                else
+                    assert.equal res.body._status, 'ERR'
+                    assert.equal res.body._code, 500
+                    assert.isAbove res.body._detail.length, 0
+                    done()
