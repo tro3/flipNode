@@ -20,6 +20,8 @@ maps = {
 }
 
 
+
+
 module.exports.api = (db, config) ->
     router = express.Router()
     router.events = new EventEmitter()
@@ -33,6 +35,26 @@ module.exports.api = (db, config) ->
     for key, val of config
         config[key] = new Endpoint(val)
 
+    handle = (fn, req, res) ->
+        res.handled = true
+        req.endpoint = config[req.collection]
+        req.cache = new DbCache(db)
+        router.events.emit "pre", req, res
+        router.events.emit "#{maps[req.method]}.pre", req, res
+        router.events.emit "#{req.collection}.#{maps[req.method]}.pre", req, res
+        fn(req, res)
+        .then ->
+            if res.statusCode == 200
+                router.events.emit "post", req, res
+                router.events.emit "#{maps[req.method]}.post", req, res
+                router.events.emit "#{req.collection}.#{maps[req.method]}.post", req, res
+                if res.body
+                    res.send(res.body)
+                else
+                    res.status(204).send()
+        .catch -> null
+        .done null, (err) -> throw err
+
 
     router.param 'collection', (req, res, next) ->
         req.collection = req.params.collection
@@ -41,34 +63,19 @@ module.exports.api = (db, config) ->
         if !(req.collection of config)
             res.status(404).send()
             return
-        req.endpoint = config[req.collection]
-        req.cache = new DbCache(db)
-
-        # We can put these here because all api url include a collection param
-        router.events.emit "pre", req, res
-        router.events.emit "#{maps[req.method]}.pre", req, res
-        router.events.emit "#{req.collection}.#{maps[req.method]}.pre", req, res
         next()
         
-    router.use (req, res, next) -> res.handled = false; next()
-    router.get '/:collection', (req, res, next) -> res.handled = true; viewFcns.getListView(req, res).then -> next()
-    router.get '/:collection/:id(\\d+)', (req, res, next) -> res.handled = true; viewFcns.getItemView(req, res).then -> next()
-    router.post '/:collection', (req, res, next) -> res.handled = true; viewFcns.createItemView(req, res).then -> next()
-    router.put '/:collection/:id(\\d+)', (req, res, next) -> res.handled = true; viewFcns.updateItemView(req, res).then -> next()
-    router.delete '/:collection/:id(\\d+)', (req, res, next) -> res.handled = true; viewFcns.deleteItemView(req, res).then -> next()
+    router.use                              (req, res, next) -> res.handled = false; next()
+    router.get '/:collection',              (req, res, next) -> handle(viewFcns.getListView,    req, res)
+    router.get '/:collection/:id(\\d+)',    (req, res, next) -> handle(viewFcns.getItemView,    req, res)
+    router.post '/:collection',             (req, res, next) -> handle(viewFcns.createItemView, req, res)
+    router.put '/:collection/:id(\\d+)',    (req, res, next) -> handle(viewFcns.updateItemView, req, res)
+    router.delete '/:collection/:id(\\d+)', (req, res, next) -> handle(viewFcns.deleteItemView, req, res)
 
     router.use (req, res) ->
         if !res.handled
-            res.status(404).send()        
-        else if res.statusCode == 200
-            router.events.emit "post", req, res
-            router.events.emit "#{maps[req.method]}.post", req, res
-            router.events.emit "#{req.collection}.#{maps[req.method]}.post", req, res
-            if res.body
-                res.send(res.body)
-            else
-                res.status(204).send()
-    
+            res.status(404).send()
+            
     router
 
 

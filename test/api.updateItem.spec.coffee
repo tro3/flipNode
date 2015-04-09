@@ -55,7 +55,6 @@ describe 'api.updateItem', ->
         .catch (err) -> done(err)
     
     it 'responds with a 404 for non-existent collection', (done) ->
-        app = express()
         app.use '/api', flip.api conn,
             users:
                 name: types.String
@@ -79,7 +78,6 @@ describe 'api.updateItem', ->
         .catch (err) -> done(err)
 
     it 'responds with a 404 for existing document but no id in URL', (done) ->
-        app = express()
         app.use '/api', flip.api conn,
             users:
                 name: types.String
@@ -103,7 +101,6 @@ describe 'api.updateItem', ->
         .catch (err) -> done(err)
 
     it 'responds with a 404 for non-existent document', (done) ->
-        app = express()
         app.use '/api', flip.api conn,
             users:
                 name: types.String
@@ -127,7 +124,6 @@ describe 'api.updateItem', ->
         .catch (err) -> done(err)
 
     it 'responds with a 400 for for mismatched id', (done) ->
-        app = express()
         app.use '/api', flip.api conn,
             users:
                 name: types.String
@@ -151,7 +147,6 @@ describe 'api.updateItem', ->
         .catch (err) -> done(err)
 
     it 'responds with a 400 for for garbled data', (done) ->
-        app = express()
         app.use '/api', flip.api conn,
             users:
                 name: types.String
@@ -175,7 +170,6 @@ describe 'api.updateItem', ->
         .catch (err) -> done(err)
 
     it 'responds with a 403 for edit auth constant false', (done) ->
-        app = express()
         app.use '/api', flip.api conn,
             users:
                 auth:
@@ -202,7 +196,6 @@ describe 'api.updateItem', ->
         .catch (err) -> done(err)
 
     it 'responds with a 403 for edit auth function false', (done) ->
-        app = express()
         app.use '/api', flip.api conn,
             users:
                 auth:

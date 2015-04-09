@@ -4,22 +4,10 @@ getItems = require('./getItems')
 createItems = require('./createItems')
 updateItems = require('./updateItems')
 deleteItems = require('./deleteItems')
+errors = require('./errors')
 
 p = console.log
 
-
-NOT_FOUND =
-    _status: 'ERR'
-    _msg: 'Not found'
-    
-MALFORMED =
-    _status: 'ERR'
-    _msg: 'Malformed data'
-
-UNAUTHORIZED =
-    _status: 'ERR'
-    _msg: 'Unauthorzied'
-    
 
 
 resolve = (attr, args...) ->
@@ -32,11 +20,13 @@ resolve = (attr, args...) ->
         return q.Promise.resolve attr
 
 
+module.exports.errors = errors
+
 module.exports.getListView = (req, res) ->
     # check high-level auth, read & create
 
     if typeof req.endpoint.auth.read == 'boolean' && !req.endpoint.auth.read
-        res.status(403).send(UNAUTHORIZED)
+        res.status(403).send(errors.UNAUTHORIZED)
         q.Promise.resolve true
     else
         resolve(req.endpoint.auth.create, req)
@@ -77,7 +67,7 @@ module.exports.getListView = (req, res) ->
 module.exports.getItemView = (req, res) ->
     # check high-level auth
     if typeof req.endpoint.auth.read == 'boolean' && !req.endpoint.auth.read
-        res.status(403).send(UNAUTHORIZED)
+        res.status(403).send(errors.UNAUTHORIZED)
         q.Promise.resolve true
     else
         options = {}
@@ -85,13 +75,13 @@ module.exports.getItemView = (req, res) ->
             options.fields = JSON.parse(req.query.fields)
         getItems(req, {_id:parseInt(req.params.id)}, options, true).then (items) ->
             if items == false
-                res.status(403).send(UNAUTHORIZED)
+                res.status(403).send(errors.UNAUTHORIZED)
             else if items.length > 0
                 res.body =
                     _status: 'OK'
                     _item: items[0]
             else
-                res.status(404).send(NOT_FOUND)
+                res.status(404).send(errors.NOT_FOUND)
         .catch (err) -> throw err
 
 
@@ -103,13 +93,13 @@ module.exports.createItemView = (req, res) ->
     evalAuth('create', req.endpoint.auth, req)
     .then (auth) ->
         if !auth
-            res.status(403).send(UNAUTHORIZED)
+            res.status(403).send(errors.UNAUTHORIZED)
             return
         if not 'body' of req
-            res.status(400).send(MALFORMED)
+            res.status(400).send(errors.MALFORMED)
             return
         if '_id' of req.body
-            res.status(400).send(MALFORMED)
+            res.status(400).send(errors.ID_MISMATCH)
             return
 
         item = req.body
@@ -137,26 +127,26 @@ module.exports.updateItemView = (req, res) ->
     evalAuth('edit', req.endpoint.auth, req)
     .then (auth) ->
         if !auth
-            res.status(403).send(UNAUTHORIZED)
+            res.status(403).send(errors.UNAUTHORIZED)
             return
         if not 'body' of req
-            res.status(400).send(MALFORMED)
+            res.status(400).send(errors.MALFORMED)
             return
 
         item = req.body
         id = parseInt(req.params.id)
         getItems(req, {_id:id}, {}, true).then (dbItems) ->
             if dbItems.length == 0
-                res.status(404).send(NOT_FOUND)
+                res.status(404).send(errors.NOT_FOUND)
                 return
             if item._id != parseInt(req.params.id)
-                res.status(400).send(MALFORMED)
+                res.status(400).send(errors.ID_MISMATCH)
                 return
             evalAuth('edit', req.endpoint.auth, req, dbItems[0])
 
     .then (auth) ->
         if !auth
-            res.status(403).send(UNAUTHORIZED)
+            res.status(403).send(errors.UNAUTHORIZED)
             return
                     
         # Update items
@@ -168,7 +158,7 @@ module.exports.updateItemView = (req, res) ->
                             _status: 'OK'
                             _item: items[0]
                 else
-                    res.status(403).send(UNAUTHORIZED)
+                    res.status(403).send(errors.UNAUTHORIZED)
             else
                 res.body =
                     _status: 'ERR'
@@ -185,19 +175,19 @@ module.exports.deleteItemView = (req, res) ->
     evalAuth('delete', req.endpoint.auth, req)
     .then (auth) ->
         if !auth
-            res.status(403).send(UNAUTHORIZED)
+            res.status(403).send(errors.UNAUTHORIZED)
             return
 
         id = parseInt(req.params.id)
         getItems(req, {_id:id}, {}, true).then (dbItems) ->
             if dbItems.length == 0
-                res.status(404).send(NOT_FOUND)
+                res.status(404).send(errors.NOT_FOUND)
                 return
             evalAuth('delete', req.endpoint.auth, req, dbItems[0])
 
     .then (auth) ->
         if !auth
-            res.status(403).send(UNAUTHORIZED)
+            res.status(403).send(errors.UNAUTHORIZED)
             return
 
         # Delete items
