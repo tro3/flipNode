@@ -61,7 +61,6 @@ module.exports.getListView = (req, res) ->
                         res.body = resp
                 else
                     res.body = resp
-        .catch (err) -> throw err
 
 
 module.exports.getItemView = (req, res) ->
@@ -82,7 +81,6 @@ module.exports.getItemView = (req, res) ->
                     _item: items[0]
             else
                 res.status(404).send(errors.NOT_FOUND)
-        .catch (err) -> throw err
 
 
 module.exports.createItemView = (req, res) ->
@@ -116,7 +114,6 @@ module.exports.createItemView = (req, res) ->
                         _status: 'ERR'
                         _errs: resp.errs[0]
             
-    .catch (err) -> throw err
 
 
 module.exports.updateItemView = (req, res) ->
@@ -135,7 +132,8 @@ module.exports.updateItemView = (req, res) ->
 
         item = req.body
         id = parseInt(req.params.id)
-        getItems(req, {_id:id}, {}, true).then (dbItems) ->
+        getItems(req, {_id:id}, {}, true)
+        .then (dbItems) ->
             if dbItems.length == 0
                 res.status(404).send(errors.NOT_FOUND)
                 return
@@ -143,28 +141,25 @@ module.exports.updateItemView = (req, res) ->
                 res.status(400).send(errors.ID_MISMATCH)
                 return
             evalAuth('edit', req.endpoint.auth, req, dbItems[0])
-
-    .then (auth) ->
-        if !auth
-            res.status(403).send(errors.UNAUTHORIZED)
-            return
-                    
-        # Update items
-        updateItems(req, [item]).then (resp) ->
-            if resp.status == 'OK'
-                if resp.items.length > 0
-                    getItems(req, {_id:id}, {}, true).then (items) ->
-                        res.body =
-                            _status: 'OK'
-                            _item: items[0]
-                else
+            .then (auth) ->
+                if !auth
                     res.status(403).send(errors.UNAUTHORIZED)
-            else
-                res.body =
-                    _status: 'ERR'
-                    _errs: resp.errs[0]
-            
-    .catch (err) -> throw err
+                    return
+                            
+                # Update items
+                updateItems(req, [item]).then (resp) ->
+                    if resp.status == 'OK'
+                        if resp.items.length > 0
+                            getItems(req, {_id:id}, {}, true).then (items) ->
+                                res.body =
+                                    _status: 'OK'
+                                    _item: items[0]
+                        else
+                            res.status(403).send(errors.UNAUTHORIZED)
+                    else
+                        res.body =
+                            _status: 'ERR'
+                            _errs: resp.errs[0]
 
 
 module.exports.deleteItemView = (req, res) ->
@@ -184,20 +179,17 @@ module.exports.deleteItemView = (req, res) ->
                 res.status(404).send(errors.NOT_FOUND)
                 return
             evalAuth('delete', req.endpoint.auth, req, dbItems[0])
-
-    .then (auth) ->
-        if !auth
-            res.status(403).send(errors.UNAUTHORIZED)
-            return
-
-        # Delete items
-        deleteItems(req, [id]).then (resp) ->
-            if resp.status == 'OK'
-                res.body =
-                    _status: 'OK'
-            else
-                res.body =
-                    _status: 'ERR'
-                    _errs: resp.errs[0]
-            
-    .catch (err) -> throw err
+            .then (auth) ->
+                if !auth
+                    res.status(403).send(errors.UNAUTHORIZED)
+                    return
+        
+                # Delete items
+                deleteItems(req, [id]).then (resp) ->
+                    if resp.status == 'OK'
+                        res.body =
+                            _status: 'OK'
+                    else
+                        res.body =
+                            _status: 'ERR'
+                            _errs: resp.errs[0]
