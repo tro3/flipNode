@@ -91,3 +91,72 @@ describe 'api specific test cases', ->
                             done()
         .catch (err) -> done(err)
     
+
+    it 'handles total schema shift', (done) ->
+        
+        all = 
+            str:String
+            int:Integer
+            flt:Float
+            ref:
+                type: Reference
+                collection: 'users'
+            date:Date
+            bool:Boolean
+
+        app.use '/api', flip.api conn,
+            users:
+                name: String
+            test:
+                a: all
+        conn.insert('test', {
+            _id: 1
+            b:
+                str:'hi'
+                int:1
+                flt:1.2
+                ref:1
+                date:new Date('2/1/2005')
+                bool:true
+        })
+        .then ->
+            request(app)
+                .put('/api/test/1')
+                .set('Content-Type', 'application/json')
+                .send({_id:1})
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end (err, res) ->
+                    if err
+                        done(err)
+                    else
+                        assert.deepEqual res.body,
+                            _status: 'OK'
+                            _item:
+                                _id:1
+                                _auth:
+                                    _edit: true
+                                    _delete: true
+                                a:
+                                    _id:1
+                                    _auth:
+                                        _edit: true
+                                    str:null
+                                    int:null
+                                    flt:null
+                                    ref:null
+                                    date:null
+                                    bool:null
+                        conn.findOne('test', {_id:1}).then (doc) ->
+                            assert.deepEqual doc,
+                                _id:1
+                                a:
+                                    _id:1
+                                    str:null
+                                    int:null
+                                    flt:null
+                                    ref:null
+                                    date:null
+                                    bool:null
+                            done()
+        .catch (err) -> done(err)
