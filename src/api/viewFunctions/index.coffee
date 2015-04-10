@@ -14,7 +14,6 @@ resolve = (attr, args...) ->
     attr = if (attr != undefined && attr != null) then attr else true
     if typeof attr == 'function'
         return q.Promise.resolve(attr.apply(@, args)).catch ->
-            p 'err'
             q.Promise.resolve true
     else
         return q.Promise.resolve attr

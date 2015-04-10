@@ -73,7 +73,7 @@ module.exports = diff = (o, n, path='') ->
                         index: ind
                         new: n[key][ind]
 
-            else if typeof o[key] == 'object' && typeof n[key] == 'object'
+            else if typeof o[key] == 'object' && typeof n[key] == 'object' && o[key] != null && n[key] != null
                 results = results.concat diff o[key], n[key], join path, key
 
             else if o[key] != n[key]
