@@ -31,7 +31,8 @@ createItems = (req, data, direct=false) ->
         itemErrs = []
         if !direct
             itemErrs = itemErrs.concat(incoming(item, schema))              # Enforce existence and clean data
-        item = merge({}, item, schema)                                      # Fill in prototype
+        item = resp.items[index] = merge({}, item, schema)                                      # Fill in prototype
+
         if !direct
             itemErrs = itemErrs.concat(behavior.allowed(item, endpoint))    # Enforce allowed, required, and unique constraints
             itemErrs = itemErrs.concat(behavior.required(item, endpoint))
@@ -49,15 +50,14 @@ createItems = (req, data, direct=false) ->
             req.cache.db.findOne('flipData.ids', {collection:req.collection})
             .then (result) ->
                 baseID = result.lastID
-                qForEach data, (item, index) ->
+                qForEach resp.items, (item, index) ->
                     runAuto(item, endpoint)                               # Run Autos
                     enforceID(item, endpoint)                             # Enforce ID's
                     item._id = baseID + index + 1                         # Add top level id        
-                    resp.items[index] = item
                     req.cache.insert(req.collection, item)                # Insert item
             .then ->
                 hist = []
-                data.forEach (item, index) ->                             # Insert history
+                resp.items.forEach (item, index) ->                       # Insert history
                     hist.push
                         collection: req.collection
                         item: item._id

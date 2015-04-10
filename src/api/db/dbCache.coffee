@@ -29,6 +29,8 @@ hashQuery = (collection, query, options={}) ->
 deepcopy = (obj) ->
     if typeof obj != 'object'
         return obj
+    if obj == null
+        return obj
     if obj instanceof Array
         return (deepcopy(x) for x in obj)
     result = {}

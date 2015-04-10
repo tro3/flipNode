@@ -47,6 +47,33 @@ describe 'api.getItem', ->
                         done()
         .catch (err) -> done(err)
 
+    it 'responds with a simple item containing nulls', (done) ->
+        app.use '/api', flip.api conn,
+            users:
+                name: types.String
+                age: types.Integer
+        conn.insert('users', {_id:1, name:'admin', age:null})
+        .then ->
+            request(app)
+                .get('/api/users/1')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end (err, res) ->
+                    if err
+                        done(err)
+                    else
+                        assert.deepEqual res.body,
+                            _status: 'OK'
+                            _item:
+                                _id:1
+                                _auth:
+                                    _edit: true
+                                    _delete: true
+                                name: 'admin'
+                                age: null
+                        done()
+        .catch (err) -> done(err)
+
     it 'responds with a 404 for non-existent collection', (done) ->
         app.use '/api', flip.api conn,
             users:
