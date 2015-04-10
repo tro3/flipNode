@@ -295,3 +295,48 @@ describe 'viewFunctions.createItems', ->
             done()
         .catch (err) -> done(err)
 
+    it 'handles nulls for all data types', (done) ->
+        req.collection = 'test'
+        t = schema.types
+        req.endpoint = new Endpoint {
+            a: t.String
+            b: t.Integer
+            c: t.Float
+            d: t.Boolean
+            e: t.Date
+            f:
+                type: t.Reference
+                collection: 'test'
+        }
+        data = {a:null, b:null, c:null, d:null, e:null, f:null}
+        createItems(req, data)
+        .then (result) ->
+            assert.deepEqual result, {
+                status: 'OK'
+                items: [{_id:1, a:null, b:null, c:null, d:null, e:null, f:null}]
+            }
+            done()
+        .catch (err) -> done(err)
+
+    it 'assigns nulls for all data types', (done) ->
+        req.collection = 'test'
+        t = schema.types
+        req.endpoint = new Endpoint {
+            a: t.String
+            b: t.Integer
+            c: t.Float
+            d: t.Boolean
+            e: t.Date
+            f:
+                type: t.Reference
+                collection: 'test'
+        }
+        data = {}
+        createItems(req, data)
+        .then (result) ->
+            assert.deepEqual result, {
+                status: 'OK'
+                items: [{_id:1, a:null, b:null, c:null, d:null, e:null, f:null}]
+            }
+            done()
+        .catch (err) -> done(err)

@@ -287,3 +287,29 @@ describe 'viewFunctions.updateItems', ->
             }]
             done()
         .catch (err) -> done(err)
+
+    it 'handles nulls for all data types', (done) ->
+        req.collection = 'test'
+        t = schema.types
+        req.endpoint = new Endpoint {
+            a: t.String
+            b: t.Integer
+            c: t.Float
+            d: t.Boolean
+            e: t.Date
+            f:
+                type: t.Reference
+                collection: 'test'
+        }
+        data = {_id:1, a:1, b:1, c:1, d:1, e:1, f:1}
+        conn.insert('test', data)
+        .then ->
+            data = {_id:1, a:null, b:null, c:null, d:null, e:null, f:null}
+        .then -> updateItems(req, data)
+        .then (result) ->
+            assert.deepEqual result, {
+                status: 'OK'
+                items: [{_id:1, a:null, b:null, c:null, d:null, e:null, f:null}]
+            }
+            done()
+        .catch (err) -> done(err)

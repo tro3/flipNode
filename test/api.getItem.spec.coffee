@@ -74,6 +74,36 @@ describe 'api.getItem', ->
                         done()
         .catch (err) -> done(err)
 
+    it 'responds with an item containing null reference', (done) ->
+        app.use '/api', flip.api conn,
+            users:
+                name: types.String
+                other:
+                    type: types.Reference
+                    collection: 'users'
+                    fields: ['name']
+        conn.insert('users', {_id:1, name:'admin', other:null})
+        .then ->
+            request(app)
+                .get('/api/users/1')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end (err, res) ->
+                    if err
+                        done(err)
+                    else
+                        assert.deepEqual res.body,
+                            _status: 'OK'
+                            _item:
+                                _id:1
+                                _auth:
+                                    _edit: true
+                                    _delete: true
+                                name: 'admin'
+                                other: null
+                        done()
+        .catch (err) -> done(err)
+
     it 'responds with a 404 for non-existent collection', (done) ->
         app.use '/api', flip.api conn,
             users:

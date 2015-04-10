@@ -8,6 +8,7 @@ p = console.log
 
 
 evaluate = (val, path, key, type, errs) ->
+    return null if val == null
     try
         return type(val)
     catch

@@ -211,6 +211,28 @@ describe 'viewFunctions.getItems', ->
             done()
         .catch (err) -> done(err)
 
+    it 'handles null references', (done) ->
+        req.collection = 'test'
+        req.endpoint = new Endpoint (
+            schema:
+                ref: 
+                    type: Reference
+                    collection: 'refs'
+                    fields: ['name', 'city']
+        )
+        req.cache.insert('test', {_id:1, ref:null})
+        .then -> getItems(req, {_id:1})
+        .then (docs) ->
+            assert.equal docs.length, 1
+            assert.deepEqual docs[0], {
+                __proto__: docs[0].__proto__
+                _id:1
+                _auth: {_edit: true, _delete: true}
+                ref: null
+            }
+            done()
+        .catch (err) -> done(err)
+
     it 'serializes references in nested documents', (done) ->
         req.collection = 'test'
         req.endpoint = new Endpoint (

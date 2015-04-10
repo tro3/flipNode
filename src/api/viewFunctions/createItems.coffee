@@ -31,7 +31,7 @@ createItems = (req, data, direct=false) ->
         itemErrs = []
         if !direct
             itemErrs = itemErrs.concat(incoming(item, schema))              # Enforce existence and clean data
-        item = resp.items[index] = merge({}, item, schema)                                      # Fill in prototype
+        item = resp.items[index] = merge({}, item, schema)                  # Fill in prototype
 
         if !direct
             itemErrs = itemErrs.concat(behavior.allowed(item, endpoint))    # Enforce allowed, required, and unique constraints
