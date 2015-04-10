@@ -32,7 +32,8 @@ module.exports.api = (db, config) ->
         res.status(400).send viewFcns.MALFORMED
 
     for key, val of config
-        config[key] = new Endpoint(val)
+        delete config[key]
+        config[key.toLowerCase()] = new Endpoint(val)
 
     handle = (fn, req, res) ->
         res.handled = true
@@ -57,7 +58,7 @@ module.exports.api = (db, config) ->
         )
 
     router.param 'collection', (req, res, next) ->
-        req.collection = req.params.collection
+        req.collection = req.params.collection.toLowerCase()
         if 'id' of req.params
             req.id = parseInt(req.params.id)
         if !(req.collection of config)
@@ -84,5 +85,5 @@ module.exports.prepDB = (db, config) ->
     db.find('flipData.ids').then (docs) ->
         colls = (x.collection for x in docs)
         for key of config
-            if !(key in colls)
+            if !(key.toLowerCase() in colls)
                 db.insert('flipData.ids', {collection:key, lastID:0})

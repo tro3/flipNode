@@ -262,3 +262,47 @@ describe 'api.getItem', ->
                                 city: 'Menlo Park'
                         done()
         .catch (err) -> done(err)
+
+
+    it 'forces URLs to be case-insensitive', (done) ->
+        app.use '/api', flip.api conn,
+            Users:
+                name: types.String
+        conn.insert('users', {_id:1, name:'admin', city:'Menlo Park'})
+        .then ->
+            request(app)
+                .get('/api/users/1')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end (err, res) ->
+                    if err
+                        done(err)
+                    else
+                        assert.deepEqual res.body,
+                            _status: 'OK'
+                            _item:
+                                _id:1
+                                _auth:
+                                    _edit: true
+                                    _delete: true
+                                name: 'admin'
+                                city: 'Menlo Park'
+                        request(app)
+                            .get('/api/UsErs/1')
+                            .expect('Content-Type', /json/)
+                            .expect(200)
+                            .end (err, res) ->
+                                if err
+                                    done(err)
+                                else
+                                    assert.deepEqual res.body,
+                                        _status: 'OK'
+                                        _item:
+                                            _id:1
+                                            _auth:
+                                                _edit: true
+                                                _delete: true
+                                            name: 'admin'
+                                            city: 'Menlo Park'
+                                    done()
+        .catch (err) -> done(err)
