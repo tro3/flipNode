@@ -472,6 +472,21 @@ describe 'Schema module', ->
             ]
 
     describe 'Endpoint object', ->
+        defaultPaths = (obj) ->
+            resp = 
+                references: {}
+                alloweds: {}
+                requireds: {}
+                uniques: {}
+                autos: {}
+                autoInits: {}
+                docs: {}
+                lists: {}
+                defaults: {}
+            for key of obj
+                resp[key] = obj[key]
+            resp
+        
         it 'handles a simple schema', ->
             dut = new Endpoint {
                 name: String
@@ -489,15 +504,7 @@ describe 'Schema module', ->
                         type: Integer
                     name:
                         type: String
-                paths:
-                    references: {}
-                    alloweds: {}
-                    requireds: {}
-                    uniques: {}
-                    autos: {}
-                    autoInits: {}
-                    docs: {}
-                    lists: {}
+                paths: defaultPaths()
             }
 
         it 'handles a simple schema with reference', ->
@@ -525,16 +532,10 @@ describe 'Schema module', ->
                         type: Reference
                         collection: 'users'
                         fields: ['name']
-                paths:
+                paths: defaultPaths(
                     references:
                         ref: dut.schema.ref
-                    alloweds: {}
-                    requireds: {}
-                    uniques: {}
-                    autos: {}
-                    autoInits: {}
-                    docs: {}
-                    lists: {}
+                )
             }
             
         it 'handles a simple schema with auth', ->
@@ -556,15 +557,7 @@ describe 'Schema module', ->
                         type: Integer
                     name:
                         type: String
-                paths:
-                    references: {}
-                    alloweds: {}
-                    requireds: {}
-                    uniques: {}
-                    autos: {}
-                    autoInits: {}
-                    docs: {}
-                    lists: {}
+                paths: defaultPaths()
             }
 
         it 'handles schema with nested and listed reference', ->
@@ -610,18 +603,13 @@ describe 'Schema module', ->
                                     type: Reference
                                     collection: 'users'
                                     fields: ['name']
-                paths:
+                paths: defaultPaths(
                     references:
                         'subdoc.main_ref': dut.schema.subdoc.schema.main_ref
                         'subdoc.list': dut.schema.subdoc.schema.list
-                    alloweds: {}
-                    requireds: {}
-                    uniques: {}
-                    autos: {}
-                    autoInits: {}
                     docs:
                         'subdoc': dut.schema.subdoc
-                    lists: {}
+                )
             }
 
         it 'handles nested schema with alloweds', ->
@@ -677,20 +665,16 @@ describe 'Schema module', ->
                             stage:
                                 type: String
                                 allowed: ['Open', 'Closed']
-                paths:
-                    references: {}
+                paths: defaultPaths(
                     alloweds:
                         'subdoc.stage': dut.schema.subdoc.schema.stage
                         'subdoc.list': dut.schema.subdoc.schema.list
                         'list.stage': dut.schema.list.schema.stage
-                    requireds: {}
-                    uniques: {}
-                    autos: {}
-                    autoInits: {}
                     docs:
                         'subdoc': dut.schema.subdoc
                     lists:
                         'list': dut.schema.list
+                )
             }
 
         it 'handles nested schema with requireds', ->
@@ -746,20 +730,16 @@ describe 'Schema module', ->
                             stage:
                                 type: String
                                 required: true
-                paths:
-                    references: {}
-                    alloweds: {}
+                paths: defaultPaths(
                     requireds:
                         'subdoc.stage': dut.schema.subdoc.schema.stage
                         'subdoc.list': dut.schema.subdoc.schema.list
                         'list.stage': dut.schema.list.schema.stage
-                    uniques: {}
-                    autos: {}
-                    autoInits: {}
                     docs:
                         'subdoc': dut.schema.subdoc
                     lists:
                         'list': dut.schema.list
+                )
             }
 
         it 'handles nested schema with uniques', ->
@@ -815,20 +795,16 @@ describe 'Schema module', ->
                             stage:
                                 type: String
                                 unique: true
-                paths:
-                    references: {}
-                    alloweds: {}
-                    requireds: {}
+                paths: defaultPaths(
                     uniques:
                         'subdoc.stage': dut.schema.subdoc.schema.stage
                         'subdoc.list': dut.schema.subdoc.schema.list
                         'list.stage': dut.schema.list.schema.stage
-                    autos: {}
-                    autoInits: {}
                     docs:
                         'subdoc': dut.schema.subdoc
                     lists:
                         'list': dut.schema.list
+                )
             }
 
         it 'handles nested schema with auto functions', ->
@@ -884,20 +860,16 @@ describe 'Schema module', ->
                             stage:
                                 type: Auto
                                 auto: dut.schema.list.schema.stage.auto
-                paths:
-                    references: {}
-                    alloweds: {}
-                    requireds: {}
-                    uniques: {}
+                paths: defaultPaths(
                     autos:
                         'subdoc.stage': dut.schema.subdoc.schema.stage
                         'subdoc.list': dut.schema.subdoc.schema.list
                         'list.stage': dut.schema.list.schema.stage
-                    autoInits: {}
                     docs:
                         'subdoc': dut.schema.subdoc
                     lists:
                         'list': dut.schema.list
+                )
             }
 
         it 'handles nested schema with autoInit functions', ->
@@ -953,12 +925,7 @@ describe 'Schema module', ->
                             stage:
                                 type: AutoInit
                                 auto: dut.schema.list.schema.stage.auto
-                paths:
-                    references: {}
-                    alloweds: {}
-                    requireds: {}
-                    uniques: {}
-                    autos: {}
+                paths: defaultPaths(
                     autoInits:
                         'subdoc.stage': dut.schema.subdoc.schema.stage
                         'subdoc.list': dut.schema.subdoc.schema.list
@@ -967,6 +934,7 @@ describe 'Schema module', ->
                         'subdoc': dut.schema.subdoc
                     lists:
                         'list': dut.schema.list
+                )
             }
 
     describe 'prototype generation', ->

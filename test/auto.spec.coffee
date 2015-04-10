@@ -292,3 +292,20 @@ describe 'runAuto function', ->
               {a:1, b:6, c:6}    
             ]
         }
+        
+    it 'default behavior handles nested lists of objects', ->
+        data =
+            a:
+                a: [{a:null}]
+                b: null
+        endp = new Endpoint {
+            a:
+                a: [{a:{type: Integer, default: 1}}]
+                b: {type: Integer, default: 2}
+        }
+        runAuto(data, endp)
+        assert.deepEqual data, {
+            a:
+                a: [{a:1}]
+                b: 2
+        }

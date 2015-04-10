@@ -27,3 +27,12 @@ x.runAuto = (data, endpoint, req) ->
         for element in list
             if !element._id
                 element[lastPath(path)] = sch.auto(element, data, req)
+
+    for path, sch of endpoint.paths.defaults
+        list = mpath.get(parentPath(path), data) || data
+        if !(list instanceof Array)
+            list = [list]
+        for element in list
+            key = lastPath(path)
+            if element[key] == null || element[key] == undefined
+                element[key] = sch.default

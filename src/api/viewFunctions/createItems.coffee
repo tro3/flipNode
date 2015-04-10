@@ -51,7 +51,7 @@ createItems = (req, data, direct=false) ->
             .then (result) ->
                 baseID = result.lastID
                 qForEach resp.items, (item, index) ->
-                    runAuto(item, endpoint)                               # Run Autos
+                    runAuto(item, endpoint)                               # Run Autos & Defaults
                     enforceID(item, endpoint)                             # Enforce ID's
                     item._id = baseID + index + 1                         # Add top level id        
                     req.cache.insert(req.collection, item)                # Insert item

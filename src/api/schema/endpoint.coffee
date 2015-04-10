@@ -25,6 +25,7 @@ class Endpoint
             autoInits: {}
             docs: {}
             lists: {}
+            defaults: {}
             
         for path in paths.ofType(@schema, types.Reference)
             @paths.references[path] = @schema.get(path)
@@ -49,6 +50,9 @@ class Endpoint
 
         for path in paths.ifTrue(@schema, (x) -> x.type == types.List && 'schema' of x)
             @paths.lists[path] = @schema.get(path)
+
+        for path in paths.withProp(@schema, 'default')
+            @paths.defaults[path] = @schema.get(path)
 
 
 module.exports = Endpoint

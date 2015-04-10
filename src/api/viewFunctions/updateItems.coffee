@@ -54,7 +54,7 @@ updateItems = (req, data, direct=false) ->
             req.cache.db.findOne('flipData.ids', {collection:req.collection})
             .then (result) ->
                 qForEach data, (item, index) ->
-                    runAuto(item, endpoint)                                    # Run Autos
+                    runAuto(item, endpoint)                                    # Run Autos & Defaults
                     enforceID(item, endpoint)                                  # Enforce ID's
                     resp.items[index] = item
                     req.cache.update(req.collection, {_id:item._id}, item)     # Insert item

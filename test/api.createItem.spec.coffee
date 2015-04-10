@@ -309,3 +309,37 @@ describe 'api.createItem', ->
                             name: 'admin2'
                             age: null
                         done()
+                        
+    it 'handles defaults', (done) ->
+        app.use '/api', flip.api conn,
+            users:
+                name: types.String
+                age:
+                    type: types.Integer
+                    default: 32
+        data = {name:'admin2'}
+        request(app)
+            .post('/api/users')
+            .set('Content-Type', 'application/json')
+            .send(data)
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .end (err, res) ->
+                if err
+                    done(err)
+                else
+                    assert.deepEqual res.body,
+                        _status: 'OK'
+                        _item:
+                            _id:1
+                            _auth:
+                                _edit: true
+                                _delete: true
+                            name: 'admin2'
+                            age: 32
+                    conn.findOne('users', {_id:1}).then (doc) ->
+                        assert.deepEqual doc,
+                            _id:1
+                            name: 'admin2'
+                            age: 32
+                        done()
