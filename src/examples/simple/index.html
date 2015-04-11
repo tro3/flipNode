@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>
+<html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>
+<html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>
+<html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js"> <!--<![endif]-->
+<head>
+
+    <!-- Meta-Information -->
+    <title>ACME Inc.</title>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="description" content="ACME Inc.">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Vendor: Bootstrap Stylesheets http://getbootstrap.com -->
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+
+    <!-- Our Website CSS Styles -->
+    <!--<link rel="stylesheet" href="css/main.css">-->
+
+</head>
+<body ng-app="appTop" ng-controller="appController">
+<!--[if lt IE 7]>
+<p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade
+    your browser</a> to improve your experience.</p>
+<![endif]-->
+
+<!-- Our Website Content Goes Here -->
+<div class="container">
+    <br/>
+    <div class="row">
+        <div class="col-md-12">
+            <h2>Users</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Username</th>
+                        <th>Full Name</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="user in users"
+                        ng-click="userClick(user)"
+                        ng-class="{info: selectedUserId == user._id}"
+                        style="cursor: pointer">
+                        <td>{{user.username}}</td>
+                        <td>{{user.fullName}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-md-4">Username</label>
+                    <div class="col-md-8">
+                        <input class="form-control" ng-model="buffUser.username">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4">First Name</label>
+                    <div class="col-md-8">
+                        <input class="form-control" ng-model="buffUser.firstName">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4">Last Name</label>
+                    <div class="col-md-8">
+                        <input class="form-control" ng-model="buffUser.lastName">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4"></label>
+                    <div class="col-md-8">
+                        <button class="btn btn-default" ng-show="!buffUser._id" ng-click="onAddUser()">Add</button>
+                        <button class="btn btn-default" ng-show="buffUser._id"  ng-click="onEditUser()">Edit</button>
+                        <button class="btn btn-default" ng-show="buffUser._id"  ng-click="onDeleteUser()">Delete</button>
+                        <button class="btn btn-default" ng-click="onCancelUser()">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h2>To Do Items</h2>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-8">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Description</th>
+                        <th>Assigned To</th>
+                        <th>Complete</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in items"
+                        ng-click="itemClick(item)"
+                        ng-class="{info: selectedItemId == item._id}"
+                        style="cursor: pointer">
+                        <td>{{item.description}}</td>
+                        <td>{{item.assignee.fullName}}</td>
+                        <td>{{item.complete}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="col-md-4">
+            <form class="form-horizontal">
+                <div class="form-group">
+                    <label class="control-label col-md-4">Description</label>
+                    <div class="col-md-8">
+                        <input class="form-control" ng-model="buffItem.description">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4">Assignee</label>
+                    <div class="col-md-8">
+                        <select class="form-control"
+                                ng-model="buffItem.assignee"
+                                ng-options="x as x.fullName for x in users track by x._id"></select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4">Complete</label>
+                    <div class="col-md-8">
+                        <input type="checkbox" ng-model="buffItem.complete">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-md-4"></label>
+                    <div class="col-md-8">
+                        <button class="btn btn-default" ng-show="!buffItem._id" ng-click="onAddItem()">Add</button>
+                        <button class="btn btn-default" ng-show="buffItem._id"  ng-click="onEditItem()">Edit</button>
+                        <button class="btn btn-default" ng-show="buffItem._id"  ng-click="onDeleteItem()">Delete</button>
+                        <button class="btn btn-default" ng-click="onCancelItem()">Cancel</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Vendor: Javascripts -->
+<!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>-->
+<!--<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>-->
+
+<!-- Vendor: Angular, followed by our custom Javascripts -->
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.2.18/angular-resource.min.js"></script>
+
+<!-- Our Website Javascripts -->
+<script>
+    var app = angular.module('appTop', ['ngResource'])
+    .controller('appController', function($scope, $resource) {
+        s = $scope;
+        s.users = null;
+        s.items = null;
+        s.selectedUserId = null;
+        s.selectedItemId = null;
+        s.buffUser = {};
+        s.buffItem = {};
+
+        var User = $resource('/api/users/:_id', {_id:'@_id'}, {save:{method:'PUT'}, add:{method:'POST'}, delete:{method:'DELETE'}});
+        var ToDo = $resource('/api/todos/:_id', {_id:'@_id'}, {save:{method:'PUT'}, add:{method:'POST'}, delete:{method:'DELETE'}});
+
+        function refreshUsers(){
+            User.get({}, function(docs) {
+                s.users = docs._items;
+            });
+        };
+
+        function refreshItems(){
+            ToDo.get({}, function(docs) {
+                s.items = docs._items;
+            });
+        };
+
+        s.userClick = function (user) {
+            if (s.selectedUserId == user._id) {
+                s.selectedUserId = null;
+                s.buffUser = {};
+            } else {
+                s.selectedUserId = user._id;
+                s.buffUser = angular.copy(user);
+            }
+        };
+
+        s.onAddUser = function () {
+            User.add(s.buffUser, function(){refreshUsers();});
+        };
+
+        s.onEditUser = function () {
+            User.save({_id:s.buffUser._id}, s.buffUser, function(){refreshUsers();});
+        };
+
+        s.onDeleteUser = function () {
+            User.delete({_id:s.buffUser._id}, function(){refreshUsers();});
+        };
+
+        s.onCancelUser = function () {
+            s.selectedUserId = null;
+            s.buffUser = {};
+        };
+
+        s.itemClick = function (item) {
+            if (s.selectedItemId == item._id) {
+                s.selectedItemId = null;
+                s.buffItem = {};
+            } else {
+                s.selectedItemId = item._id;
+                s.buffItem = angular.copy(item);
+            }
+        };
+
+        s.onAddItem = function () {
+            ToDo.add(s.buffItem, function(){refreshItems();});
+        };
+
+        s.onEditItem = function () {
+            ToDo.save({_id:s.buffItem._id}, s.buffItem, function(){refreshItems();});
+        };
+
+        s.onDeleteItem = function () {
+            ToDo.delete({_id:s.buffItem._id}, function(){refreshItems();});
+        };
+
+        s.onCancelItem = function () {
+            s.selectedItemId = null;
+            s.buffItem = {};
+        };
+
+        refreshUsers();
+        refreshItems();
+    });
+
+</script>
+
+</body>
+</html>
