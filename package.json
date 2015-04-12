@@ -12,7 +12,9 @@
     "express": "^4.12.3",
     "mongodb": "2",
     "mpath": "",
-    "q": ""
+    "primus": "^3.0.2",
+    "q": "",
+    "sockjs": "^0.3.15"
   },
   "devDependencies": {
     "chai": "",
