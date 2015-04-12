@@ -3,11 +3,8 @@ Primus = require('primus')
 
 
 module.exports = (server, api, config) ->
-    filename = (config && config.filename) || './primus.js'
 
     primus = new Primus(server, {transformer: 'SockJS'})
-    primus.save(filename)
-     
     primus.on 'connection', (spark) ->  
 
       api.events.on 'create.post', (req, res) ->
