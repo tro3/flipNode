@@ -46,6 +46,9 @@ module.exports.api = (db, config) ->
         .done(
             ->
                 if res.statusCode == 200
+                    res.header 'Cache-Control', 'no-cache, no-store, must-revalidate'
+                    res.header 'Pragma', 'no-cache'
+                    res.header 'Expires', '0' 
                     router.events.emit "post", req, res
                     router.events.emit "#{maps[req.method]}.post", req, res
                     router.events.emit "#{req.collection}.#{maps[req.method]}.post", req, res
