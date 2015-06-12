@@ -34,8 +34,8 @@ module.exports.getListView = (req, res) ->
             options = {}
             page = null
             size = null
-            if 'query' of req.query
-                query = JSON.parse(req.query.query)
+            if 'q' of req.query
+                query = JSON.parse(req.query.q)
             if 'fields' of req.query
                 options.fields = JSON.parse(req.query.fields)
             if 'sort' of req.query

@@ -5,7 +5,7 @@ Primus = require('primus')
 module.exports = (server, api, config) ->
 
     primus = new Primus(server, {transformer: 'SockJS'})
-    if 'assetPath' of config
+    if config and 'assetPath' of config
         primus.save config.assetPath + '/primus.js'
     primus.on 'connection', (spark) ->  
 
@@ -29,3 +29,5 @@ module.exports = (server, api, config) ->
             collection: req.collection
             id: req._id
         )
+    
+    primus
