@@ -182,7 +182,7 @@ describe 'api.getList', ->
         ])
         .then ->
             request(app)
-                .get('/api/users?query={"city":"Palo Alto"}')
+                .get('/api/users?q={"city":"Palo Alto"}')
                 .expect('Content-Type', /json/)
                 .expect(200)
                 .end (err, res) ->
