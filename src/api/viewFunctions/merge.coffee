@@ -42,6 +42,9 @@ module.exports = merge = (old, new_, schema) ->
                         for n in new_[key]
                             o = if n._id of lookup then lookup[n._id] else prototype(val.schema)
                             result[key].push merge(o, n, val.schema)
+                            
+                else if !(key of old)                                # Schema change
+                    result[key] = []
 
             else                                                     # Primitive
                 if key of new_

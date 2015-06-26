@@ -162,6 +162,68 @@ describe 'api specific test cases', ->
         .catch (err) -> done(err)
 
 
+    it 'handles list of objects added to schema', (done) ->
+        
+        all =
+            name: String
+            description: String
+            lastFunding: String
+            monthsSince: Integer
+            notes: [
+                markdown: String
+                creationDate:
+                    type: AutoInit
+                    auto: (el) -> new Date()
+            ]
+
+        app.use '/api', flip.api conn,
+            users:
+                name: String
+            test: all
+        conn.insert('test', {
+            _id: 1
+            name: "Bobsam"
+            description: null
+            lastFunding: "None"
+            monthsSince: null
+        })
+        .then ->
+            request(app)
+                .put('/api/test/1')
+                .set('Content-Type', 'application/json')
+                .send({_id:1})
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end (err, res) ->
+                    if err
+                        done(err)
+                    else
+                        assert.deepEqual res.body,
+                            _status: 'OK'
+                            _item:
+                                _id:1
+                                _auth:
+                                    _edit: true
+                                    _delete: true
+                                    notes: true
+                                name: "Bobsam"
+                                description: null
+                                lastFunding: "None"
+                                monthsSince: null
+                                notes: []
+                        conn.findOne('test', {_id:1}).then (doc) ->
+                            assert.deepEqual doc,
+                                _id:1
+                                name: "Bobsam"
+                                description: null
+                                lastFunding: "None"
+                                monthsSince: null
+                                notes: []
+                            done()
+        .catch (err) -> done(err)
+
+
+
     it 'handles Date serialization', (done) ->
         
         all = 
