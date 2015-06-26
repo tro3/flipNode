@@ -482,6 +482,7 @@ describe 'Schema module', ->
                 autoInits: {}
                 docs: {}
                 lists: {}
+                dates: {}
                 defaults: {}
             for key of obj
                 resp[key] = obj[key]

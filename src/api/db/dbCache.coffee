@@ -33,12 +33,11 @@ deepcopy = (obj) ->
         return obj
     if obj instanceof Array
         return (deepcopy(x) for x in obj)
+    if obj instanceof Date
+        return new Date(obj)
     result = {}
     for key, val of obj
-        if val instanceof Date
-            result[key] = deepcopy(val)
-            result[key].__proto__ = val.proto
-        else if val instanceof ObjectID
+        if val instanceof ObjectID
             result[key] = deepcopy(val)
             result[key].__proto__ = val.proto
         else

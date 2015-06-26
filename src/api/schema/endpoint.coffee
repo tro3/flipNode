@@ -25,6 +25,7 @@ class Endpoint
             autoInits: {}
             docs: {}
             lists: {}
+            dates: {}
             defaults: {}
             
         for path in paths.ofType(@schema, types.Reference)
@@ -47,6 +48,9 @@ class Endpoint
 
         for path in paths.ofType(@schema, types.Doc)
             @paths.docs[path] = @schema.get(path)
+
+        for path in paths.ofType(@schema, types.Date)
+            @paths.dates[path] = @schema.get(path)
 
         for path in paths.ifTrue(@schema, (x) -> x.type == types.List && 'schema' of x)
             @paths.lists[path] = @schema.get(path)

@@ -160,3 +160,54 @@ describe 'api specific test cases', ->
                                     bool:null
                             done()
         .catch (err) -> done(err)
+
+
+    it 'handles Date serialization', (done) ->
+        
+        all = 
+            str:String
+            date:Date
+
+        app.use '/api', flip.api conn,
+            test:
+                a: all
+        conn.insert('test', {
+            _id: 1
+            a:
+                _id: 1
+                str:'hi'
+                date:new Date('2/1/2005')
+        })
+        .then ->
+            conn.findOne('test', {_id:1})
+        .then (doc) ->
+            assert.deepEqual doc,
+                _id:1
+                a:
+                    _id: 1
+                    str: 'hi'
+                    date: new Date('2/1/2005')
+        .then ->
+            request(app)
+                .get('/api/test/1')
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end (err, res) ->
+                    if err
+                        done(err)
+                    else
+                        assert.deepEqual res.body,
+                            _status: 'OK'
+                            _item:
+                                _id:1
+                                _auth:
+                                    _edit: true
+                                    _delete: true
+                                a:
+                                    _id:1
+                                    _auth:
+                                        _edit: true
+                                    str:'hi'
+                                    date:new Date('2/1/2005').toISOString()
+                        done()
+        .catch (err) -> done(err)
