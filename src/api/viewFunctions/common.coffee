@@ -12,3 +12,7 @@ x.qForItems = (obj, fn) ->
     for key, val of obj
         qs.push fn(key, val)
     q.all(qs)
+
+
+x.genTID = ->
+    Math.random().toString()[2..]
