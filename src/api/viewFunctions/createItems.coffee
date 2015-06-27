@@ -7,6 +7,7 @@ Reference = types.Reference
 
 qForEach = require('./common').qForEach
 qForItems = require('./common').qForItems
+genTID = require('./common').genTID
 
 incoming = require('./incoming')
 merge = require('./merge')
@@ -47,6 +48,7 @@ createItems = (req, data, direct=false) ->
         baseID = null
         if resp.status == 'OK'
             delete resp.errs
+            resp.tid = genTID()
             req.cache.db.findOne('flipData.ids', {collection:req.collection})
             .then (result) ->
                 baseID = result.lastID

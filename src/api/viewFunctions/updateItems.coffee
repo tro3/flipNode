@@ -7,6 +7,7 @@ Reference = types.Reference
 
 qForEach = require('./common').qForEach
 qForItems = require('./common').qForItems
+genTID = require('./common').genTID
 
 incoming = require('./incoming')
 merge = require('./merge')
@@ -21,7 +22,6 @@ p = console.log
 
 
 updateItems = (req, data, direct=false) ->
-    debugger
     endpoint = req.endpoint
     schema = endpoint.schema
     data = [data] if !(data instanceof Array)
@@ -52,13 +52,12 @@ updateItems = (req, data, direct=false) ->
         baseID = null
         if resp.status == 'OK'
             delete resp.errs
-            req.cache.db.findOne('flipData.ids', {collection:req.collection})
-            .then (result) ->
-                qForEach data, (item, index) ->
-                    runAuto(item, endpoint)                                    # Run Autos & Defaults
-                    enforceID(item, endpoint)                                  # Enforce ID's
-                    resp.items[index] = item
-                    req.cache.update(req.collection, {_id:item._id}, item)     # Insert item
+            resp.tid = genTID()
+            qForEach data, (item, index) ->
+                runAuto(item, endpoint)                                        # Run Autos & Defaults
+                enforceID(item, endpoint)                                      # Enforce ID's
+                resp.items[index] = item
+                req.cache.update(req.collection, {_id:item._id}, item)         # Insert item
             .then ->
                 hist = []
                 data.forEach (item, index) ->                                  # Insert history
