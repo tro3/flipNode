@@ -100,6 +100,8 @@ module.exports.createItemView = (req, res) ->
             return
 
         item = req.body
+        tid = req.body._tid || null
+        delete req.body._tid if tid
                     
         # Create item
         createItems(req, [item]).then (resp) ->
@@ -108,6 +110,8 @@ module.exports.createItemView = (req, res) ->
                     res.body =
                         _status: 'OK'
                         _item: items[0]
+                    if tid
+                        res.body._tid = tid
             else
                     res.body =
                         _status: 'ERR'
@@ -130,6 +134,8 @@ module.exports.updateItemView = (req, res) ->
             return
 
         item = req.body
+        tid = req.body._tid || null
+        delete req.body._tid if tid
         id = parseInt(req.params.id)
         getItems(req, {_id:id}, {}, true)
         .then (dbItems) ->
@@ -153,6 +159,8 @@ module.exports.updateItemView = (req, res) ->
                                 res.body =
                                     _status: 'OK'
                                     _item: items[0]
+                                if tid
+                                    res.body._tid = tid
                         else
                             res.status(403).send(errors.UNAUTHORIZED)
                     else
