@@ -7,6 +7,11 @@ connect = require('../src/api/db').connect
 
 p = console.log
 
+assertTID = (result) ->
+    assert.property result, '_tid'
+    assert.match result._tid, /[0-9]+/
+    delete result._tid
+
 
 describe 'api.deleteItem', ->
     app = null
@@ -38,6 +43,7 @@ describe 'api.deleteItem', ->
                     if err
                         done(err)
                     else
+                        assertTID res.body
                         assert.deepEqual res.body,
                             _status: 'OK'
                         conn.count('users', {_id:1}).then (count) ->
@@ -174,6 +180,7 @@ describe 'api.deleteItem', ->
                             'users.delete.pre': true
                             'delete.post': true
                             'users.delete.post': true
+                        assertTID res.body
                         assert.deepEqual res.body,
                             _status: 'OK'
                         conn.count('users', {_id:1}).then (count) ->

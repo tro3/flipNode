@@ -10,6 +10,9 @@ p = console.log
 
 
 
+genTID = ->
+    Math.random().toString()[2..]
+    
 resolve = (attr, args...) ->
     attr = if (attr != undefined && attr != null) then attr else true
     if typeof attr == 'function'
@@ -107,6 +110,7 @@ module.exports.createItemView = (req, res) ->
                 getItems(req, {_id:resp.items[0]._id}, {}, true).then (items) ->
                     res.body =
                         _status: 'OK'
+                        _tid: genTID()
                         _item: items[0]
             else
                     res.body =
@@ -152,6 +156,7 @@ module.exports.updateItemView = (req, res) ->
                             getItems(req, {_id:id}, {}, true).then (items) ->
                                 res.body =
                                     _status: 'OK'
+                                    _tid: genTID()
                                     _item: items[0]
                         else
                             res.status(403).send(errors.UNAUTHORIZED)
@@ -188,6 +193,7 @@ module.exports.deleteItemView = (req, res) ->
                     if resp.status == 'OK'
                         res.body =
                             _status: 'OK'
+                            _tid: genTID()
                     else
                         res.body =
                             _status: 'ERR'

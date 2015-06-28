@@ -5,6 +5,13 @@ flip = require('../src')
 types = flip.schema.types
 connect = require('../src/api/db').connect
 
+p = console.log
+
+assertTID = (result) ->
+    assert.property result, '_tid'
+    assert.match result._tid, /[0-9]+/
+    delete result._tid
+
 
 
 describe 'api.updateItem', ->
@@ -39,6 +46,7 @@ describe 'api.updateItem', ->
                     if err
                         done(err)
                     else
+                        assertTID res.body
                         assert.deepEqual res.body,
                             _status: 'OK'
                             _item:
@@ -275,6 +283,7 @@ describe 'api.updateItem', ->
             api.events.on x, (req, res) ->
                 assert.equal req.collection, 'users'
                 assert.equal req.id, 1
+                assertTID res.body
                 assert.deepEqual res.body,
                     _status: 'OK'
                     _item:
@@ -283,6 +292,7 @@ describe 'api.updateItem', ->
                             _edit: true
                             _delete: true
                         name: 'admin2'
+                res.body._tid = '1'
                 tests[x] = true
         conn.insert('users', {_id:1, name:'admin'})
         .then ->
@@ -302,6 +312,7 @@ describe 'api.updateItem', ->
                             'users.edit.pre': true
                             'edit.post': true
                             'users.edit.post': true
+                        assertTID res.body
                         assert.deepEqual res.body,
                             _status: 'OK'
                             _item:
@@ -334,6 +345,7 @@ describe 'api.updateItem', ->
                     if err
                         done(err)
                     else
+                        assertTID res.body
                         assert.deepEqual res.body,
                             _status: 'OK'
                             _item:
@@ -394,6 +406,7 @@ describe 'api.updateItem', ->
                     if err
                         done(err)
                     else
+                        assertTID res.body
                         assert.deepEqual res.body,
                             _status: 'OK'
                             _item:
@@ -431,6 +444,7 @@ describe 'api.updateItem', ->
                     if err
                         done(err)
                     else
+                        assertTID res.body
                         assert.deepEqual res.body,
                             _status: 'OK'
                             _item:

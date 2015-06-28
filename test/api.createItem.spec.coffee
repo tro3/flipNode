@@ -7,6 +7,11 @@ connect = require('../src/api/db').connect
 
 p = console.log
 
+assertTID = (result) ->
+    assert.property result, '_tid'
+    assert.match result._tid, /[0-9]+/
+    delete result._tid
+
 
 describe 'api.createItem', ->
     app = null
@@ -42,6 +47,7 @@ describe 'api.createItem', ->
                 if err
                     done(err)
                 else
+                    assertTID res.body
                     assert.deepEqual res.body,
                         _status: 'OK'
                         _item:
@@ -217,6 +223,7 @@ describe 'api.createItem', ->
             tests[x] = false
             api.events.on x, (req, res) ->
                 assert.equal req.collection, 'users'
+                assertTID res.body
                 assert.deepEqual res.body,
                     _status: 'OK'
                     _item:
@@ -225,6 +232,7 @@ describe 'api.createItem', ->
                             _edit: true
                             _delete: true
                         name: 'admin2'
+                res.body._tid = '1'
                 tests[x] = true
         request(app)
             .post('/api/users')
@@ -241,6 +249,7 @@ describe 'api.createItem', ->
                         'users.create.pre': true
                         'create.post': true
                         'users.create.post': true
+                    assertTID res.body
                     assert.deepEqual res.body,
                         _status: 'OK'
                         _item:
@@ -294,6 +303,7 @@ describe 'api.createItem', ->
                 if err
                     done(err)
                 else
+                    assertTID res.body
                     assert.deepEqual res.body,
                         _status: 'OK'
                         _item:
@@ -328,6 +338,7 @@ describe 'api.createItem', ->
                 if err
                     done(err)
                 else
+                    assertTID res.body
                     assert.deepEqual res.body,
                         _status: 'OK'
                         _item:

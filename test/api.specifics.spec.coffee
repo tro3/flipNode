@@ -19,6 +19,11 @@ ReqString = {type: String, required: true}
 
 p = console.log
 
+assertTID = (result) ->
+    assert.property result, '_tid'
+    assert.match result._tid, /[0-9]+/
+    delete result._tid
+
 
 describe 'api specific test cases', ->
     app = null
@@ -72,6 +77,7 @@ describe 'api specific test cases', ->
                     if err
                         done(err)
                     else
+                        assertTID res.body
                         assert.deepEqual res.body,
                             _status: 'OK'
                             _item:
@@ -130,6 +136,7 @@ describe 'api specific test cases', ->
                     if err
                         done(err)
                     else
+                        assertTID res.body
                         assert.deepEqual res.body,
                             _status: 'OK'
                             _item:
@@ -198,6 +205,7 @@ describe 'api specific test cases', ->
                     if err
                         done(err)
                     else
+                        assertTID res.body
                         assert.deepEqual res.body,
                             _status: 'OK'
                             _item:
