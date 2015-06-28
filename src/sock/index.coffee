@@ -14,6 +14,7 @@ module.exports = (server, api, config) ->
             action: 'create'
             collection: req.collection
             id: res.body._item._id
+            tid: res.body._tid
         )
 
       api.events.on 'edit.post', (req, res) ->
@@ -29,6 +30,7 @@ module.exports = (server, api, config) ->
             action: 'delete'
             collection: req.collection
             id: req._id
+            tid: res.body._tid
         )
     
     primus
