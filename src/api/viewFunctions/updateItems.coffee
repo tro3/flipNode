@@ -21,7 +21,6 @@ p = console.log
 
 
 updateItems = (req, data, direct=false) ->
-    debugger
     endpoint = req.endpoint
     schema = endpoint.schema
     data = [data] if !(data instanceof Array)
