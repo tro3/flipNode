@@ -1,5 +1,6 @@
 qForEach = require('./common').qForEach
 qForItems = require('./common').qForItems
+genTID = require('./common').genTID
 
 p = console.log
 
@@ -25,7 +26,10 @@ deleteItems = (req, data) ->
                     action: 'deleted'
                     old: olds[index]
             req.cache.insert 'flipData.history', hist
-    .then -> {status: 'OK'}
+    .then -> {
+        status: 'OK'
+        tid: genTID()
+    }
 
 
 module.exports = deleteItems

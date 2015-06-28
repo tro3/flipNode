@@ -51,6 +51,7 @@ describe 'viewFunctions.createItems', ->
             a:1
         createItems(req, data)
         .then (result) ->
+            assert.property result, 'tid'; delete result.tid
             assert.deepEqual result, {
                 status: 'OK'
                 items: [{
@@ -75,6 +76,7 @@ describe 'viewFunctions.createItems', ->
         data = [{a:1},{a:4}]
         createItems(req, data)
         .then (result) ->
+            assert.property result, 'tid'; delete result.tid
             assert.deepEqual result, {
                 status: 'OK'
                 items: [{
@@ -197,6 +199,7 @@ describe 'viewFunctions.createItems', ->
             a:1
         createItems(req, data)
         .then (result) ->
+            assert.property result, 'tid'; delete result.tid
             assert.deepEqual result, {
                 status: 'OK'
                 items: [{
@@ -212,6 +215,7 @@ describe 'viewFunctions.createItems', ->
             }]
         .then -> createItems(req, data)
         .then (result) ->
+            assert.property result, 'tid'; delete result.tid
             assert.deepEqual result, {
                 status: 'OK'
                 items: [{
@@ -240,6 +244,7 @@ describe 'viewFunctions.createItems', ->
             a:1
         createItems(req, data)
         .then (result) ->
+            assert.property result, 'tid'; delete result.tid
             assert.deepEqual result, {
                 status: 'OK'
                 items: [{
@@ -267,6 +272,7 @@ describe 'viewFunctions.createItems', ->
         data = [{a:2},{a:4}]
         createItems(req, data)
         .then (result) ->
+            assert.property result, 'tid'; delete result.tid
             assert.deepEqual result, {
                 status: 'OK'
                 items: [{
@@ -311,6 +317,7 @@ describe 'viewFunctions.createItems', ->
         data = {a:null, b:null, c:null, d:null, e:null, f:null}
         createItems(req, data)
         .then (result) ->
+            assert.property result, 'tid'; delete result.tid
             assert.deepEqual result, {
                 status: 'OK'
                 items: [{_id:1, a:null, b:null, c:null, d:null, e:null, f:null}]
@@ -334,6 +341,7 @@ describe 'viewFunctions.createItems', ->
         data = {}
         createItems(req, data)
         .then (result) ->
+            assert.property result, 'tid'; delete result.tid
             assert.deepEqual result, {
                 status: 'OK'
                 items: [{_id:1, a:null, b:null, c:null, d:null, e:null, f:null}]

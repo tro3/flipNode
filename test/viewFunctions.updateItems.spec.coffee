@@ -54,6 +54,7 @@ describe 'viewFunctions.updateItems', ->
         .then -> data.a = 2
         .then -> updateItems(req, data)
         .then (result) ->
+            assert.property result, 'tid'; delete result.tid
             assert.deepEqual result, {
                 status: 'OK'
                 items: [{
@@ -82,6 +83,7 @@ describe 'viewFunctions.updateItems', ->
             data[1].a = 3
         .then -> updateItems(req, data)
         .then (result) ->
+            assert.property result, 'tid'; delete result.tid
             assert.deepEqual result, {
                 status: 'OK'
                 items: [{
@@ -220,6 +222,7 @@ describe 'viewFunctions.updateItems', ->
         .then -> data.a = 2
         .then -> updateItems(req, data)
         .then (result) ->
+            assert.property result, 'tid'; delete result.tid
             assert.deepEqual result, {
                 status: 'OK'
                 items: [{
@@ -254,6 +257,7 @@ describe 'viewFunctions.updateItems', ->
             data[1].a = 2
         .then -> updateItems(req, data)
         .then (result) ->
+            assert.property result, 'tid'; delete result.tid
             assert.deepEqual result, {
                 status: 'OK'
                 items: [{
@@ -307,6 +311,7 @@ describe 'viewFunctions.updateItems', ->
             data = {_id:1, a:null, b:null, c:null, d:null, e:null, f:null}
         .then -> updateItems(req, data)
         .then (result) ->
+            assert.property result, 'tid'; delete result.tid
             assert.deepEqual result, {
                 status: 'OK'
                 items: [{_id:1, a:null, b:null, c:null, d:null, e:null, f:null}]
