@@ -4,6 +4,7 @@ express = require('express')
 flip = require('../src')
 types = flip.schema.types
 connect = require('../src/api/db').connect
+assertBody = require('./lib/utils').assertBody
 
 p = console.log
 
@@ -38,7 +39,7 @@ describe 'api.deleteItem', ->
                     if err
                         done(err)
                     else
-                        assert.deepEqual res.body,
+                        assertBody res.body,
                             _status: 'OK'
                         conn.count('users', {_id:1}).then (count) ->
                             assert.equal count, 0
@@ -174,7 +175,7 @@ describe 'api.deleteItem', ->
                             'users.delete.pre': true
                             'delete.post': true
                             'users.delete.post': true
-                        assert.deepEqual res.body,
+                        assertBody res.body,
                             _status: 'OK'
                         conn.count('users', {_id:1}).then (count) ->
                             assert.equal count, 0

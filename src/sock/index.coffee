@@ -21,6 +21,7 @@ module.exports = (server, api, config) ->
             action: 'edit'
             collection: req.collection
             id: req.id
+            tid: res.body._tid
         )
 
       api.events.on 'delete.post', (req, res) ->

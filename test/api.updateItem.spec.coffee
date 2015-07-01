@@ -4,6 +4,7 @@ express = require('express')
 flip = require('../src')
 types = flip.schema.types
 connect = require('../src/api/db').connect
+assertBody = require('./lib/utils').assertBody
 
 
 
@@ -39,7 +40,7 @@ describe 'api.updateItem', ->
                     if err
                         done(err)
                     else
-                        assert.deepEqual res.body,
+                        assertBody res.body,
                             _status: 'OK'
                             _item:
                                 _id:1
@@ -54,39 +55,6 @@ describe 'api.updateItem', ->
                             done()
         .catch (err) -> done(err)
 
-    it 'updates a simple item and adds _tid when provided', (done) ->
-        app.use '/api', flip.api conn,
-            users:
-                name: types.String
-        conn.insert('users', {_id:1, name:'admin'})
-        .then ->
-            data = {_id:1, name:'admin2', _tid:'124'}
-            request(app)
-                .put('/api/users/1')
-                .set('Content-Type', 'application/json')
-                .send(data)
-                .expect('Content-Type', /json/)
-                .expect(200)
-                .end (err, res) ->
-                    if err
-                        done(err)
-                    else
-                        assert.deepEqual res.body,
-                            _status: 'OK'
-                            _tid:'124'
-                            _item:
-                                _id:1
-                                _auth:
-                                    _edit: true
-                                    _delete: true
-                                name: 'admin2'
-                        conn.findOne('users', {_id:1}).then (doc) ->
-                            assert.deepEqual doc,
-                                _id:1
-                                name: 'admin2'            
-                            done()
-        .catch (err) -> done(err)
-    
     it 'responds with a 404 for non-existent collection', (done) ->
         app.use '/api', flip.api conn,
             users:
@@ -308,7 +276,7 @@ describe 'api.updateItem', ->
             api.events.on x, (req, res) ->
                 assert.equal req.collection, 'users'
                 assert.equal req.id, 1
-                assert.deepEqual res.body,
+                assertBody res.body,
                     _status: 'OK'
                     _item:
                         _id:1
@@ -335,7 +303,7 @@ describe 'api.updateItem', ->
                             'users.edit.pre': true
                             'edit.post': true
                             'users.edit.post': true
-                        assert.deepEqual res.body,
+                        assertBody res.body,
                             _status: 'OK'
                             _item:
                                 _id:1
@@ -367,7 +335,7 @@ describe 'api.updateItem', ->
                     if err
                         done(err)
                     else
-                        assert.deepEqual res.body,
+                        assertBody res.body,
                             _status: 'OK'
                             _item:
                                 _id:1
@@ -427,7 +395,7 @@ describe 'api.updateItem', ->
                     if err
                         done(err)
                     else
-                        assert.deepEqual res.body,
+                        assertBody res.body,
                             _status: 'OK'
                             _item:
                                 _id:1
@@ -464,7 +432,7 @@ describe 'api.updateItem', ->
                     if err
                         done(err)
                     else
-                        assert.deepEqual res.body,
+                        assertBody res.body,
                             _status: 'OK'
                             _item:
                                 _id:1

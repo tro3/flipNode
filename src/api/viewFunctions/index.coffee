@@ -9,6 +9,8 @@ errors = require('./errors')
 p = console.log
 
 
+genTID = ->
+    Math.floor(Math.random()*1e9)
 
 resolve = (attr, args...) ->
     attr = if (attr != undefined && attr != null) then attr else true
@@ -100,8 +102,6 @@ module.exports.createItemView = (req, res) ->
             return
 
         item = req.body
-        tid = req.body._tid || null
-        delete req.body._tid if tid
                     
         # Create item
         createItems(req, [item]).then (resp) ->
@@ -109,9 +109,8 @@ module.exports.createItemView = (req, res) ->
                 getItems(req, {_id:resp.items[0]._id}, {}, true).then (items) ->
                     res.body =
                         _status: 'OK'
+                        _tid: genTID()
                         _item: items[0]
-                    if tid
-                        res.body._tid = tid
             else
                     res.body =
                         _status: 'ERR'
@@ -158,6 +157,7 @@ module.exports.updateItemView = (req, res) ->
                             getItems(req, {_id:id}, {}, true).then (items) ->
                                 res.body =
                                     _status: 'OK'
+                                    _tid: genTID()
                                     _item: items[0]
                                 if tid
                                     res.body._tid = tid
@@ -196,6 +196,7 @@ module.exports.deleteItemView = (req, res) ->
                     if resp.status == 'OK'
                         res.body =
                             _status: 'OK'
+                            _tid: genTID()
                     else
                         res.body =
                             _status: 'ERR'

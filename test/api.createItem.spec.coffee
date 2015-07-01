@@ -4,6 +4,7 @@ express = require('express')
 flip = require('../src')
 types = flip.schema.types
 connect = require('../src/api/db').connect
+assertBody = require('./lib/utils').assertBody
 
 p = console.log
 
@@ -42,7 +43,7 @@ describe 'api.createItem', ->
                 if err
                     done(err)
                 else
-                    assert.deepEqual res.body,
+                    assertBody res.body,
                         _status: 'OK'
                         _item:
                             _id:1
@@ -55,38 +56,6 @@ describe 'api.createItem', ->
                             _id:1
                             name: 'admin2'
                         done()
-
-
-    it 'adds a _tid param when a simple item is created', (done) ->
-        app.use '/api', flip.api conn,
-            users:
-                name: types.String
-        data = {name:'admin2', _tid: '123'}
-        request(app)
-            .post('/api/users')
-            .set('Content-Type', 'application/json')
-            .send(data)
-            .expect('Content-Type', /json/)
-            .expect(200)
-            .end (err, res) ->
-                if err
-                    done(err)
-                else
-                    assert.deepEqual res.body,
-                        _status: 'OK'
-                        _tid: '123'
-                        _item:
-                            _id:1
-                            _auth:
-                                _edit: true
-                                _delete: true
-                            name: 'admin2'
-                    conn.findOne('users', {_id:1}).then (doc) ->
-                        assert.deepEqual doc,
-                            _id:1
-                            name: 'admin2'
-                        done()
-
 
     it 'responds with a 404 for non-existent collection', (done) ->
         app.use '/api', flip.api conn,
@@ -249,7 +218,7 @@ describe 'api.createItem', ->
             tests[x] = false
             api.events.on x, (req, res) ->
                 assert.equal req.collection, 'users'
-                assert.deepEqual res.body,
+                assertBody res.body,
                     _status: 'OK'
                     _item:
                         _id:1
@@ -273,7 +242,7 @@ describe 'api.createItem', ->
                         'users.create.pre': true
                         'create.post': true
                         'users.create.post': true
-                    assert.deepEqual res.body,
+                    assertBody res.body,
                         _status: 'OK'
                         _item:
                             _id:1
@@ -326,7 +295,7 @@ describe 'api.createItem', ->
                 if err
                     done(err)
                 else
-                    assert.deepEqual res.body,
+                    assertBody res.body,
                         _status: 'OK'
                         _item:
                             _id:1
@@ -360,7 +329,7 @@ describe 'api.createItem', ->
                 if err
                     done(err)
                 else
-                    assert.deepEqual res.body,
+                    assertBody res.body,
                         _status: 'OK'
                         _item:
                             _id:1

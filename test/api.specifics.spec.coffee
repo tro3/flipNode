@@ -4,6 +4,7 @@ express = require('express')
 flip = require('../src')
 types = flip.schema.types
 connect = require('../src/api/db').connect
+assertBody = require('./lib/utils').assertBody
 
 List = types.List
 Doc = types.Doc
@@ -72,7 +73,7 @@ describe 'api specific test cases', ->
                     if err
                         done(err)
                     else
-                        assert.deepEqual res.body,
+                        assertBody res.body,
                             _status: 'OK'
                             _item:
                                 _id:1
@@ -130,7 +131,7 @@ describe 'api specific test cases', ->
                     if err
                         done(err)
                     else
-                        assert.deepEqual res.body,
+                        assertBody res.body,
                             _status: 'OK'
                             _item:
                                 _id:1
@@ -198,7 +199,7 @@ describe 'api specific test cases', ->
                     if err
                         done(err)
                     else
-                        assert.deepEqual res.body,
+                        assertBody res.body,
                             _status: 'OK'
                             _item:
                                 _id:1
