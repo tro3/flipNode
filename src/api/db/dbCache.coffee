@@ -45,6 +45,8 @@ deepcopy = (obj) ->
     result
 
 
+resolve = q.Promise.resolve
+
 
 class DbCache
     constructor: (db) ->
@@ -52,22 +54,28 @@ class DbCache
         @lookup = {}
 
     isCached: (hash) ->
-        if !(hash of @lookup)
-            return false
+        return false if !(hash of @lookup)
         @lookup[hash].every (x) -> x._id != null
+        
+    setCache: (hash, collection, docs) ->
+        @lookup[hash] = docs
+        docs.forEach (doc) =>
+            indHash = hashQuery(collection, {_id:doc._id})
+            @lookup[indHash] = [doc]
+
+    resetCache: (hash) ->
+        if hash of @lookup
+            @lookup[hash].forEach (x) -> x._id = null
+
 
     find: (collection, query={}, options={}) ->
         hash = hashQuery(collection, query, options)
 
         if !@isCached(hash)
             tmpQ = @db.find(collection, query, options)
-            .then (docs) =>
-                @lookup[hash] = docs
-                docs.forEach (doc) =>
-                    indHash = hashQuery(collection, {_id:doc._id})
-                    @lookup[indHash] = [doc]
+            .then (docs) => @setCache(hash, collection, docs)
         else
-            tmpQ = q.Promise.resolve()
+            tmpQ = resolve()
         return tmpQ.then => deepcopy(@lookup[hash])
 
 
@@ -77,20 +85,17 @@ class DbCache
             tmpQ = @db.findOne(collection, query, options)
             .then (doc) =>
                 return false if !doc
-                @lookup[hash] = [doc]
-                indHash = hashQuery(collection, {_id:doc._id})
-                @lookup[indHash] = [doc]
+                @setCache(hash, collection, [doc])
                 true
         else
-            tmpQ = q.Promise.resolve(true)
+            tmpQ = resolve(true)
         return tmpQ.then (found) =>
             if found then deepcopy(@lookup[hash][0]) else null
 
 
     count: (collection, query={}, options={}) ->
         hash = hashQuery(collection, query, options)
-        if @isCached(hash)
-            return q.Promise.resolve(@lookup[hash].length)
+        return resolve(@lookup[hash].length) if @isCached(hash)
         @db.count(collection, query, options)
 
 
@@ -100,22 +105,19 @@ class DbCache
 
     update: (collection, spec, update, options) ->
         hash = hashQuery(collection, spec, {})
-        if hash of @lookup
-            @lookup[hash].forEach (x) -> x._id = null
+        @resetCache(hash)
         @db.update(collection, spec, update, options)
 
 
     updateMany: (collection, spec, update, options) ->
         hash = hashQuery(collection, spec, {})
-        if hash of @lookup
-            @lookup[hash].forEach (x) -> x._id = null
+        @resetCache(hash)
         @db.updateMany(collection, spec, update, options)
 
 
     remove: (collection, spec) ->
         hash = hashQuery(collection, spec, {})
-        if hash of @lookup
-            @lookup[hash].forEach (x) -> x._id = null
+        @resetCache(hash)
         @db.remove(collection, spec)
 
 
