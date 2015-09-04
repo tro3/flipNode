@@ -12,25 +12,25 @@ recurseCollect = (sch, fn, path='') ->
     paths
 
 
-ex = module.exports
+x = module.exports
 
-ex.all = (sch) ->
+x.all = (sch) ->
     recurseCollect(sch, () -> true)
 
-ex.primitives = (sch) ->
+x.primitives = (sch) ->
     recurseCollect(sch, (x) -> !('schema' of x))
 
-ex.withTrueProp = (sch, prop) ->
+x.withTrueProp = (sch, prop) ->
     fn = (x) -> (prop of x && x[prop]) || (x.type == types.List && ('subtype' of x) && prop of x.subtype && x.subtype[prop])
     recurseCollect(sch, fn)
 
-ex.withProp = (sch, prop) ->
+x.withProp = (sch, prop) ->
     fn = (x) -> prop of x || (x.type == types.List && ('subtype' of x) && prop of x.subtype)
     recurseCollect(sch, fn)
 
-ex.ofType = (sch, type) ->
+x.ofType = (sch, type) ->
     fn = (x) -> x.type == type || (x.type == types.List && ('subtype' of x) && x.subtype.type == type)
     recurseCollect(sch, fn)
     
-ex.ifTrue = (sch, fn) ->
+x.ifTrue = (sch, fn) ->
     recurseCollect(sch, fn)
