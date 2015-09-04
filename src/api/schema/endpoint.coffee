@@ -1,3 +1,4 @@
+fp = require 'flipFP'
 Schema = require('./schema')
 paths = require('./paths')
 types = require('./types')
@@ -13,50 +14,28 @@ class Endpoint
             @auth = if 'auth' of config then config.auth else {}
             
         for perm in ['create','read','edit','delete']
-            if !(perm of @auth)
-                @auth[perm] = true
+            @auth[perm] = true if !(perm of @auth)
+            
+
+        collect = (fcn, condition) =>
+            get = (x) => @schema.get(x)
+            lst = fcn(@schema, condition)
+            fp.zip lst, fp.map get, lst
+            
+        isDocList = (x) -> x.type == types.List && 'schema' of x
 
         @paths =
-            references: {}
-            alloweds: {}
-            requireds: {}
-            uniques: {}
-            autos: {}
-            autoInits: {}
-            docs: {}
-            lists: {}
-            dates: {}
-            defaults: {}
-            
-        for path in paths.ofType(@schema, types.Reference)
-            @paths.references[path] = @schema.get(path)
-        
-        for path in paths.withProp(@schema, 'allowed')
-            @paths.alloweds[path] = @schema.get(path)
+            alloweds:   collect paths.withProp,     'allowed'
+            defaults:   collect paths.withProp,     'default'
+            requireds:  collect paths.withTrueProp, 'required'
+            uniques:    collect paths.withTrueProp, 'unique'
+            references: collect paths.ofType,       types.Reference
+            autos:      collect paths.ofType,       types.Auto
+            autoInits:  collect paths.ofType,       types.AutoInit
+            docs:       collect paths.ofType,       types.Doc
+            dates:      collect paths.ofType,       types.Date
+            lists:      collect paths.ifTrue,       isDocList
 
-        for path in paths.withTrueProp(@schema, 'required')
-            @paths.requireds[path] = @schema.get(path)
-
-        for path in paths.withTrueProp(@schema, 'unique')
-            @paths.uniques[path] = @schema.get(path)
-
-        for path in paths.ofType(@schema, types.Auto)
-            @paths.autos[path] = @schema.get(path)
-
-        for path in paths.ofType(@schema, types.AutoInit)
-            @paths.autoInits[path] = @schema.get(path)
-
-        for path in paths.ofType(@schema, types.Doc)
-            @paths.docs[path] = @schema.get(path)
-
-        for path in paths.ofType(@schema, types.Date)
-            @paths.dates[path] = @schema.get(path)
-
-        for path in paths.ifTrue(@schema, (x) -> x.type == types.List && 'schema' of x)
-            @paths.lists[path] = @schema.get(path)
-
-        for path in paths.withProp(@schema, 'default')
-            @paths.defaults[path] = @schema.get(path)
 
 
 module.exports = Endpoint

@@ -1,4 +1,5 @@
 assert = require('chai').assert
+utils = require './lib/utils'
 p = console.log
 
 schema = require('../src/api/schema')
@@ -26,7 +27,7 @@ describe 'Schema module', ->
         it 'handles simple types', ->
             cfg =
                 name: types.String
-            assert.deepEqual expand(cfg), {
+            utils.assertEqualObj expand(cfg), {
                 _id:
                     type: types.Integer
                 name:
@@ -38,7 +39,7 @@ describe 'Schema module', ->
                 name:
                     type: types.String
                     required: true
-            assert.deepEqual expand(cfg), {
+            utils.assertEqualObj expand(cfg), {
                 _id:
                     type: types.Integer
                 name:
@@ -51,7 +52,7 @@ describe 'Schema module', ->
                 address:
                     street: types.String
                     city: types.String
-            assert.deepEqual expand(cfg), {
+            utils.assertEqualObj expand(cfg), {
                 _id:
                     type: types.Integer
                 address:
@@ -72,7 +73,7 @@ describe 'Schema module', ->
                     schema:
                         street: types.String
                         city: types.String
-            assert.deepEqual expand(cfg), {
+            utils.assertEqualObj expand(cfg), {
                 _id:
                     type: types.Integer
                 address:
@@ -89,7 +90,7 @@ describe 'Schema module', ->
         it 'handles simple lists', ->
             cfg =
                 tags: [types.String]
-            assert.deepEqual expand(cfg), {
+            utils.assertEqualObj expand(cfg), {
                 _id:
                     type: types.Integer
                 tags:
@@ -103,7 +104,7 @@ describe 'Schema module', ->
                 tags:
                     type: types.List
                     subtype: types.String
-            assert.deepEqual expand(cfg), {
+            utils.assertEqualObj expand(cfg), {
                 _id:
                     type: types.Integer
                 tags:
@@ -118,7 +119,7 @@ describe 'Schema module', ->
                     street: types.String
                     city: types.String
                 ]
-            assert.deepEqual expand(cfg), {
+            utils.assertEqualObj expand(cfg), {
                 _id:
                     type: types.Integer
                 address:
@@ -141,7 +142,7 @@ describe 'Schema module', ->
                             type: types.String
                         city:
                             type: types.String
-            assert.deepEqual expand(cfg), {
+            utils.assertEqualObj expand(cfg), {
                 _id:
                     type: types.Integer
                 address:
@@ -165,7 +166,7 @@ describe 'Schema module', ->
                     subdoc:
                         address: types.String
                 ]
-            assert.deepEqual expand(cfg), {
+            utils.assertEqualObj expand(cfg), {
                 _id:
                     type: types.Integer
                 subdoc:
@@ -254,30 +255,30 @@ describe 'Schema module', ->
                 )
 
             it 'handles simple types', ->
-                assert.deepEqual @sch.get('simple1'), {
+                utils.assertEqualObj @sch.get('simple1'), {
                     type: types.String
                 }
-                assert.deepEqual @sch.get('simple2'), {
+                utils.assertEqualObj @sch.get('simple2'), {
                     type: types.String
                     required: true
                 }
                 
             it 'handles subdocs', ->
-                assert.deepEqual @sch.get('sub.simple1'), {
+                utils.assertEqualObj @sch.get('sub.simple1'), {
                     type: types.String
                 }
-                assert.deepEqual @sch.get('sub.simple2'), {
+                utils.assertEqualObj @sch.get('sub.simple2'), {
                     type: types.String
                     required: true
                 }                
                 
             it 'handles simple lists', ->
-                assert.deepEqual @sch.get('list1'), {
+                utils.assertEqualObj @sch.get('list1'), {
                     type: types.List
                     subtype:
                         type: types.String
                 }
-                assert.deepEqual @sch.get('list2'), {
+                utils.assertEqualObj @sch.get('list2'), {
                     type: types.List
                     subtype:
                         type: types.String
@@ -286,39 +287,39 @@ describe 'Schema module', ->
                 }                
 
             it 'handles lists of docs', ->
-                assert.deepEqual @sch.get('doclist1.simple1'), {
+                utils.assertEqualObj @sch.get('doclist1.simple1'), {
                     type: types.String
                 }
-                assert.deepEqual @sch.get('doclist2.1.simple2'), {
+                utils.assertEqualObj @sch.get('doclist2.1.simple2'), {
                     type: types.String
                     required: true
                 }               
             
             it 'handles nested docs and lists', ->
-                assert.deepEqual @sch.get('nested.simple'), {
+                utils.assertEqualObj @sch.get('nested.simple'), {
                     type: types.String
                 }
-                assert.deepEqual @sch.get('nested.list'), {
+                utils.assertEqualObj @sch.get('nested.list'), {
                     type: types.List
                     subtype:
                         type: types.String
                 }
-                assert.deepEqual @sch.get('nested.doclist.simple'), {
+                utils.assertEqualObj @sch.get('nested.doclist.simple'), {
                     type: types.String
                     required: true
                 }
-                assert.deepEqual @sch.get('nested.doc.simple'), {
+                utils.assertEqualObj @sch.get('nested.doc.simple'), {
                     type: types.String
                     required: true
                 }
-                assert.deepEqual @sch.get('nested.doc.list'), {
+                utils.assertEqualObj @sch.get('nested.doc.list'), {
                     type: types.List
                     subtype:
                         type: types.String
                         auth:
                             read: true
                 }
-                assert.deepEqual @sch.get('nested.doc.doclist'), {
+                utils.assertEqualObj @sch.get('nested.doc.doclist'), {
                     type: types.List
                     schema:
                         _id:
@@ -329,10 +330,10 @@ describe 'Schema module', ->
                             type: types.String
                             required: true
                 }
-                assert.deepEqual @sch.get('nested.doc.doclist.0.simple1'), {
+                utils.assertEqualObj @sch.get('nested.doc.doclist.0.simple1'), {
                     type: types.String
                 }
-                assert.deepEqual @sch.get('nested.doc.doclist.simple2'), {
+                utils.assertEqualObj @sch.get('nested.doc.doclist.simple2'), {
                     type: types.String
                     required: true
                 }
@@ -492,7 +493,7 @@ describe 'Schema module', ->
             dut = new Endpoint {
                 name: String
             }
-            assert.deepEqual dut, {
+            utils.assertEqualObj dut, {
                 auth:
                     create: true
                     read: true
@@ -516,7 +517,7 @@ describe 'Schema module', ->
                     collection: 'users'
                     fields: ['name']
             }
-            assert.deepEqual dut, {
+            utils.assertEqualObj dut, {
                 auth:
                     create: true
                     read: true
@@ -546,7 +547,7 @@ describe 'Schema module', ->
                 schema:
                     name: String
             }
-            assert.deepEqual dut, {
+            utils.assertEqualObj dut, {
                 auth:
                     create: true
                     read: true
@@ -576,7 +577,7 @@ describe 'Schema module', ->
                             collection: 'users'
                             fields: ['name']
             }
-            assert.deepEqual dut, {
+            utils.assertEqualObj dut, {
                 auth:
                     create: true
                     read: true
@@ -632,7 +633,7 @@ describe 'Schema module', ->
                             type: String
                             allowed: ['Open', 'Closed']
             }
-            assert.deepEqual dut, {
+            utils.assertEqualObj dut, {
                 auth:
                     create: true
                     read: true
@@ -697,7 +698,7 @@ describe 'Schema module', ->
                             type: String
                             required: true
             }
-            assert.deepEqual dut, {
+            utils.assertEqualObj dut, {
                 auth:
                     create: true
                     read: true
@@ -762,7 +763,7 @@ describe 'Schema module', ->
                             type: String
                             unique: true
             }
-            assert.deepEqual dut, {
+            utils.assertEqualObj dut, {
                 auth:
                     create: true
                     read: true
@@ -827,7 +828,7 @@ describe 'Schema module', ->
                             type: Auto
                             auto: (el, root) -> root.name
             }
-            assert.deepEqual dut, {
+            utils.assertEqualObj dut, {
                 auth:
                     create: true
                     read: true
@@ -892,7 +893,7 @@ describe 'Schema module', ->
                             type: AutoInit
                             auto: (el, root) -> root.name
             }
-            assert.deepEqual dut, {
+            utils.assertEqualObj dut, {
                 auth:
                     create: true
                     read: true
@@ -900,7 +901,6 @@ describe 'Schema module', ->
                     delete: true
 
                 schema:
-                    __proto__: dut.schema.__proto__
                     _id:
                         type: Integer
                     name:
@@ -944,7 +944,7 @@ describe 'Schema module', ->
                 name: String
             }
             dut = prototype(sch)
-            assert.deepEqual dut, {
+            utils.assertEqualObj dut, {
                 __proto__: dut.__proto__
                 _id:null
                 name: null
@@ -967,7 +967,7 @@ describe 'Schema module', ->
                 ]
             }
             dut = prototype(sch)
-            assert.deepEqual dut, {
+            utils.assertEqualObj dut, {
                 __proto__: dut.__proto__
                 _id: null
                 name: null
