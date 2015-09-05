@@ -20,7 +20,7 @@ class Endpoint
         collect = (fcn, condition) =>
             get = (x) => @schema.get(x)
             lst = fcn(@schema, condition)
-            fp.zip lst, fp.map get, lst
+            fp.zipObj lst, fp.map get, lst
             
         isDocList = (x) -> x.type == types.List && 'schema' of x
 

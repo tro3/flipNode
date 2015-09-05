@@ -7,8 +7,11 @@ x.ReadOnly = () ->
 x.List = () -> x.TypeError # Should never be used
 x.Doc = () -> x.TypeError # Should never be used
 
+x.Id = x.ReadOnly
 x.Auto = (val) -> x.ReadOnly
 x.AutoInit = (val) -> x.ReadOnly
+
+x.ReadOnlyTypes = [x.Id, x.Auto, x.AutoInit]
 
 
 x.String = (val) -> String(val)
