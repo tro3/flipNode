@@ -4,14 +4,6 @@ prim = require './primitives'
 p = console.log
 
 
-
-Error = (x) -> {_err: x}
-isError = (x) -> typeof x == 'object' and '_err' of x
-
-State = (schema, value, path) -> {schema:schema, value:value, path:path}
-Result = (result, errs) -> {res:result, errs:errs}
-
-
 readableKeys = (sch) ->
   fp.filter ( (k) -> !(prim.isReadOnly sch[k]) && k != '_id'), fp.keys sch
 
@@ -48,8 +40,11 @@ module.exports = enforceTypes = (endp) ->
         errs.push({path:path, msg:"Could not convert '#{path}' value of '#{val}'"})
         return null
 
-  (instate) ->
-    [obj, inerrs] = instate
+  (inState) ->
+    inState = {doc:inState, errs:[]} if '_state' not of inState
     errs = []
-    result = processDoc endp.schema, obj, ''
-    return [result, fp.concat(inerrs, errs)]
+    return {
+      _state: true
+      doc: processDoc endp.schema, inState.doc, ''
+      errs: fp.concat inState.errs, errs
+    }

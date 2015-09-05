@@ -45,9 +45,9 @@ describe 'enforceTypes function', ->
                 name: 'fred'
             auto: 1
             autoi: 1
-        [data, errs] = enforceTypes(endp)([data, []])
-        assert.equal errs.length, 0
-        assert.deepEqual data, {
+        result = enforceTypes(endp)(data)
+        assert.equal result.errs.length, 0
+        assert.deepEqual result.doc, {
             int:1
             str: '2'
             flt: 1.2
@@ -81,9 +81,9 @@ describe 'enforceTypes function', ->
                     name: 'fred'
                 auto: 1
                 autoi: 1
-        [data, errs] = enforceTypes(endp)([data, []])
-        assert.equal errs.length, 0
-        assert.deepEqual data, {
+        result = enforceTypes(endp)(data)
+        assert.equal result.errs.length, 0
+        assert.deepEqual result.doc, {
             a:
                 int:1
                 str: '2'
@@ -100,9 +100,9 @@ describe 'enforceTypes function', ->
             }
         data =
             a: ['1',2,'3.3']
-        [data, errs] = enforceTypes(endp)([data, []])
-        assert.equal errs.length, 0
-        assert.deepEqual data, {
+        result = enforceTypes(endp)(data)
+        assert.equal result.errs.length, 0
+        assert.deepEqual result.doc, {
             a: [1,2,3]
         }
 
@@ -133,9 +133,9 @@ describe 'enforceTypes function', ->
                 auto: 1
                 autoi: 1
         ]
-        [data, errs] = enforceTypes(endp)([data, []])
-        assert.equal errs.length, 0
-        assert.deepEqual data, {
+        result = enforceTypes(endp)(data)
+        assert.equal result.errs.length, 0
+        assert.deepEqual result.doc, {
             a: [
                 int:1
                 str: '2'
@@ -155,9 +155,9 @@ describe 'enforceTypes function', ->
         data =
             b:
                 a: [{_id:1},{_id:'2', name:'fred'}]
-        [data, errs] = enforceTypes(endp)([data, []])
-        assert.equal errs.length, 0
-        assert.deepEqual data, {
+        result = enforceTypes(endp)(data)
+        assert.equal result.errs.length, 0
+        assert.deepEqual result.doc, {
             b:
                 a: [1,2]
         }
@@ -191,9 +191,9 @@ describe 'enforceTypes function', ->
                     auto: 1
                     autoi: 1
         ]
-        [data, errs] = enforceTypes(endp)([data, []])
-        assert.equal errs.length, 0
-        assert.deepEqual data, {
+        result = enforceTypes(endp)(data)
+        assert.equal result.errs.length, 0
+        assert.deepEqual result.doc, {
             b:
                 a: [
                     int:1
@@ -245,9 +245,9 @@ describe 'enforceTypes function', ->
                         'fgh'
                     ]
         ]
-        [data, errs] = enforceTypes(endp)([data, []])
-        assert.equal errs.length, 0
-        assert.deepEqual data, {
+        result = enforceTypes(endp)(data)
+        assert.equal result.errs.length, 0
+        assert.deepEqual result.doc, {
             b:
                 a: [
                     int:1
@@ -290,9 +290,9 @@ describe 'enforceTypes function', ->
                     list: ['2/2/2002', '2005-01-01T00:00:00', 'I am the model of a modern...']                    
                 ]
             ]
-        [data, errs] = enforceTypes(endp)([data, []])
-        assert.equal errs.length, 8
-        assert.deepEqual data, {
+        result = enforceTypes(endp)(data)
+        assert.equal result.errs.length, 8
+        assert.deepEqual result.doc, {
             int: null
             list: [1,2,null]
             doc:
@@ -311,7 +311,7 @@ describe 'enforceTypes function', ->
                 ]
             ]
         }
-        assert.sameMembers (x.path for x in errs), [
+        assert.sameMembers (x.path for x in result.errs), [
             'int'
             'list.2'
             'doc.int'
