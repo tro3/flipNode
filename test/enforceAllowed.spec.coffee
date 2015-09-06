@@ -25,7 +25,7 @@ p = console.log
 
 
 
-describe.only 'enforceAllowed function', ->
+describe 'enforceAllowed function', ->
     
     it 'handles simple objects', ->
         endp = new Endpoint {
