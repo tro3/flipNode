@@ -23,16 +23,16 @@ x.extractFromPath = (endp) ->
   
   processDoc = (stack, sch, val, path) ->
     [key, stack] = fp.splitHead stack
-    return [{path: join(path, key), value: undefined}] if key not of val
     sch = sch[key]
-    val = val[key]
     path = join path, key
-    return [{path: path, value: val}] if stack.length == 0
+    return [{path:path, sch:sch, value:undefined}] if key not of val
+    val = val[key]
+    return [{path: path, sch:sch, value: val}] if stack.length == 0
     
     switch
       when isDoc(sch)       then processDoc(stack, sch.schema, val, path)
       when isDocList(sch)   then processDocList(stack, sch.schema, val, path)
-      when isPrimList(sch)  then [{path: join(path, stack[0]), value: val[stack[0]]}]
+      when isPrimList(sch)  then [{path: join(path, stack[0]), sch:sch, value: val[stack[0]]}]
 
   processDocList = (stack, sch, lst, path) ->
     if stack[0] of sch
@@ -40,10 +40,12 @@ x.extractFromPath = (endp) ->
       fp.flatten fp.mapIndex fn, lst
     else
       [key, stack] = fp.splitHead stack
+      return [{path: join(path, key), sch:sch, value: lst[key]}] if stack.length == 0
       processDoc(stack, sch, lst[key], join(path, key))
-    
+
   (path) ->
     (doc) ->
+      return [{path:'', sch:{type:types.Doc, schema:endp.schema}, value:doc}] if path == ''
       stack = path.split('.')
       processDoc(stack, endp.schema, doc, '')
       
