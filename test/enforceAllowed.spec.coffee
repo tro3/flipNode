@@ -132,7 +132,7 @@ describe 'enforceAllowed function', ->
             {c:2}
             {c:3}
         ]}}
-        result = enforceAllowed(endp)({doc:data, req:req, errs:[], _state:true})
+        result = enforceAllowed(endp)(data, req)
         assert.equal result.errs.length, 1
         assert.sameMembers (x.path for x in result.errs), [
             'a.b.0.c'

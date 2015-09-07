@@ -10,9 +10,7 @@ module.exports = enforceAllowed = (endp) ->
   root = null
   req = null
 
-  # List of extraction fcns by path
-  extractors = fp.map prim.extractFromPath(endp), fp.keys endp.paths.alloweds  
-  getValues = fp.flatten fp.callAll extractors
+  getValues = prim.getValues endp, fp.keys endp.paths.alloweds
 
   parentPath = (path) -> path.split('.')[...-1].join('.')
   getParent = (path) -> prim.extractFromPath(endp)(parentPath path)(root)[0].value
@@ -29,8 +27,8 @@ module.exports = enforceAllowed = (endp) ->
   genErr = (value) -> {path: value.path, msg: "Value '#{value.value}' at '#{value.path}' not allowed"}
   
   
-  (inState) ->
-    inState = {doc:inState, req:null, errs:[]} if '_state' not of inState
+  (inState, inReq) ->
+    inState = prim.enforceState inState, inReq
     root = inState.doc
     req = inState.req
     return {
