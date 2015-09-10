@@ -10,7 +10,6 @@ module.exports = enforceAllowed = (endp) ->
   root = null
   req = null
 
-  getValues = prim.getValues endp, fp.keys endp.paths.alloweds
 
   parentPath = (path) -> path.split('.')[...-1].join('.')
   getParent = (path) -> prim.extractFromPath(endp)(parentPath path)(root)[0].value
@@ -22,7 +21,9 @@ module.exports = enforceAllowed = (endp) ->
                   value.sch.allowed
     alloweds = fp.concat(alloweds, [null, undefined]) if !value.sch.required
     return value.value not in alloweds
-  
+
+
+  getValues = prim.getValues endp, fp.keys endp.paths.alloweds  
   findErrors = (values) -> fp.map genErr, fp.filter checkNotAllowed, values
   genErr = (value) -> {path: value.path, msg: "Value '#{value.value}' at '#{value.path}' not allowed"}
   

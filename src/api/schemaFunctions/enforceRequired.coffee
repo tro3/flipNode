@@ -7,11 +7,11 @@ p = console.log
 
 module.exports = enforceRequired = (endp) ->
 
-  getValues = prim.getValues endp, fp.keys endp.paths.requireds
-  
-  filterNothings = fp.filter fp.isNothing fp.prop 'value'
+  checkIfNothing = fp.isNothing fp.prop 'value'
+
+  getValues = prim.getValues endp, fp.keys endp.paths.requireds  
   genErr = (value) -> {path: value.path, msg: "Value required at '#{value.path}'"}    
-  findErrors = fp.map genErr, filterNothings getValues
+  findErrors = fp.map genErr, fp.filter checkIfNothing, getValues
 
   
   (inState, req) ->
