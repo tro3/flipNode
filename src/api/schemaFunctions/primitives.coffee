@@ -18,6 +18,10 @@ x.isReadOnly = isReadOnly = (sch) -> sch.type in types.ReadOnlyTypes
 
 x.join = join = (p1, p2) -> "#{p1}#{if p1.length then '.' else ''}#{p2}"
 
+x.get = get = (lst, id) ->
+  for item in lst
+    return item if item._id == id
+
 
 x.State = State = (doc, req=null, errs=[]) ->
   fp.zipObj ['doc', 'req', 'errs', '_state'], [doc, req, errs, true]
