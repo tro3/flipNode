@@ -16,9 +16,6 @@ module.exports = enforceRequired = (endp) ->
   
   (inState, req) ->
     inState = prim.enforceState inState, req
-    return {
-      _state: true
-      doc: inState.doc
-      req: inState.req
+    return fp.merge inState, {
       errs: fp.concat inState.errs, findErrors inState.doc
     }

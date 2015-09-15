@@ -43,9 +43,7 @@ module.exports = enforceTypes = (endp) ->
   (inState) ->
     inState = {doc:inState, errs:[]} if '_state' not of inState
     errs = []
-    return {
-      _state: true
+    return fp.merge inState, {
       doc: processDoc endp.schema, inState.doc, ''
-      req: inState.req
       errs: fp.concat inState.errs, errs
     }

@@ -19,9 +19,7 @@ module.exports = enforceUnique = (endp) ->
   (inState, inReq) ->
     inState = prim.enforceState inState, inReq
     req = inState.req
-    return findErrors(inState.doc).then (errs) -> {
-      _state: true
-      doc: inState.doc
-      req: inState.req
-      errs: fp.concat inState.errs, errs
-    }
+    return findErrors(inState.doc).then (errs) ->
+      fp.merge inState, {
+        errs: fp.concat inState.errs, errs
+      }
