@@ -46,5 +46,6 @@ module.exports = enforceTypes = (endp) ->
     return {
       _state: true
       doc: processDoc endp.schema, inState.doc, ''
+      req: inState.req
       errs: fp.concat inState.errs, errs
     }

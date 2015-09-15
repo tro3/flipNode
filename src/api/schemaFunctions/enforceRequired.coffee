@@ -19,5 +19,6 @@ module.exports = enforceRequired = (endp) ->
     return {
       _state: true
       doc: inState.doc
+      req: inState.req
       errs: fp.concat inState.errs, findErrors inState.doc
     }

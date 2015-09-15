@@ -16,25 +16,25 @@ x.isPrimList = isPrimList = (sch) -> sch.type == types.List and 'subtype' of sch
 x.isPrimitive = isPrimitive = (sch) -> sch.type != types.Doc and sch.type != types.List
 x.isReadOnly = isReadOnly = (sch) -> sch.type in types.ReadOnlyTypes
 
-x.join = join = (p1, p2) -> "#{p1}#{if p1.length then '.' else ''}#{p2}"
+x.parentPath = parentPath = (path) -> path.split('.')[...-1].join('.')
+x.getParent = (endp, path, x) -> extractFromPath(endp)(parentPath path)(x)[0].value
 
-x.get = get = (lst, id) ->
-  for item in lst
-    return item if item._id == id
+x.join = join = (p1, p2) -> "#{p1}#{if p1.length then '.' else ''}#{p2}"
+x.get = get = (lst, id) -> fp.find {_id:id}, lst
 
 
 x.State = State = (doc, req=null, errs=[]) ->
   fp.zipObj ['doc', 'req', 'errs', '_state'], [doc, req, errs, true]
-
 x.enforceState = (state, req) ->
   if '_state' of state then state else State state, req, []
+
 
 Result = () -> [fp.zipObj(['path', 'sch', 'value'], arguments)] # Will be flattened
 
 
 
 # {EndP} -> (String -> ({Doc} -> a))
-x.extractFromPath = (endp) ->
+x.extractFromPath = extractFromPath = (endp) ->
   
   processDoc = (stack, sch, val, path) ->
     [key, stack] = fp.splitHead stack
@@ -71,39 +71,3 @@ x.extractFromPath = (endp) ->
 x.getValues = (endp, paths) ->
   valueExtractors = fp.map x.extractFromPath(endp), paths
   fp.flatten fp.callAll valueExtractors
-  
-      
-#
-#endp =
-#  schema:
-#    a:
-#      type: types.Integer
-#    b:
-#      type: types.Doc
-#      schema:
-#        c:
-#          type: types.Integer
-#    d:
-#      type: types.List
-#      subtype: types.Integer
-#    e:
-#      type: types.List
-#      schema:
-#        f:
-#          type: types.Integer
-#val =
-#  a: 1
-#  b:
-#    c: 2
-#  d:[3,4]
-#  e:[
-#    {f:5}
-#    {f:6}
-#  ]
-#      
-#p x.extractFromPath(endp)('a')(val)
-#p x.extractFromPath(endp)('b.c')(val)
-#p x.extractFromPath(endp)('d.1')(val)
-#p x.extractFromPath(endp)('e.f')(val)
-#p x.extractFromPath(endp)('e.1.f')(val)
-#     
