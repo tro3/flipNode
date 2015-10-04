@@ -20,7 +20,7 @@ Auto = types.Auto
 AutoInit = types.AutoInit
 
 
-enforceUnique = require('../src/api/schemaFunctions/enforceUnique')
+enforceUnique = require('../src/api/schemaFunctions/enforceSchema/enforceUnique')
 p = console.log
 
 

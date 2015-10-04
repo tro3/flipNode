@@ -20,7 +20,7 @@ Auto = types.Auto
 AutoInit = types.AutoInit
 
 
-enforceAllowed = require('../src/api/schemaFunctions/enforceAllowed')
+enforceAllowed = require('../src/api/schemaFunctions/enforceSchema/enforceAllowed')
 p = console.log
 
 
@@ -96,7 +96,7 @@ describe 'enforceAllowed function', ->
       'a.b.0.c'
     ]
 
-  it.only 'handles root dependence', ->
+  it 'handles root dependence', ->
     endp = new Endpoint {
       allowed: [Integer]
       a:

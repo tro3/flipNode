@@ -1,6 +1,6 @@
 fp = require 'flipFP'
 
-prim = require './primitives'
+prim = require './enforceSchema/primitives'
 schema = require '../schema'
 types =  schema.types
 
@@ -9,8 +9,6 @@ x = module.exports
 
 
 
-
-  
 processVal = (sch, o, n) ->
   if      prim.isDoc(sch) then     processDoc(sch.schema, o, n)
   else if prim.isDocList(sch) then processList(sch.schema, o, n)

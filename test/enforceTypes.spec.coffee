@@ -16,7 +16,7 @@ Auto = types.Auto
 AutoInit = types.AutoInit
 
 
-enforceTypes = require('../src/api/schemaFunctions/enforceTypes')
+enforceTypes = require('../src/api/schemaFunctions/enforceSchema/enforceTypes')
 p = console.log
 
 

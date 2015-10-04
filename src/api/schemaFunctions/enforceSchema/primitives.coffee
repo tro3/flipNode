@@ -1,10 +1,10 @@
 mpath = require 'mpath'
 fp = require 'flipFP'
 
-schema = require '../schema'
+schema = require '../../schema'
 types =  schema.types
 
-getPaths = require '../schema/paths'
+getPaths = require '../../schema/paths'
 
 p = console.log
 x = module.exports
@@ -25,10 +25,10 @@ x.get = get = (lst, id) -> fp.find {_id:id}, lst
 
 x.State = State = (doc, req=null, errs=[]) ->
   fp.zipObj ['doc', 'req', 'errs', '_state'], [doc, req, errs, true]
+
 x.enforceState = (state, req) ->
   if '_state' of state then state else State state, req, []
-
-
+    
 Result = () -> [fp.zipObj(['path', 'sch', 'value'], arguments)] # Will be flattened
 
 

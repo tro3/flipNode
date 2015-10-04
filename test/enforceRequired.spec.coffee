@@ -20,7 +20,7 @@ Auto = types.Auto
 AutoInit = types.AutoInit
 
 
-enforceRequired = require('../src/api/schemaFunctions/enforceRequired')
+enforceRequired = require('../src/api/schemaFunctions/enforceSchema/enforceRequired')
 p = console.log
 
 
