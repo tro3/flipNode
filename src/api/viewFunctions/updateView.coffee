@@ -2,7 +2,7 @@
 auth = require '../authFunctions'
 
 
-updateView = (req, res) ->
+module.exports = updateView = (req, res) ->
   return res.status(400).send(errors.MALFORMED) if 'body' not of req
   auth.checkList('edit', req.endpoint, req)
   .then (auth) ->

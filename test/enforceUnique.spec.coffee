@@ -26,7 +26,7 @@ p = console.log
 
 describe 'enforceUnique function', ->
     conn = null
-    req = {}
+    env = null
     spy = null
 
     before ->
@@ -43,12 +43,14 @@ describe 'enforceUnique function', ->
         .then -> done()
 
     beforeEach ->
-        req.cache = new DbCache(conn)
+        env =
+            collection: 'items'
+            cache: new DbCache(conn)
+            errs: []
 
     
     it 'handles top-level contraints', (done) ->
-        req.collection = 'items'
-        req.endpoint = endp = new Endpoint {
+        env.endpoint = new Endpoint {
             name:
                 type: String
                 unique: true
@@ -57,8 +59,8 @@ describe 'enforceUnique function', ->
                     type: String
                     unique: true
         }
-        data = {name: 'Bob', address: {city: 'San Diego'}}
-        enforceUnique(endp)(data, req)
+        env.doc = {name: 'Bob', address: {city: 'San Diego'}}
+        enforceUnique(env)
         .then (result) ->
             assert.equal result.errs.length, 1
             assert.sameMembers (x.path for x in result.errs), [
@@ -68,8 +70,7 @@ describe 'enforceUnique function', ->
         .catch (err) -> done(err)
 
     it 'handles nested contraints', (done) ->
-        req.collection = 'items'
-        req.endpoint = endp = new Endpoint {
+        env.endpoint = new Endpoint {
             name:
                 type: String
                 unique: true
@@ -78,8 +79,8 @@ describe 'enforceUnique function', ->
                     type: String
                     unique: true
         }
-        data = {name: 'Robert', address: {city: 'Palo Alto'}}
-        enforceUnique(endp)(data, req)
+        env.doc = {name: 'Robert', address: {city: 'Palo Alto'}}
+        enforceUnique(env)
         .then (result) ->
             assert.equal result.errs.length, 1
             assert.sameMembers (x.path for x in result.errs), [

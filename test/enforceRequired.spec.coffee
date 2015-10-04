@@ -34,7 +34,7 @@ describe 'enforceRequired function', ->
             b: Integer
         }
         data = {b:1}
-        result = enforceRequired(endp)(data)
+        result = enforceRequired({endpoint:endp, doc:data, errs:[]})
         assert.equal result.errs.length, 1
         assert.sameMembers (x.path for x in result.errs), [
             'a'
@@ -49,7 +49,7 @@ describe 'enforceRequired function', ->
                 b: Integer
         }
         data = {a: {a: null, b:1}}
-        result = enforceRequired(endp)(data)
+        result = enforceRequired({endpoint:endp, doc:data, errs:[]})
         assert.equal result.errs.length, 1
         assert.sameMembers (x.path for x in result.errs), [
             'a.a'
@@ -75,7 +75,7 @@ describe 'enforceRequired function', ->
             {c:1,d:[{e:' ', f:1}]}
             {c:null,d:[]}
         ]}}
-        result = enforceRequired(endp)(data)
+        result = enforceRequired({endpoint:endp, doc:data, errs:[]})
         assert.equal result.errs.length, 4
         assert.sameMembers (x.path for x in result.errs), [
             'a.b.0.c'

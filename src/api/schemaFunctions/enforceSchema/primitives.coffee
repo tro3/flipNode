@@ -23,11 +23,11 @@ x.join = join = (p1, p2) -> "#{p1}#{if p1.length then '.' else ''}#{p2}"
 x.get = get = (lst, id) -> fp.find {_id:id}, lst
 
 
-x.State = State = (doc, req=null, errs=[]) ->
-  fp.zipObj ['doc', 'req', 'errs', '_state'], [doc, req, errs, true]
-
-x.enforceState = (state, req) ->
-  if '_state' of state then state else State state, req, []
+#x.State = State = (doc, req=null, errs=[]) ->
+#  fp.zipObj ['doc', 'req', 'errs', '_state'], [doc, req, errs, true]
+#
+#x.enforceState = (state, req) ->
+#  if '_state' of state then state else State state, req, []
     
 Result = () -> [fp.zipObj(['path', 'sch', 'value'], arguments)] # Will be flattened
 

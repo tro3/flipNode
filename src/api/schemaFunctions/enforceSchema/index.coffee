@@ -1,6 +1,7 @@
 
 fp = require 'flipFP'
 prim = require './primitives'
+p = console.log
 
 functions = [
   'enforceTypes'
@@ -9,8 +10,16 @@ functions = [
   'enforceUnique'
 ]
 
-getMod = (name) -> require "./#{name}"
+
 module.exports = enforceSchema = (req, doc) ->
-  
-  
-  fp.pipe fp.map getMod, functions
+
+  result = {req:req, doc:doc, errs:[]}
+
+  endp = req.endpoint
+  getMod = (name) -> require("./#{name}")(endp)
+  a = fp.pipe fp.map getMod, functions
+  p a
+  p a.length
+  p a(result)
+    
+  (fp.pipe (fp.map getMod, functions))(result)

@@ -5,7 +5,9 @@ p = console.log
 
 
 
-module.exports = enforceRequired = (endp) ->
+module.exports = enforceRequired = (env) ->
+  
+  endp = env.endpoint
 
   checkIfNothing = fp.isNothing fp.prop 'value'
 
@@ -13,9 +15,5 @@ module.exports = enforceRequired = (endp) ->
   genErr = (value) -> {path: value.path, msg: "Value required at '#{value.path}'"}    
   findErrors = fp.map genErr, fp.filter checkIfNothing, getValues
 
-  
-  (inState, req) ->
-    inState = prim.enforceState inState, req
-    return fp.merge inState, {
-      errs: fp.concat inState.errs, findErrors inState.doc
-    }
+  env.errs = fp.concat env.errs, findErrors env.doc
+  env

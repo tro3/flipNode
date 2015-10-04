@@ -5,30 +5,22 @@ p = console.log
 
 
 
-module.exports = enforceAllowed = (endp) ->
+module.exports = enforceAllowed = (env) ->
 
-  root = null
-  req = null
-
+  endp = env.endpoint
+  root = env.doc
 
   checkNotAllowed = (value) ->
     alloweds =  if typeof value.sch.allowed == 'function'
-                  value.sch.allowed(prim.getParent(endp, value.path, root), root, req)
+                  value.sch.allowed(prim.getParent(endp, value.path, root), root, env)
                 else
                   value.sch.allowed
-    alloweds = fp.concat(alloweds, [null, undefined]) if !value.sch.required
+    alloweds = fp.concat(alloweds, [null, undefined]) if !value.sch.envuired
     return value.value not in alloweds
-
 
   getValues = prim.getValues endp, fp.keys endp.paths.alloweds  
   findErrors = (values) -> fp.map genErr, fp.filter checkNotAllowed, values
   genErr = (value) -> {path: value.path, msg: "Value '#{value.value}' at '#{value.path}' not allowed"}
-  
-  
-  (inState, inReq) ->
-    inState = prim.enforceState inState, inReq
-    root = inState.doc
-    req = inState.req
-    return fp.merge inState, {
-      errs: fp.concat inState.errs, findErrors(getValues inState.doc) 
-    }
+
+  env.errs = fp.concat env.errs, findErrors(getValues root) 
+  return env

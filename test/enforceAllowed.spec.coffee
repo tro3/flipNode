@@ -37,13 +37,13 @@ describe 'enforceAllowed function', ->
         allowed: (el) -> [2,3]
     }
     data = {a:3, b:2}
-    result = enforceAllowed(endp)(data)
+    result = enforceAllowed({endpoint:endp, doc:data, errs:[]})
     assert.equal result.errs.length, 1
     assert.sameMembers (x.path for x in result.errs), [
       'a'
     ]
     data = {a:1, b:1}
-    result = enforceAllowed(endp)(data)
+    result = enforceAllowed({endpoint:endp, doc:data, errs:[]})
     assert.equal result.errs.length, 1
     assert.sameMembers (x.path for x in result.errs), [
       'b'
@@ -69,7 +69,7 @@ describe 'enforceAllowed function', ->
       {c:1,d:[{e:1, f:1}]}
       {c:null,d:[]}
     ]}}
-    result = enforceAllowed(endp)(data)
+    result = enforceAllowed({endpoint:endp, doc:data, errs:[]})
     assert.equal result.errs.length, 2
     assert.sameMembers (x.path for x in result.errs), [
       'a.b.2.c'
@@ -90,7 +90,7 @@ describe 'enforceAllowed function', ->
       {allowed:[1,3],c:2}
       {allowed:[1,3],c:3}
     ]}}
-    result = enforceAllowed(endp)(data)
+    result = enforceAllowed({endpoint:endp, doc:data, errs:[]})
     assert.equal result.errs.length, 1
     assert.sameMembers (x.path for x in result.errs), [
       'a.b.0.c'
@@ -110,29 +110,27 @@ describe 'enforceAllowed function', ->
       {c:2}
       {c:3}
     ]}}
-    result = enforceAllowed(endp)(data)
+    result = enforceAllowed({endpoint:endp, doc:data, errs:[]})
     assert.equal result.errs.length, 1
     assert.sameMembers (x.path for x in result.errs), [
       'a.b.0.c'
     ]
 
-  it 'handles req dependence', ->
+  it 'handles env dependence', ->
     endp = new Endpoint {
       allowed: [Integer]
       a:
         b: [
           c:
             type: Integer
-            allowed: (el, root, req) -> req.allowed
+            allowed: (el, root, env) -> env.allowed
         ]
     }
-    req =
-      allowed: [1,3]
     data = {a: {b: [
       {c:2}
       {c:3}
     ]}}
-    result = enforceAllowed(endp)(data, req)
+    result = enforceAllowed({endpoint:endp, doc:data, errs:[], allowed:[1,3]})
     assert.equal result.errs.length, 1
     assert.sameMembers (x.path for x in result.errs), [
       'a.b.0.c'

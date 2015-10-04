@@ -4,22 +4,18 @@ prim = require './primitives'
 p = console.log
 
 
-module.exports = enforceUnique = (endp) ->
+module.exports = enforceUnique = (env) ->
   
-  req = null
-
+  endp = env.endpoint
+  
   hasDuplicate = (value) ->
     query = fp.zipObj [value.path],[value.value]
-    req.cache.findOne(req.collection, query).then (doc) -> doc != null
+    env.cache.findOne(env.collection, query).then (doc) -> doc != null
 
   getValues = prim.getValues endp, fp.keys endp.paths.uniques
   genErr = (value) -> {path: value.path, msg: "Value required at '#{value.path}'"}    
   findErrors = fp.map genErr, fp.qFilter hasDuplicate, getValues
   
-  (inState, inReq) ->
-    inState = prim.enforceState inState, inReq
-    req = inState.req
-    return findErrors(inState.doc).then (errs) ->
-      fp.merge inState, {
-        errs: fp.concat inState.errs, errs
-      }
+  return findErrors(env.doc).then (errs) ->
+    env.errs = fp.concat env.errs, errs
+    return env

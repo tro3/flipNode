@@ -9,9 +9,10 @@ readableKeys = (sch) ->
 
       
 # {endpoint} -> ({sch}, {}..., String -> a) -> ({}... -> {})
-module.exports = enforceTypes = (endp) ->
+module.exports = enforceTypes = (env) ->
   
-  errs = []
+  endp = env.endpoint
+  errs = env.errs
     
   loopFn = (sch, val, path) ->
     switch
@@ -40,12 +41,6 @@ module.exports = enforceTypes = (endp) ->
         errs.push({path:path, msg:"Could not convert '#{path}' value of '#{val}'"})
         return null
 
-  (inState) ->
-    inState = {doc:inState, errs:[]} if '_state' not of inState
-    errs = []
-    d = processDoc endp.schema, inState.doc, ''
-    s = fp.merge inState, {
-      errs: fp.concat inState.errs, errs
-    }
-    s.doc = d
-    s
+  env.doc = processDoc endp.schema, env.doc, ''
+  env
+    
