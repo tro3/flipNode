@@ -10,16 +10,6 @@ functions = [
   'enforceUnique'
 ]
 
+getMod = (name) -> require("./#{name}")
 
-module.exports = enforceSchema = (req, doc) ->
-
-  result = {req:req, doc:doc, errs:[]}
-
-  endp = req.endpoint
-  getMod = (name) -> require("./#{name}")(endp)
-  a = fp.pipe fp.map getMod, functions
-  p a
-  p a.length
-  p a(result)
-    
-  (fp.pipe (fp.map getMod, functions))(result)
+module.exports = enforceSchema = fp.pipe.apply(null, fp.map(getMod, functions))

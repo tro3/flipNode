@@ -23,7 +23,7 @@ module.exports = enforceTypes = (env) ->
 
   processDoc = (sch, obj, path) ->
     fn = (key) -> loopFn sch[key], obj[key], prim.join(path, key)
-    fp.zipKeys fn, (readableKeys sch)
+    fp.zipKeys fn, (fp.keys sch)
 
   processDocList = (sch, lst, path) ->
     fn = (doc, i) -> processDoc sch, doc, prim.join(path, i)
