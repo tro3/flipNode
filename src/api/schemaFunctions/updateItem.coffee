@@ -11,6 +11,7 @@ module.exports = updateItem = (env, newDoc) ->
   .then (oldDoc) ->
     return {errs:['Document not found']} if !oldDoc
     env.doc = schemaMerge env.endpoint, oldDoc, newDoc
+    env.original = oldDoc
     enforceSchema(env)
   .then (env) ->
     return q(env) if env.errs.length
