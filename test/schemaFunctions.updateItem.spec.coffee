@@ -19,7 +19,7 @@ updateItem = require('../src/api/schemaFunctions/updateItem')
 p = console.log
 
 
-describe.only 'schemaFunctions.updateItem', ->
+describe 'schemaFunctions.updateItem', ->
     conn = null
     env = null
 

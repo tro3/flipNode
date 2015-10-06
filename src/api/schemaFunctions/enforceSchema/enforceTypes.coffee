@@ -4,7 +4,7 @@ prim = require './primitives'
 p = console.log
 
 
-readableKeys = (sch) ->
+nonIdKeys = (sch) ->
   fp.filter ( (k) -> !(prim.isReadOnly sch[k]) && k != '_id'), fp.keys sch
 
       

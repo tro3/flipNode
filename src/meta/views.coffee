@@ -3,7 +3,8 @@ p = console.log
 types = require('../api').schema.types
 
 [
-    [types.Doc,      'Doc']
+    [types.Id,        'Id']
+    [types.Doc,       'Doc']
     [types.List,      'List']
     [types.String,    'String']
     [types.Integer,   'Integer']

@@ -13,7 +13,7 @@ schemaMerge = require('../src/api/schemaFunctions/schemaMerge')
 p = console.log
 
 
-describe 'schemaMerge function', ->
+xdescribe 'schemaMerge function', ->
         
     it 'handles simple objects', ->
         old =

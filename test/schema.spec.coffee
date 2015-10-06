@@ -29,7 +29,7 @@ describe 'Schema module', ->
                 name: types.String
             utils.assertEqualObj expand(cfg), {
                 _id:
-                    type: types.Integer
+                    type: types.Id
                 name:
                     type: types.String
             }
@@ -41,7 +41,7 @@ describe 'Schema module', ->
                     required: true
             utils.assertEqualObj expand(cfg), {
                 _id:
-                    type: types.Integer
+                    type: types.Id
                 name:
                     type: types.String
                     required: true
@@ -54,12 +54,12 @@ describe 'Schema module', ->
                     city: types.String
             utils.assertEqualObj expand(cfg), {
                 _id:
-                    type: types.Integer
+                    type: types.Id
                 address:
                     type: types.Doc
                     schema:
                         _id:
-                            type: types.Integer
+                            type: types.Id
                         street:
                             type: types.String
                         city:
@@ -75,12 +75,12 @@ describe 'Schema module', ->
                         city: types.String
             utils.assertEqualObj expand(cfg), {
                 _id:
-                    type: types.Integer
+                    type: types.Id
                 address:
                     type: types.Doc
                     schema:
                         _id:
-                            type: types.Integer
+                            type: types.Id
                         street:
                             type: types.String
                         city:
@@ -92,7 +92,7 @@ describe 'Schema module', ->
                 tags: [types.String]
             utils.assertEqualObj expand(cfg), {
                 _id:
-                    type: types.Integer
+                    type: types.Id
                 tags:
                     type: types.List
                     subtype:
@@ -106,7 +106,7 @@ describe 'Schema module', ->
                     subtype: types.String
             utils.assertEqualObj expand(cfg), {
                 _id:
-                    type: types.Integer
+                    type: types.Id
                 tags:
                     type: types.List
                     subtype:
@@ -121,12 +121,12 @@ describe 'Schema module', ->
                 ]
             utils.assertEqualObj expand(cfg), {
                 _id:
-                    type: types.Integer
+                    type: types.Id
                 address:
                     type: types.List
                     schema:
                         _id:
-                            type: types.Integer
+                            type: types.Id
                         street:
                             type: types.String
                         city:
@@ -144,12 +144,12 @@ describe 'Schema module', ->
                             type: types.String
             utils.assertEqualObj expand(cfg), {
                 _id:
-                    type: types.Integer
+                    type: types.Id
                 address:
                     type: types.List
                     schema:
                         _id:
-                            type: types.Integer
+                            type: types.Id
                         street:
                             type: types.String
                         city:
@@ -168,29 +168,29 @@ describe 'Schema module', ->
                 ]
             utils.assertEqualObj expand(cfg), {
                 _id:
-                    type: types.Integer
+                    type: types.Id
                 subdoc:
                     type: types.Doc
                     schema:
                         _id:
-                            type: types.Integer
+                            type: types.Id
                         subdoclist:
                             type: types.List
                             schema:
                                 _id:
-                                    type: types.Integer
+                                    type: types.Id
                                 name:
                                     type:types.String
                 sublist:
                     type: types.List
                     schema:
                         _id:
-                            type: types.Integer
+                            type: types.Id
                         subdoc:
                             type: types.Doc
                             schema:
                                 _id:
-                                    type: types.Integer
+                                    type: types.Id
                                 address:
                                     type: types.String
             }
@@ -323,7 +323,7 @@ describe 'Schema module', ->
                     type: types.List
                     schema:
                         _id:
-                            type: types.Integer
+                            type: types.Id
                         simple1:
                             type: types.String
                         simple2:
@@ -503,7 +503,7 @@ describe 'Schema module', ->
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
-                        type: Integer
+                        type: types.Id
                     name:
                         type: String
                 paths: defaultPaths()
@@ -527,7 +527,7 @@ describe 'Schema module', ->
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
-                        type: Integer
+                        type: types.Id
                     name:
                         type: String
                     ref:
@@ -556,7 +556,7 @@ describe 'Schema module', ->
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
-                        type: Integer
+                        type: types.Id
                     name:
                         type: String
                 paths: defaultPaths()
@@ -587,14 +587,14 @@ describe 'Schema module', ->
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
-                        type: Integer
+                        type: types.Id
                     name:
                         type: String
                     subdoc:
                         type: Doc
                         schema:
                             _id:
-                                type: Integer
+                                type: types.Id
                             main_ref:
                                 type: Reference
                                 collection: 'users'
@@ -643,14 +643,14 @@ describe 'Schema module', ->
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
-                        type: Integer
+                        type: types.Id
                     name:
                         type: String
                     subdoc:
                         type: Doc
                         schema:
                             _id:
-                                type: Integer
+                                type: types.Id
                             stage:
                                 type: String
                                 allowed: ['Open', 'Closed']
@@ -663,7 +663,7 @@ describe 'Schema module', ->
                         type: List
                         schema:
                             _id:
-                                type: Integer
+                                type: types.Id
                             stage:
                                 type: String
                                 allowed: ['Open', 'Closed']
@@ -708,14 +708,14 @@ describe 'Schema module', ->
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
-                        type: Integer
+                        type: types.Id
                     name:
                         type: String
                     subdoc:
                         type: Doc
                         schema:
                             _id:
-                                type: Integer
+                                type: types.Id
                             stage:
                                 type: String
                                 required: true
@@ -728,7 +728,7 @@ describe 'Schema module', ->
                         type: List
                         schema:
                             _id:
-                                type: Integer
+                                type: types.Id
                             stage:
                                 type: String
                                 required: true
@@ -773,14 +773,14 @@ describe 'Schema module', ->
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
-                        type: Integer
+                        type: types.Id
                     name:
                         type: String
                     subdoc:
                         type: Doc
                         schema:
                             _id:
-                                type: Integer
+                                type: types.Id
                             stage:
                                 type: String
                                 unique: true
@@ -793,7 +793,7 @@ describe 'Schema module', ->
                         type: List
                         schema:
                             _id:
-                                type: Integer
+                                type: types.Id
                             stage:
                                 type: String
                                 unique: true
@@ -838,14 +838,14 @@ describe 'Schema module', ->
                 schema:
                     __proto__: dut.schema.__proto__
                     _id:
-                        type: Integer
+                        type: types.Id
                     name:
                         type: String
                     subdoc:
                         type: Doc
                         schema:
                             _id:
-                                type: Integer
+                                type: types.Id
                             stage:
                                 type: Auto
                                 auto: dut.schema.subdoc.schema.stage.auto
@@ -858,7 +858,7 @@ describe 'Schema module', ->
                         type: List
                         schema:
                             _id:
-                                type: Integer
+                                type: types.Id
                             stage:
                                 type: Auto
                                 auto: dut.schema.list.schema.stage.auto
@@ -902,14 +902,14 @@ describe 'Schema module', ->
 
                 schema:
                     _id:
-                        type: Integer
+                        type: types.Id
                     name:
                         type: String
                     subdoc:
                         type: Doc
                         schema:
                             _id:
-                                type: Integer
+                                type: types.Id
                             stage:
                                 type: AutoInit
                                 auto: dut.schema.subdoc.schema.stage.auto
@@ -922,7 +922,7 @@ describe 'Schema module', ->
                         type: List
                         schema:
                             _id:
-                                type: Integer
+                                type: types.Id
                             stage:
                                 type: AutoInit
                                 auto: dut.schema.list.schema.stage.auto

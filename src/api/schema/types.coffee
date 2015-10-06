@@ -2,8 +2,8 @@ p = console.log
 
 x = module.exports
 
-x.ReadOnly = () ->
-    
+x.ReadOnly = (val) -> val
+ 
 x.List = () -> x.TypeError # Should never be used
 x.Doc = () -> x.TypeError # Should never be used
 

@@ -31,7 +31,7 @@ describe 'meta API', ->
                     assert.deepEqual res.body,
                         users:
                             _id:
-                                type: 'Integer'
+                                type: 'Id'
                             name:
                                 type: 'String'
                     done()
@@ -66,40 +66,40 @@ describe 'meta API', ->
                     assert.deepEqual res.body,
                         users:
                             _id:
-                                type: 'Integer'
+                                type: 'Id'
                             name:
                                 type: 'String'
                             nested:
                                 type: 'Doc'
                                 schema:
                                     _id:
-                                        type: 'Integer'
+                                        type: 'Id'
                                     name:
                                         type: 'String'
                                     docList:
                                         type: 'List'
                                         schema:
                                             _id:
-                                                type: 'Integer'
+                                                type: 'Id'
                                             name:
                                                 type: 'String'
                             docList:
                                 type: 'List'
                                 schema:
                                     _id:
-                                        type: 'Integer'
+                                        type: 'Id'
                                     name:
                                         type: 'String'
                                     nested:
                                         type: 'Doc'
                                         schema:
                                             _id:
-                                                type: 'Integer'
+                                                type: 'Id'
                                             docList:
                                                 type: 'List'
                                                 schema:
                                                     _id:
-                                                        type: 'Integer'
+                                                        type: 'Id'
                                                     name:
                                                         type: 'String'
                     done()
@@ -130,7 +130,7 @@ describe 'meta API', ->
                     assert.deepEqual res.body,
                         users:
                             _id:
-                                type: 'Integer'
+                                type: 'Id'
                             str:
                                 type: 'String'
                             int:
@@ -166,7 +166,7 @@ describe 'meta API', ->
                     assert.deepEqual res.body,
                         users:
                             _id:
-                                type: 'Integer'
+                                type: 'Id'
                             name:
                                 type: 'String'
                                 required: true
@@ -191,7 +191,7 @@ describe 'meta API', ->
                     assert.deepEqual res.body,
                         users:
                             _id:
-                                type: 'Integer'
+                                type: 'Id'
                             name:
                                 type: 'String'
                                 unique: true
@@ -219,7 +219,7 @@ describe 'meta API', ->
                     assert.deepEqual res.body,
                         users:
                             _id:
-                                type: 'Integer'
+                                type: 'Id'
                             name:
                                 type: 'Auto'
                             name2:
@@ -245,7 +245,7 @@ describe 'meta API', ->
                     assert.deepEqual res.body,
                         users:
                             _id:
-                                type: 'Integer'
+                                type: 'Id'
                             name:
                                 type: 'Integer'
                                 allowed: [1,2]
@@ -270,8 +270,8 @@ describe 'meta API', ->
                     assert.deepEqual res.body,
                         users:
                             _id:
-                                type: 'Integer'
+                                type: 'Id'
                             name:
-                                type: 'Integer'
+                                type: 'Id'
                                 allowed: '(el) -> [1,2]'
                     done()
