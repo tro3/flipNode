@@ -20,7 +20,7 @@ incoming = require('../src/api/viewFunctions/incoming')
 p = console.log
 
 
-describe 'incoming function', ->
+xdescribe 'incoming function', ->
     it 'handles simple objects', ->
         sch = new Schema {
             int: Integer

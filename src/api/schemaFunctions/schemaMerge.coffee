@@ -12,7 +12,7 @@ x = module.exports
 processVal = (sch, o, n) ->
   if      prim.isDoc(sch) then     processDoc(sch.schema, o, n)
   else if prim.isDocList(sch) then processList(sch.schema, o, n)
-  else if prim.isReadOnly(sch) then return o
+  else if prim.isReadOnly(sch) then return o || null
   else if prim.isPrimList(sch)
     return o if n == undefined and o != undefined
     return [] if n == undefined and o == undefined

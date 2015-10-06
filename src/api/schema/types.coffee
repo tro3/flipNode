@@ -2,14 +2,13 @@ p = console.log
 
 x = module.exports
 
-x.ReadOnly = (val) -> val
  
 x.List = () -> x.TypeError # Should never be used
 x.Doc = () -> x.TypeError # Should never be used
 
-x.Id = x.ReadOnly
-x.Auto = (val) -> x.ReadOnly
-x.AutoInit = (val) -> x.ReadOnly
+x.Id = (val) -> val || null
+x.Auto = (val) -> val
+x.AutoInit = (val) -> val
 
 x.ReadOnlyTypes = [x.Id, x.Auto, x.AutoInit]
 

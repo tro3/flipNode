@@ -13,7 +13,7 @@ schemaMerge = require('../src/api/schemaFunctions/schemaMerge')
 p = console.log
 
 
-xdescribe 'schemaMerge function', ->
+describe 'schemaMerge function', ->
         
     it 'handles simple objects', ->
         old =
@@ -281,7 +281,7 @@ xdescribe 'schemaMerge function', ->
             a: [1,2]
             b: 1
             c: 1
-            d: [{_id:1,a:1}]
+            d: [{a:1}]
         endp =
             schema: new Schema {
                 a: [Integer]
@@ -296,6 +296,6 @@ xdescribe 'schemaMerge function', ->
             a: [1,2]
             b: 1
             c: 1
-            d: [{_id:1,a:1}]
+            d: [{_id:null,a:1}]
         }
     
