@@ -20,7 +20,7 @@ enforceTypes = require('../src/api/schemaFunctions/enforceSchema/enforceTypes')
 p = console.log
 
 
-xdescribe 'enforceTypes function', ->
+describe 'enforceTypes function', ->
     it 'handles simple objects', ->
         endp =
             schema:
@@ -46,15 +46,17 @@ xdescribe 'enforceTypes function', ->
             auto: 1
             autoi: 1
         result = enforceTypes({endpoint:endp, doc:data, errs:[]})
-        p result.errs
         assert.equal result.errs.length, 0
         assert.deepEqual result.doc, {
+            _id: null
             int:1
             str: '2'
             flt: 1.2
             date: new Date('1/1/2001')
             bool: false
             ref: 5
+            auto: 1
+            autoi: 1
         }
 
     it 'handles nested objects', ->
@@ -85,13 +87,17 @@ xdescribe 'enforceTypes function', ->
         result = enforceTypes({endpoint:endp, doc:data, errs:[]})
         assert.equal result.errs.length, 0
         assert.deepEqual result.doc, {
+            _id: null
             a:
+                _id: null
                 int:1
                 str: '2'
                 flt: 1.2
                 date: new Date('1/1/2001')
                 bool: false
                 ref: 5
+                auto: 1
+                autoi: 1
         }
 
     it 'handles lists of primitives', ->
@@ -104,6 +110,7 @@ xdescribe 'enforceTypes function', ->
         result = enforceTypes({endpoint:endp, doc:data, errs:[]})
         assert.equal result.errs.length, 0
         assert.deepEqual result.doc, {
+            _id: null
             a: [1,2,3]
         }
 
@@ -137,13 +144,17 @@ xdescribe 'enforceTypes function', ->
         result = enforceTypes({endpoint:endp, doc:data, errs:[]})
         assert.equal result.errs.length, 0
         assert.deepEqual result.doc, {
+            _id: null
             a: [
+                _id: null
                 int:1
                 str: '2'
                 flt: 1.2
                 date: new Date('1/1/2001')
                 bool: false
                 ref: 5
+                auto: 1
+                autoi: 1
             ]
         }
 
@@ -159,7 +170,9 @@ xdescribe 'enforceTypes function', ->
         result = enforceTypes({endpoint:endp, doc:data, errs:[]})
         assert.equal result.errs.length, 0
         assert.deepEqual result.doc, {
+            _id: null
             b:
+                _id: null
                 a: [1,2]
         }
 
@@ -195,14 +208,19 @@ xdescribe 'enforceTypes function', ->
         result = enforceTypes({endpoint:endp, doc:data, errs:[]})
         assert.equal result.errs.length, 0
         assert.deepEqual result.doc, {
+            _id: null
             b:
+                _id: null
                 a: [
+                    _id: null
                     int:1
                     str: '2'
                     flt: 1.2
                     date: new Date('1/1/2001')
                     bool: false
                     ref: 5
+                    auto: 1
+                    autoi: 1
                 ]
         }
 
@@ -249,14 +267,19 @@ xdescribe 'enforceTypes function', ->
         result = enforceTypes({endpoint:endp, doc:data, errs:[]})
         assert.equal result.errs.length, 0
         assert.deepEqual result.doc, {
+            _id: null
             b:
+                _id: null
                 a: [
+                    _id: null
                     int:1
                     str: '2'
                     flt: 1.2
                     date: new Date('1/1/2001')
                     bool: false
                     ref: 5
+                    auto: 1
+                    autoi: 1
                 ]
         }
 
@@ -294,15 +317,19 @@ xdescribe 'enforceTypes function', ->
         result = enforceTypes({endpoint:endp, doc:data, errs:[]})
         assert.equal result.errs.length, 8
         assert.deepEqual result.doc, {
+            _id: null
             int: null
             list: [1,2,null]
             doc:
+                _id: null
                 int: null
                 list: [1.2,2.4,null]                
             doclist: [
+                _id: null
                 int: null
                 list: [1, null]
                 doclist: [
+                    _id: null
                     int: null
                     list: [
                         new Date('2/2/2002')
