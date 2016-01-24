@@ -181,6 +181,8 @@ expandRefs = (req, doc) ->
 _expandSingle = (req, config, id) ->
     req.cache.findOne(config.collection, {_id:id})
     .then (ref) ->
+        if not config.fields
+            return ref
         sref = {_id: id}
         for fld in config.fields
             sref[fld] = if ref then ref[fld] else 'broken reference'
