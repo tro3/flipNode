@@ -28,6 +28,8 @@ x.Float = (val) ->
     val
 
 x.Reference = (val) ->
+    if val == parseInt(val)
+      val = {_id: val}
     if !('_id' of val)
         throw new Error
     id = parseInt(val._id)

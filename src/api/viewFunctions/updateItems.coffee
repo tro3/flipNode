@@ -37,7 +37,7 @@ updateItems = (req, data, direct=false) ->
             olds[index] = doc
             data[index] = item = merge(doc, item, schema)                        # Merge and fill in prototype
             if !direct
-                itemErrs = itemErrs.concat(incoming(item, schema))                   # Enforce existence and clean data
+                itemErrs = itemErrs.concat(incoming(item, schema))               # Enforce existence and clean data
                 itemErrs = itemErrs.concat(behavior.allowed(item, endpoint))     # Enforce allowed, required, and unique constraints
                 itemErrs = itemErrs.concat(behavior.required(item, endpoint))
                 tmpQ = behavior.unique(item, endpoint, req).then (result) ->

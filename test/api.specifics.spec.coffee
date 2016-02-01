@@ -325,3 +325,56 @@ describe 'api specific test cases', ->
                                 complete: false
                         done()
         .catch (err) -> done(err)
+
+
+    it 'handles non-updated Reference', (done) ->
+        app.use '/api', flip.api conn,
+            users:
+                username: ReqString
+                firstName: String
+                lastName: String
+                fullName: {type: Auto, auto: (el) -> "#{el.firstName} #{el.lastName}"}
+                    
+            test:
+                description: ReqString
+                assignee:
+                    type: Reference
+                    collection: 'users'
+                complete: {type: Boolean, default: false}
+        conn.insert('users', {
+            _id: 10
+            username: 'bob'
+        })
+        .then ->
+            conn.insert('test', {
+                _id: 1
+                description: 'Brush teeth'
+                assignee: 10
+                complete: false
+            })
+        .then ->
+            data = {_id:1}
+            request(app)
+                .put('/api/test/1')
+                .set('Content-Type', 'application/json')
+                .send(data)
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end (err, res) ->
+                    if err
+                        done(err)
+                    else
+                        assertBody res.body,
+                            _status: 'OK'
+                            _item:
+                                _id:1
+                                _auth:
+                                    _edit: true
+                                    _delete: true
+                                description: 'Brush teeth'
+                                assignee:
+                                    _id: 10
+                                    username: 'bob'
+                                complete: false
+                        done()
+        .catch (err) -> done(err)
