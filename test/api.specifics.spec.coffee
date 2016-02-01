@@ -378,3 +378,60 @@ describe 'api specific test cases', ->
                                 complete: false
                         done()
         .catch (err) -> done(err)
+
+
+    it 'handles null id on POST', (done) ->
+        app.use '/api', flip.api conn,
+            users:
+                username: ReqString
+                firstName: String
+                lastName: String
+                fullName: {type: Auto, auto: (el) -> "#{el.firstName} #{el.lastName}"}
+                    
+            test:
+                description: ReqString
+                assignee:
+                    type: Reference
+                    collection: 'users'
+                complete: {type: Boolean, default: false}
+        conn.insert('users', {
+            _id: 10
+            username: 'bob'
+        })
+        .then ->
+            conn.insert('flipData.ids', {collection:'test', lastID:0})
+        .then ->
+            data = {
+                _id: null
+                description: 'Brush teeth'
+                assignee: 10
+                complete: false
+            }
+            request(app)
+                .post('/api/test')
+                .set('Content-Type', 'application/json')
+                .send(data)
+                .expect('Content-Type', /json/)
+                .expect(200)
+                .end (err, res) ->
+                    if err
+                        done(err)
+                    else
+                        assertBody res.body,
+                            _status: 'OK'
+                            _item:
+                                _id:1
+                                _auth:
+                                    _edit: true
+                                    _delete: true
+                                description: 'Brush teeth'
+                                assignee:
+                                    _id: 10
+                                    username: 'bob'
+                                complete: false
+                        conn.drop('flipData.ids')
+                        .then ->
+                            done()
+        .catch (err) ->
+            conn.drop('flipData.ids')
+            done(err)

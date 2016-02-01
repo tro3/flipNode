@@ -87,7 +87,7 @@ module.exports.getItemView = (req, res) ->
 module.exports.createItemView = (req, res) ->
     item = null
     id = null
-    
+
     # Check high-level auth
     evalAuth('create', req.endpoint.auth, req)
     .then (auth) ->
@@ -98,8 +98,11 @@ module.exports.createItemView = (req, res) ->
             res.status(400).send(errors.MALFORMED)
             return
         if '_id' of req.body
-            res.status(400).send(errors.ID_MISMATCH)
-            return
+            if req.body._id
+                res.status(400).send(errors.ID_MISMATCH)
+                return
+            else
+                delete req.body['_id']
 
         item = req.body
                     
@@ -112,9 +115,9 @@ module.exports.createItemView = (req, res) ->
                         _tid: genTID()
                         _item: items[0]
             else
-                    res.body =
-                        _status: 'ERR'
-                        _errs: resp.errs[0]
+                res.body =
+                    _status: 'ERR'
+                    _errs: resp.errs[0]
     .catch (err) -> throw err
 
 
