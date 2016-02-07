@@ -174,6 +174,36 @@ describe 'api.getItem', ->
                         done()
         .catch (err) -> done(err)
 
+    it 'responds with field subset for sub auth function false', (done) ->
+        app.use '/api', flip.api conn,
+            users:
+                name: types.String
+                test:
+                    type: types.Doc
+                    auth:
+                        read: false
+                    schema:
+                        int: types.Integer
+        conn.insert('users', {_id:1, name:'admin', test:{int:1}})
+        .then ->
+            request(app)
+                .get('/api/users/1')
+                .expect(200)
+                .end (err, res) ->
+                    if err
+                        done(err)
+                    else
+                        assert.deepEqual res.body,
+                            _status: 'OK'
+                            _item:
+                                _id:1
+                                _auth:
+                                    _edit: true
+                                    _delete: true
+                                name:'admin'
+                        done()
+        .catch (err) -> done(err)
+
     it 'handles a simple item with a subset of fields', (done) ->
         app.use '/api', flip.api conn,
             users:
